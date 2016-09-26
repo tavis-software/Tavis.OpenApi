@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenApi", "src\OpenApi\OpenApi.csproj", "{A8E50143-69B2-472A-9D45-3F9A05D13202}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenApiTests", "src\OpenApiTests\OpenApiTests.csproj", "{1ED3C2C1-E1E7-4925-B4E6-2D969C3F5237}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A8E50143-69B2-472A-9D45-3F9A05D13202}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8E50143-69B2-472A-9D45-3F9A05D13202}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8E50143-69B2-472A-9D45-3F9A05D13202}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8E50143-69B2-472A-9D45-3F9A05D13202}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ED3C2C1-E1E7-4925-B4E6-2D969C3F5237}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ED3C2C1-E1E7-4925-B4E6-2D969C3F5237}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ED3C2C1-E1E7-4925-B4E6-2D969C3F5237}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ED3C2C1-E1E7-4925-B4E6-2D969C3F5237}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
