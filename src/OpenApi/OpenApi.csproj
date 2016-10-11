@@ -34,19 +34,26 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Model\Callback.cs" />
     <Compile Include="Model\Contact.cs" />
+    <Compile Include="Model\Content.cs" />
+    <Compile Include="Model\ContentType.cs" />
+    <Compile Include="Model\Example.cs" />
     <Compile Include="Model\ExternalDocs.cs" />
-    <Compile Include="Model\Host.cs" />
+    <Compile Include="Model\Header.cs" />
+    <Compile Include="Model\Server.cs" />
     <Compile Include="Model\Info.cs" />
     <Compile Include="Model\License.cs" />
     <Compile Include="Model\Components.cs" />
+    <Compile Include="Model\Link.cs" />
+    <Compile Include="Model\ParseHelper.cs" />
     <Compile Include="Model\Paths.cs" />
     <Compile Include="Model\RequestBody.cs" />
     <Compile Include="Model\SecurityRequirement.cs" />
+    <Compile Include="Model\ServerTemplate.cs" />
     <Compile Include="Model\Tag.cs" />
     <Compile Include="Model\YamlHelper.cs" />
     <Compile Include="Model\OpenApiDocument.cs" />
-    <Compile Include="OpenApiVocab.cs" />
     <Compile Include="Model\Operation.cs" />
     <Compile Include="Model\Parameter.cs" />
     <Compile Include="Model\Path.cs" />

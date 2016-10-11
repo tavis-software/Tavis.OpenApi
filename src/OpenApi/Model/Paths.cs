@@ -34,6 +34,11 @@ namespace Tavis.OpenApi.Model
         {
             PathMap = new Dictionary<string, Path>();  
         }
+
+        public Path GetPath(string key)
+        {
+            return PathMap[key];
+        }
         internal static Paths Load(YamlMappingNode value)
         {
             var paths = new Paths();
@@ -45,6 +50,11 @@ namespace Tavis.OpenApi.Model
             }
 
             return paths;
+        }
+
+        internal void Validate(List<string> errors)
+        {
+            //TODO:
         }
     }
 }

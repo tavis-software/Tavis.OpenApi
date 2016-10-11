@@ -7,39 +7,40 @@ namespace Tavis.OpenApi.Model
 
     public class Components
     {
-        public Dictionary<string, Schema> Definitions { get; set; }
-        public Dictionary<string, Parameter> Parameters { get; set; }
-        public Dictionary<string, Response> Responses { get; set; }
-        public Dictionary<string, SecurityScheme> SecurityDefinitions { get; set; }
-        public Dictionary<string, string> Extensions { get; set; }
+        public Dictionary<string, Schema> Definitions { get; set; } = new Dictionary<string, Schema>();
+        public Dictionary<string, Parameter> Parameters { get; set; } = new Dictionary<string, Parameter>();
+        public Dictionary<string, Response> Responses { get; set; } = new Dictionary<string, Response>();
+        public Dictionary<string, SecurityScheme> SecurityDefinitions { get; set; } = new Dictionary<string, SecurityScheme>();
+        public Dictionary<string, Callback> Callbacks { get; set; } = new Dictionary<string, Callback>();
+        public Dictionary<string, Link> Links { get; set; } = new Dictionary<string, Link>();
 
-        public static Components Load(YamlMappingNode value)
+        public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
+
+        private static FixedFieldMap<Components> fixedFields = new FixedFieldMap<Components> {
+            { "definitions", (o,n) => { o.Definitions = n.CreateMap(Schema.Load); } },
+            { "parameters", (o,n) => o.Parameters = n.CreateMap(Parameter.Load) },
+            { "responses", (o,n) => o.Responses = n.CreateMap(Response.Load) },
+            //{ "responseHeaders", (o,n) => o.ResponseHeaders = n.CreateMap(ResponseHeader.Load) },
+            { "securityDefinitions", (o,n) => o.SecurityDefinitions = n.CreateMap(SecurityScheme.Load) },
+            { "callbacks", (o,n) => o.Callbacks = n.CreateMap(Callback.Load) },
+            { "links", (o,n) => o.Links = n.CreateMap(Link.Load) },
+
+            };
+
+        private static PatternFieldMap<Components> patternFields = new PatternFieldMap<Components>
+        {
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
+        };
+
+
+        public static Components Load(YamlMappingNode mapNode)
         {
             var components = new Components();
 
-            foreach (var node in value.Children)
+            foreach (var node in mapNode.Children)
             {
                 var key = (YamlScalarNode)node.Key;
-                switch (key.Value)
-                {
-                    case "definitions":
-                        components.Definitions = null;
-                        break;
-
-                    case "parameters":
-                        components.Parameters = node.Value.CreateMap<Parameter>(Parameter.Load);
-                        break;
-
-                    case "responses":
-                        components.Responses = null;
-                        break;
-
-                    case "securityDefinitions":
-                        components.SecurityDefinitions = null;
-                        break;
-
-
-                }
+                ParseHelper.ParseField(key.Value, node.Value, components, fixedFields, patternFields);
             }
             return components;
         }

@@ -15,9 +15,27 @@ namespace Tavis.OpenApi.Model
         public List<Parameter> Parameters {get;set;}
         public RequestBody RequestBody { get; set; }
         public Dictionary<string,Response> Responses { get; set; }
-        public string Host { get; set; }
-        public string BasePath { get; set; }
-        public string[] Schemes { get; set; }
+        public Server Server { get; set; }
+        public Dictionary<string, string> Extensions { get; set; }
+
+
+        private static FixedFieldMap<Operation> fixedFields = new FixedFieldMap<Operation>
+        {
+            { "operationId", (o,n) => { o.OperationId = n.GetScalarValue(); } },
+            { "summary", (o,n) => { o.Summary = n.GetScalarValue(); } },
+            { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
+            { "deprecated", (o,n) => { o.Deprecated = bool.Parse(n.GetScalarValue()); } },
+            { "requestBody", (o,n) => { o.RequestBody = RequestBody.Load((YamlMappingNode)n); } },
+            { "responses", (o,n) => { o.Responses = n.CreateMap(Response.Load); } },
+            { "server", (o,n) => { o.Server = Server.Load((YamlMappingNode)n); } },
+//            { "security", (o,n) => { o.Se = n.GetScalarValue(); } },
+            { "parameters", (o,n) => { o.Parameters = n.CreateList(Parameter.Load); } },
+        };
+
+        private static PatternFieldMap<Operation> patternFields = new PatternFieldMap<Operation>
+        {
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
+        };
 
 
         internal static Operation Load(YamlMappingNode value)
@@ -26,51 +44,10 @@ namespace Tavis.OpenApi.Model
 
             foreach (var node in value.Children)
             {
-                var key = ((YamlScalarNode)node.Key).Value;
-                switch (key)
-                {
-                    case "summary":
-                        operation.Summary = node.Value.GetScalarValue();
-                        break;
-                    case "description":
-                        operation.Description = node.Value.GetScalarValue();
-                        break;
-                    case "operationId":
-                        operation.OperationId = node.Value.GetScalarValue();
-                        break;
-                    case "deprecated":
-                        operation.Deprecated = bool.Parse(node.Value.GetScalarValue());
-                        break;
-
-                    case "parameters":
-                        operation.Parameters = node.Value.CreateList(Parameter.Load);
-                        break;
-
-                    case "requestBody":
-                        operation.RequestBody = RequestBody.Load((YamlMappingNode)node.Value);
-                        break;
-
-                    case "responses":
-                        operation.Responses = node.Value.CreateMap(Response.Load);
-                        break;
-
-                    case "security":
-                        //operation.s = node.Value.GetScalarValue();
-                        break;
-
-                    case "host":
-                        operation.Host = node.Value.GetScalarValue();
-                        break;
-
-                    case "basePath":
-                        operation.BasePath = node.Value.GetScalarValue();
-                        break;
-                    case "schemes":
-                        operation.Schemes = ((YamlSequenceNode)node.Value).Select(n => n.GetScalarValue()).ToArray() ;
-                        break;
-
-                }
+                var key = (YamlScalarNode)node.Key;
+                ParseHelper.ParseField(key.Value, node.Value, operation, fixedFields, patternFields);
             }
+
             return operation;
         }
     }

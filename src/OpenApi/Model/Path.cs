@@ -8,23 +8,32 @@ namespace Tavis.OpenApi.Model
 
     public class Path
     {
+        public Dictionary<string, string> Extensions { get; set; }
+
         public string Summary { get; set; }
         public string Description { get; set; }
 
-        public Dictionary<string, Operation> Operations {get;set;}
+        public Dictionary<string, Operation> Operations { get; set; } = new Dictionary<string, Operation>();
 
-        public string Host { get; set; }
+        public Server Server { get; set; }
+        public List<Parameter> Parameters { get; set; } = new List<Parameter>();
 
-        public string BasePath { get; set; }
-
-        public string[] Schemes { get; set; }
-
-        public Dictionary<string, Parameter> Parameters { get; set; }
-
-        public Path()
+        private static FixedFieldMap<Path> fixedFields = new FixedFieldMap<Path>
         {
-            Operations = new Dictionary<string, Operation>();
-        }
+            { "summary", (o,n) => { o.Summary = n.GetScalarValue(); } },
+            { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
+            { "server", (o,n) => { o.Server = Server.Load((YamlMappingNode)n); } },
+            { "parameters", (o,n) => { o.Parameters = n.CreateList(Parameter.Load); } },
+
+        };
+
+        private static PatternFieldMap<Path> patternFields = new PatternFieldMap<Path>
+        {
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
+            { (s)=> "get,put,post,delete,patch,options,head".Contains(s),
+                (o,k,n)=> o.Operations.Add(k, Operation.Load((YamlMappingNode)n)) }
+        };
+
 
         internal static Path Load(YamlMappingNode value)
         {
@@ -32,41 +41,8 @@ namespace Tavis.OpenApi.Model
 
             foreach(var node in value.Children)
             {
-                var key = ((YamlScalarNode)node.Key).Value;
-                switch(key)
-                {
-                    case "summary":
-                        path.Summary = node.Value.GetScalarValue();                        
-                        break;
-
-                    case "description":
-                        path.Description = node.Value.GetScalarValue();
-                        break;
-
-                    case "host":
-                        path.Host = node.Value.GetScalarValue();
-                        break;
-
-                    case "basePath":
-                        path.BasePath = node.Value.GetScalarValue();
-                        break;
-                    case "schemes":
-                        //path.Schemes = node.Value.GetScalarValue();
-                        break;
-                    case "get":
-                    case "put":
-                    case "post":
-                    case "delete":
-                    case "patch":
-                    case "options":
-                    case "head":
-                        path.Operations.Add(key, Operation.Load((YamlMappingNode)node.Value));
-                        break;
-
-                    case "parameters":
-                        //path.Parameters = Parameters.
-                        break;
-                }
+                var key = (YamlScalarNode)node.Key;
+                ParseHelper.ParseField(key.Value, node.Value, path, fixedFields, patternFields);
             }
 
             return path;

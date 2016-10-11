@@ -53,15 +53,15 @@ namespace OpenApiTests
 
             var openApiDoc = OpenApiDocument.Parse(stream);
 
-            Assert.Equal(2, openApiDoc.ParseErrors.Count);
+            Assert.Equal(3, openApiDoc.ParseErrors.Count);
             Assert.NotNull(openApiDoc.ParseErrors.Where(s=> s == "`openapi` property does not match the required format major.minor.patch").FirstOrDefault());
             Assert.NotNull(openApiDoc.ParseErrors.Where(s => s == "`info.title` is a required property").FirstOrDefault());
+            Assert.NotNull(openApiDoc.ParseErrors.Where(s => s == "`info.version` property does not match the required format major.minor.patch"));
 
-            
         }
 
         [Fact]
-        public void ParsePetstoreAPI()
+        public void CheckOpenAPIVersion()
         {
 
             var stream = this.GetType().Assembly.GetManifestResourceStream("OpenApiTests.Samples.petstore30.yaml");
@@ -69,11 +69,34 @@ namespace OpenApiTests
             var openApiDoc = OpenApiDocument.Parse(stream);
 
             Assert.Equal("3.0.0", openApiDoc.Version);
-            Assert.Equal(2, openApiDoc.Paths.PathMap.Count());
-            Assert.Equal("Swagger Petstore (Simple)", openApiDoc.Info.Title);
-            Assert.Equal("1.0.0", openApiDoc.Info.Version);
 
         }
+
+        [Fact]
+        public void CheckPetStoreApiInfo()
+        {
+            var stream = this.GetType().Assembly.GetManifestResourceStream("OpenApiTests.Samples.petstore30.yaml");
+
+            var openApiDoc = OpenApiDocument.Parse(stream);
+            var info = openApiDoc.Info;
+            Assert.Equal("Swagger Petstore (Simple)", openApiDoc.Info.Title);
+            Assert.Equal("A sample API that uses a petstore as an example to demonstrate features in the swagger-2.0 specification", info.Description);
+            Assert.Equal("1.0.0", info.Version);
+
+        }
+
+
+        [Fact]
+        public void DoesAPathExist()
+        {
+            var stream = this.GetType().Assembly.GetManifestResourceStream("OpenApiTests.Samples.petstore30.yaml");
+
+            var openApiDoc = OpenApiDocument.Parse(stream);
+
+            Assert.Equal(2, openApiDoc.Paths.PathMap.Count());
+            Assert.NotNull(openApiDoc.Paths.GetPath("/pets"));
+        }
+
 
 
         [Fact]

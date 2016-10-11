@@ -2,6 +2,7 @@
 using SharpYaml.Serialization;
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Tavis.OpenApi.Model
 {
@@ -23,13 +24,13 @@ namespace Tavis.OpenApi.Model
              = new Dictionary<string, Action<Info, YamlNode>> {
             { "title", (o,n) => { o.Title = n.GetScalarValue(); } },
             { "version", (o,n) => { o.Version = n.GetScalarValue(); } },
-            { "description", (o,n) => { o.Description = n.GetScalarValue(); } }, 
+            { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
             { "termsOfService", (o,n) => { o.TermsOfService = n.GetScalarValue(); } },
             { "contact", (o,n) => { o.Contact = Contact.Load((YamlMappingNode)n); } },
             { "license", (o,n) => { o.License = License.Load((YamlMappingNode)n); } }
         };
 
-        private static Dictionary<Func<string,bool>, Action<Info, string, YamlNode>> patternFields
+        private static Dictionary<Func<string, bool>, Action<Info, string, YamlNode>> patternFields
            = new Dictionary<Func<string, bool>, Action<Info, string, YamlNode>>
            {
                { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
@@ -45,7 +46,7 @@ namespace Tavis.OpenApi.Model
         {
             var info = new Info();
 
-            foreach(var node in infoNode.Children)
+            foreach (var node in infoNode.Children)
             {
                 var key = (YamlScalarNode)node.Key;
                 ParseHelper.ParseField(key.Value, node.Value, info, fixedFields, patternFields);
@@ -54,16 +55,21 @@ namespace Tavis.OpenApi.Model
             return info;
         }
 
+        private static Regex versionRegex = new Regex(@"\d+\.\d+\.\d+");
+
+        public static Dictionary<Func<Info, bool>, string> ValidationRules = new Dictionary<Func<Info, bool>, string> { 
+            { i => String.IsNullOrEmpty(i.Title), "`info.title` is a required property"   },
+            { i => String.IsNullOrEmpty(i.Version), "`info.version` is a required property"   },
+            { i => !versionRegex.IsMatch(i.Version), "`info.version` property does not match the required format major.minor.patch"}
+
+        };
+
         public void Validate(List<string> errors)
         {
-            // Title
-            if (String.IsNullOrEmpty(Title))
-            {
-                errors.Add("`info.title` is a required property");
-            }
+            errors.AddRange(ValidationRules.Where(kvp => kvp.Key(this)).Select(kvp => kvp.Value));
+
         }
 
     }
-
-
-}
+        
+    }
