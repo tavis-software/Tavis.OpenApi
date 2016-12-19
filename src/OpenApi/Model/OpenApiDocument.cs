@@ -46,6 +46,7 @@ namespace Tavis.OpenApi.Model
         public static OpenApiDocument Parse(Stream stream)
         {
             var yamlStream = new YamlStream();
+            
             yamlStream.Load(new StreamReader(stream));
             var doc = yamlStream.Documents.First();
             return Load(doc);

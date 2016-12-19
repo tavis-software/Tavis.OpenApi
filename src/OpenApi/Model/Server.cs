@@ -16,7 +16,7 @@ namespace Tavis.OpenApi.Model
         {
             { "description", (o,n) => { o.Description = n.GetScalarValue();  } },
             { "url", (o,n) => { o.Url=  n.GetScalarValue(); } },
-            { "templates", (o,n) => {  n.CreateMap(ServerTemplate.Load); } }
+            { "templates", (o,n) => {  o.Templates = n.CreateMap(ServerTemplate.Load); } }
         };
 
         private static PatternFieldMap<Server> patternFields = new PatternFieldMap<Server>

@@ -6,10 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace Tavis.OpenApi.Model
 {
-
-
-
-
+    
     public class Info
     {
         public string Title { get; set; }
@@ -60,14 +57,19 @@ namespace Tavis.OpenApi.Model
         public static Dictionary<Func<Info, bool>, string> ValidationRules = new Dictionary<Func<Info, bool>, string> { 
             { i => String.IsNullOrEmpty(i.Title), "`info.title` is a required property"   },
             { i => String.IsNullOrEmpty(i.Version), "`info.version` is a required property"   },
-            { i => !versionRegex.IsMatch(i.Version), "`info.version` property does not match the required format major.minor.patch"}
-
+            { i => !versionRegex.IsMatch(i.Version), "`info.version` property does not match the required format major.minor.patch"},
+            { i => !String.IsNullOrEmpty(i.TermsOfService) && !CheckUrl(i.TermsOfService), "`info.termsOfService` MUST be a URL"   }
         };
+
+        private static bool CheckUrl(string href)
+        {
+            Uri output = null;
+            return Uri.TryCreate(href, UriKind.RelativeOrAbsolute, out output);
+        }
 
         public void Validate(List<string> errors)
         {
             errors.AddRange(ValidationRules.Where(kvp => kvp.Key(this)).Select(kvp => kvp.Value));
-
         }
 
     }
