@@ -12,7 +12,7 @@ namespace OpenApiTests
     {
 
         private OpenApiDocument _PetStoreDoc;
-        private Operation _PostOperation;
+  //      private Operation _PostOperation;
         public OperationTests()
         {
 

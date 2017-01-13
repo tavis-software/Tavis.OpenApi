@@ -45,7 +45,7 @@ paths:
                 schema:
                     type: array
                     items:
-                      "ref": '#/definitions/pet'
+                      "$ref": '#/definitions/pet'
             application/xml:
                 schema:
                     type: array
