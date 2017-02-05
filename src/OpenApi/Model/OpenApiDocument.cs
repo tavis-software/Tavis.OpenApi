@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Collections;
 
 namespace Tavis.OpenApi.Model
 {
@@ -45,23 +46,19 @@ namespace Tavis.OpenApi.Model
 
         public static OpenApiDocument Parse(Stream stream)
         {
-            var yamlStream = new YamlStream();
-            
-            yamlStream.Load(new StreamReader(stream));
-            var doc = yamlStream.Documents.First();
-            return Load(doc);
+            var rootNode = new RootNode(stream);
+            return Load(rootNode);
         }
 
-        public static OpenApiDocument Load(YamlDocument doc)
+        public static OpenApiDocument Load(RootNode rootNode)
         {
             var openApidoc = new OpenApiDocument();
 
-            var rootMap = (YamlMappingNode)doc.RootNode;
+            var rootMap = rootNode.GetMap();
             
-            foreach (var node in rootMap.Children)
+            foreach (var node in rootMap)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField<OpenApiDocument>(key.Value, node.Value, openApidoc, OpenApiDocument.fixedFields, OpenApiDocument.patternFields);
+                ParseHelper.ParseField<OpenApiDocument>(node.Name, node.Value, openApidoc, OpenApiDocument.fixedFields, OpenApiDocument.patternFields);
             }
 
             openApidoc.ParseErrors = openApidoc.Validate();
@@ -99,12 +96,104 @@ namespace Tavis.OpenApi.Model
     }
 
     
-    public class FixedFieldMap<T> : Dictionary<string, Action<T, YamlNode>>
+    public class FixedFieldMap<T> : Dictionary<string, Action<T, ParseNode>>
     {
    
     }
 
-    public class PatternFieldMap<T> : Dictionary<Func<string, bool>, Action<T, string, YamlNode>>
+    public class PatternFieldMap<T> : Dictionary<Func<string, bool>, Action<T, string, ParseNode>>
     {
     }
+
+    public class ParsingContext
+    {
+
+    }
+
+    public abstract class ParseNode
+    {
+        public ParseNode(ParsingContext ctx)
+        {
+            this.Context = ctx;
+        }
+        public ParsingContext Context { get; }
+    }
+
+    public class PropertyNode : ParseNode
+    {
+        public PropertyNode(ParsingContext ctx, string name, YamlNode node) : base(ctx)
+        {
+            this.Name = name;
+            var listNode = node as YamlSequenceNode;
+            if (listNode != null)
+            {
+                Value = new ListNode(Context,listNode);
+            } else
+            {
+                var mapNode = node as YamlMappingNode;
+                if (mapNode != null)
+                {
+                    Value = new MapNode(Context,mapNode);
+                } else
+                {
+                    Value = new ValueNode(Context,node as YamlScalarNode);
+                }
+            } 
+        }
+        public string Name { get; private set; }
+        public ParseNode Value { get; private set; }
+    }
+
+    public class RootNode : ParseNode
+    {
+        YamlDocument yamlDocument;
+        public RootNode(ParsingContext ctx, Stream stream) : base(ctx)
+        {
+            var yamlStream = new YamlStream();
+
+            yamlStream.Load(new StreamReader(stream));
+            this.yamlDocument = yamlStream.Documents.First();
+        }
+
+        public MapNode GetMap()
+        {
+            return new MapNode(Context,(YamlMappingNode)yamlDocument.RootNode);
+        }
+    }
+
+    public class ValueNode : ParseNode
+    {
+        public ValueNode(ParsingContext ctx, YamlScalarNode scalarNode) : base(ctx)
+        {
+
+        }
+    }
+    public class ListNode :  ParseNode
+    {
+        public ListNode(ParsingContext ctx, YamlSequenceNode sequenceNode) : base(ctx)
+        {
+
+        }
+    }
+    public class MapNode : ParseNode, IEnumerable<PropertyNode>
+    {
+        YamlMappingNode node;
+        private List<PropertyNode> nodes;
+        public MapNode(ParsingContext ctx, YamlMappingNode node) : base(ctx)
+        {
+            this.node = node;
+            nodes = this.node.Children.Select(kvp => new PropertyNode(Context, kvp.Key.GetScalarValue(), kvp.Value)).ToList();
+        }
+
+        public IEnumerator<PropertyNode> GetEnumerator()
+        {
+            return this.nodes.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.nodes.GetEnumerator();
+        }
+    }
+
 }
