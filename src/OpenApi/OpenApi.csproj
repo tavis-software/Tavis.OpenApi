@@ -57,6 +57,7 @@
     <Compile Include="Model\Operation.cs" />
     <Compile Include="Model\Parameter.cs" />
     <Compile Include="Model\Path.cs" />
+    <Compile Include="ParseNodes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model\Response.cs" />
     <Compile Include="Model\Schema.cs" />

@@ -17,18 +17,18 @@ namespace Tavis.OpenApi.Model
         public string Version { get; set; }
         public Dictionary<string, string> Extensions { get; set; }
 
-        private static Dictionary<string, Action<Info, YamlNode>> fixedFields
-             = new Dictionary<string, Action<Info, YamlNode>> {
+        private static FixedFieldMap<Info> fixedFields
+             = new FixedFieldMap<Info> {
             { "title", (o,n) => { o.Title = n.GetScalarValue(); } },
             { "version", (o,n) => { o.Version = n.GetScalarValue(); } },
             { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
             { "termsOfService", (o,n) => { o.TermsOfService = n.GetScalarValue(); } },
-            { "contact", (o,n) => { o.Contact = Contact.Load((YamlMappingNode)n); } },
-            { "license", (o,n) => { o.License = License.Load((YamlMappingNode)n); } }
+            { "contact", (o,n) => { o.Contact = Contact.Load(n); } },
+            { "license", (o,n) => { o.License = License.Load(n); } }
         };
 
-        private static Dictionary<Func<string, bool>, Action<Info, string, YamlNode>> patternFields
-           = new Dictionary<Func<string, bool>, Action<Info, string, YamlNode>>
+        private static PatternFieldMap<Info> patternFields
+           = new PatternFieldMap<Info>
            {
                { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
            };
@@ -39,14 +39,18 @@ namespace Tavis.OpenApi.Model
             Extensions = new Dictionary<string, string>();
         }
 
-        internal static Info Load(YamlMappingNode infoNode)
+        internal static Info Load(ParseNode node)
         {
+            var infoNode = node as MapNode;
+            if (infoNode != null)
+            {
+                throw new Exception("Info node must be a Map"); // Add to errors and return
+            } 
             var info = new Info();
 
-            foreach (var node in infoNode.Children)
+            foreach (var propertyNode in infoNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField(key.Value, node.Value, info, fixedFields, patternFields);
+                propertyNode.ParseField(info, fixedFields, patternFields);
             }
 
             return info;

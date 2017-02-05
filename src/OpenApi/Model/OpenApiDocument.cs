@@ -1,5 +1,4 @@
-﻿using SharpYaml.Serialization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,24 +28,26 @@ namespace Tavis.OpenApi.Model
  
         private static FixedFieldMap<OpenApiDocument> fixedFields = new FixedFieldMap<OpenApiDocument> {
             { "openapi", (o,n) => { o.Version = n.GetScalarValue(); } },
-            { "info", (o,n) => o.Info = Info.Load((YamlMappingNode)n) },
-            { "paths", (o,n) => o.Paths = Paths.Load((YamlMappingNode)n) },
-            { "components", (o,n) => o.Components = Components.Load((YamlMappingNode)n) },
+            { "info", (o,n) => o.Info = Info.Load(n) },
+            { "paths", (o,n) => o.Paths = Paths.Load(n) },
+            { "components", (o,n) => o.Components = Components.Load(n) },
             { "tags", (o,n) => o.Tags = n.CreateList(Tag.Load)},
-            { "externalDocs", (o,n) => o.ExternalDocs = ExternalDocs.Load((YamlMappingNode)n) },
+            { "externalDocs", (o,n) => o.ExternalDocs = ExternalDocs.Load(n) },
             { "security", (o,n) => o.SecurityRequirements = n.CreateList(SecurityRequirement.Load)}
 
             };
 
         private static PatternFieldMap<OpenApiDocument> patternFields = new PatternFieldMap<OpenApiDocument>
         {
-                   { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
+                    // We have no semantics to verify X- nodes, therefore treat them as just values.
+                   { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, ((ValueNode)n).GetScalarValue()) }
         };
 
 
         public static OpenApiDocument Parse(Stream stream)
         {
-            var rootNode = new RootNode(stream);
+            var ctx = new ParsingContext();
+            var rootNode = new RootNode(ctx,stream);
             return Load(rootNode);
         }
 
@@ -58,7 +59,7 @@ namespace Tavis.OpenApi.Model
             
             foreach (var node in rootMap)
             {
-                ParseHelper.ParseField<OpenApiDocument>(node.Name, node.Value, openApidoc, OpenApiDocument.fixedFields, OpenApiDocument.patternFields);
+                node.ParseField<OpenApiDocument>(openApidoc, OpenApiDocument.fixedFields, OpenApiDocument.patternFields);
             }
 
             openApidoc.ParseErrors = openApidoc.Validate();
@@ -108,92 +109,6 @@ namespace Tavis.OpenApi.Model
     public class ParsingContext
     {
 
-    }
-
-    public abstract class ParseNode
-    {
-        public ParseNode(ParsingContext ctx)
-        {
-            this.Context = ctx;
-        }
-        public ParsingContext Context { get; }
-    }
-
-    public class PropertyNode : ParseNode
-    {
-        public PropertyNode(ParsingContext ctx, string name, YamlNode node) : base(ctx)
-        {
-            this.Name = name;
-            var listNode = node as YamlSequenceNode;
-            if (listNode != null)
-            {
-                Value = new ListNode(Context,listNode);
-            } else
-            {
-                var mapNode = node as YamlMappingNode;
-                if (mapNode != null)
-                {
-                    Value = new MapNode(Context,mapNode);
-                } else
-                {
-                    Value = new ValueNode(Context,node as YamlScalarNode);
-                }
-            } 
-        }
-        public string Name { get; private set; }
-        public ParseNode Value { get; private set; }
-    }
-
-    public class RootNode : ParseNode
-    {
-        YamlDocument yamlDocument;
-        public RootNode(ParsingContext ctx, Stream stream) : base(ctx)
-        {
-            var yamlStream = new YamlStream();
-
-            yamlStream.Load(new StreamReader(stream));
-            this.yamlDocument = yamlStream.Documents.First();
-        }
-
-        public MapNode GetMap()
-        {
-            return new MapNode(Context,(YamlMappingNode)yamlDocument.RootNode);
-        }
-    }
-
-    public class ValueNode : ParseNode
-    {
-        public ValueNode(ParsingContext ctx, YamlScalarNode scalarNode) : base(ctx)
-        {
-
-        }
-    }
-    public class ListNode :  ParseNode
-    {
-        public ListNode(ParsingContext ctx, YamlSequenceNode sequenceNode) : base(ctx)
-        {
-
-        }
-    }
-    public class MapNode : ParseNode, IEnumerable<PropertyNode>
-    {
-        YamlMappingNode node;
-        private List<PropertyNode> nodes;
-        public MapNode(ParsingContext ctx, YamlMappingNode node) : base(ctx)
-        {
-            this.node = node;
-            nodes = this.node.Children.Select(kvp => new PropertyNode(Context, kvp.Key.GetScalarValue(), kvp.Value)).ToList();
-        }
-
-        public IEnumerator<PropertyNode> GetEnumerator()
-        {
-            return this.nodes.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.nodes.GetEnumerator();
-        }
     }
 
 }

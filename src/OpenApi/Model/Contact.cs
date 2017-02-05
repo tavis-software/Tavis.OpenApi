@@ -29,14 +29,18 @@ namespace Tavis.OpenApi.Model
         }
 
 
-        public static Contact Load(YamlMappingNode contactNode)
+        public static Contact Load(ParseNode node)
         {
+            var contactNode = node as MapNode;
+            if (contactNode == null)
+            {
+                throw new Exception("Contact node should be a map");
+            }
             var contact = new Contact();
 
-            foreach (var node in contactNode.Children)
+            foreach (var propertyNode in contactNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField(key.Value, node.Value, contact, fixedFields, patternFields);
+                propertyNode.ParseField(contact, fixedFields, patternFields);
             }
 
             return contact;
