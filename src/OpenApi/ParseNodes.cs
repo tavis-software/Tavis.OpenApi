@@ -10,32 +10,7 @@ using Tavis.OpenApi.Model;
 
 namespace Tavis.OpenApi
 {
-    public interface IReference
-    {
-        string Pointer { get; }
-    }
-
-    public interface IReference<T> : IReference
-    {
-        T GetInstance();
-    }
-
-    public class Reference<T> : IReference<T>
-    {
-        public ParsingContext context;
-        public Reference(ParsingContext context, string pointer)
-        {
-            this.Pointer = pointer;
-            this.context = context;
-        }
-        public string Pointer { get; private set; }
-
-        public T GetInstance()
-        {
-            return (T)this.context.GetInstance(this.Pointer);
-        }
-    }
-
+ 
     public interface IReferenceStore
     {
         object GetReferencedObject(string pointer);
@@ -74,7 +49,7 @@ namespace Tavis.OpenApi
             var mapNode = this as MapNode;
             if (mapNode == null)
             {
-                throw new Exception($"{nodeName} must be a map/object");
+                throw new OpenApiParseException($"{nodeName} must be a map/object");
             }
 
             return mapNode;

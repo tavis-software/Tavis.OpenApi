@@ -47,7 +47,6 @@
     <Compile Include="Model\License.cs" />
     <Compile Include="Model\Components.cs" />
     <Compile Include="Model\Link.cs" />
-    <Compile Include="Model\ParseHelper.cs" />
     <Compile Include="Model\Paths.cs" />
     <Compile Include="Model\RequestBody.cs" />
     <Compile Include="Model\SecurityRequirement.cs" />
