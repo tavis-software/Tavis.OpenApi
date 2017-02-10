@@ -33,14 +33,15 @@ namespace Tavis.OpenApi.Model
         };
 
 
-        public static Components Load(YamlMappingNode mapNode)
+        public static Components Load(ParseNode node)
         {
+            var mapNode = node.CheckMapNode("components");
+
             var components = new Components();
 
-            foreach (var node in mapNode.Children)
+            foreach (var itemNode in mapNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField(key.Value, node.Value, components, fixedFields, patternFields);
+                itemNode.ParseField(components, fixedFields, patternFields);
             }
             return components;
         }

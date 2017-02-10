@@ -41,14 +41,10 @@ namespace Tavis.OpenApi.Model
 
         internal static Info Load(ParseNode node)
         {
-            var infoNode = node as MapNode;
-            if (infoNode != null)
-            {
-                throw new Exception("Info node must be a Map"); // Add to errors and return
-            } 
+            var mapNode = node.CheckMapNode("Info");
             var info = new Info();
 
-            foreach (var propertyNode in infoNode)
+            foreach (var propertyNode in mapNode)
             {
                 propertyNode.ParseField(info, fixedFields, patternFields);
             }
@@ -67,7 +63,7 @@ namespace Tavis.OpenApi.Model
 
         private static bool CheckUrl(string href)
         {
-            Uri output = null;
+            Uri output;
             return Uri.TryCreate(href, UriKind.RelativeOrAbsolute, out output);
         }
 

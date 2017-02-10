@@ -21,18 +21,18 @@ namespace Tavis.OpenApi.Model
         {
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
             { (s)=> "get,put,post,delete,patch,options,head".Contains(s),
-                (o,k,n)=> o.Operations.Add(k, Operation.Load((YamlMappingNode)n)) }
+                (o,k,n)=> o.Operations.Add(k, Operation.Load(n)    ) }
 
         };
 
 
-        public static Callback Load(YamlMappingNode mapNode)
+        public static Callback Load(ParseNode node)
         {
+            var mapNode = node.CheckMapNode("callback");
             var callback = new Callback();
-            foreach (var node in mapNode.Children)
+            foreach (var property in mapNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField(key.Value, node.Value, callback, fixedFields, patternFields);
+                property.ParseField(callback, fixedFields, patternFields);
             }
 
             return callback;

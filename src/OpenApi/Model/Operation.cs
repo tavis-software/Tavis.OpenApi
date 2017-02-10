@@ -25,9 +25,9 @@ namespace Tavis.OpenApi.Model
             { "summary", (o,n) => { o.Summary = n.GetScalarValue(); } },
             { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
             { "deprecated", (o,n) => { o.Deprecated = bool.Parse(n.GetScalarValue()); } },
-            { "requestBody", (o,n) => { o.RequestBody = RequestBody.Load((YamlMappingNode)n); } },
+            { "requestBody", (o,n) => { o.RequestBody = RequestBody.Load(n)    ; } },
             { "responses", (o,n) => { o.Responses = n.CreateMap(Response.Load); } },
-            { "server", (o,n) => { o.Server = Server.Load((YamlMappingNode)n); } },
+            { "server", (o,n) => { o.Server = Server.Load(n)    ; } },
 //            { "security", (o,n) => { o.Se = n.GetScalarValue(); } },
             { "parameters", (o,n) => { o.Parameters = n.CreateList(Parameter.Load); } },
         };
@@ -38,14 +38,14 @@ namespace Tavis.OpenApi.Model
         };
 
 
-        internal static Operation Load(YamlMappingNode value)
+        internal static Operation Load(ParseNode node)
         {
+            var mapNode = node.CheckMapNode("Operation");
             var operation = new Operation();
 
-            foreach (var node in value.Children)
+            foreach (var property in mapNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField(key.Value, node.Value, operation, fixedFields, patternFields);
+                property.ParseField(operation, fixedFields, patternFields);
             }
 
             return operation;

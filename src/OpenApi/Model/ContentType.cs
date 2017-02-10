@@ -17,9 +17,9 @@ namespace Tavis.OpenApi.Model
 
         private static FixedFieldMap<ContentType> fixedFields = new FixedFieldMap<ContentType>
         {
-            { "schema", (o,n) => { o.Schema = Schema.Load((YamlMappingNode)n); } },
+            { "schema", (o,n) => { o.Schema = Schema.Load(n); } },
             { "examples", (o,n) => { o.Examples=  n.CreateList(Example.Load); } },
-            { "example", (o,n) => { o.Example=  Example.Load((YamlMappingNode)n); } },
+            { "example", (o,n) => { o.Example=  Example.Load(n); } },
         };
 
         private static PatternFieldMap<ContentType> patternFields = new PatternFieldMap<ContentType>
@@ -27,13 +27,13 @@ namespace Tavis.OpenApi.Model
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
         };
 
-        public static ContentType Load(YamlMappingNode mapNode)
+        public static ContentType Load(ParseNode node)
         {
+            var mapNode = node.CheckMapNode("contentType");
             var contentType = new ContentType();
-            foreach (var node in mapNode.Children)
+            foreach (var property in mapNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField(key.Value, node.Value, contentType, fixedFields, patternFields);
+                property.ParseField(contentType, fixedFields, patternFields);
             }
 
             return contentType;

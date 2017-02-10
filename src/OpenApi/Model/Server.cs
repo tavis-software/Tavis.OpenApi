@@ -24,13 +24,14 @@ namespace Tavis.OpenApi.Model
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
         };
 
-        public static Server Load(YamlMappingNode mapNode)
+        public static Server Load(ParseNode node)
         {
+            var mapNode = node.CheckMapNode("server");
+
             var server = new Server();
-            foreach (var node in mapNode.Children)
+            foreach (var property in mapNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField(key.Value, node.Value, server, fixedFields, patternFields);
+                property.ParseField(server, fixedFields, patternFields);
             }
 
             return server;

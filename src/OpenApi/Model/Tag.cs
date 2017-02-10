@@ -7,15 +7,16 @@ namespace Tavis.OpenApi.Model
         public string Name { get; set; }
         public string Description { get; set; }
 
-        internal static Tag Load(YamlMappingNode n)
+        internal static Tag Load(ParseNode n)
         {
+            var mapNode = n.CheckMapNode("tag");
 
             var obj = new Tag();
 
-            foreach (var node in n.Children)
+            foreach (var node in mapNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                switch (key.Value)
+                var key = node.Name;
+                switch (key)
                 {
                     case "description":
                         obj.Description = node.Value.GetScalarValue();

@@ -48,14 +48,15 @@ namespace Tavis.OpenApi.Model
         };
 
 
-        public static Parameter Load(YamlMappingNode value)
+        public static Parameter Load(ParseNode node)
         {
+            var mapNode = node.CheckMapNode("parameter");
+
             var parameter = new Parameter();
 
-            foreach (var node in value.Children)
+            foreach (var item in mapNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField(key.Value, node.Value, parameter, fixedFields, patternFields);
+                item.ParseField(parameter, fixedFields, patternFields);
             }
 
             return parameter;

@@ -19,7 +19,7 @@ namespace Tavis.OpenApi.Model
         {
             { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
             { "required", (o,n) => { o.Required = bool.Parse(n.GetScalarValue()); } },
-            { "content", (o,n) => { o.Content = Content.Load((YamlMappingNode)n);  } },
+            { "content", (o,n) => { o.Content = Content.Load(n);  } },
         };
 
         private static PatternFieldMap<RequestBody> patternFields = new PatternFieldMap<RequestBody>
@@ -27,13 +27,14 @@ namespace Tavis.OpenApi.Model
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
         };
 
-        public static RequestBody Load(YamlMappingNode mapNode)
+        public static RequestBody Load(ParseNode node)
         {
+            var mapNode = node.CheckMapNode("requestBody");
+
             var requestBody = new RequestBody();
-            foreach (var node in mapNode.Children)
+            foreach (var property in mapNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField(key.Value, node.Value, requestBody, fixedFields, patternFields);
+                property.ParseField(requestBody, fixedFields, patternFields);
             }
 
             return requestBody;

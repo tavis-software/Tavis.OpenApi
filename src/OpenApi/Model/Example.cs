@@ -20,13 +20,13 @@ namespace Tavis.OpenApi.Model
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
         };
 
-        public static Example Load(YamlMappingNode mapNode)
+        public static Example Load(ParseNode node)
         {
+            var mapNode = node.CheckMapNode("Example");
             var example = new Example();
-            foreach (var node in mapNode.Children)
+            foreach (var property in mapNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField(key.Value, node.Value, example, fixedFields, patternFields);
+                property.ParseField(example, fixedFields, patternFields);
             }
 
             return example;

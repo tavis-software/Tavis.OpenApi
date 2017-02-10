@@ -24,13 +24,13 @@ namespace Tavis.OpenApi.Model
         };
 
 
-        public static Header Load(YamlMappingNode mapNode)
+        public static Header Load(ParseNode node)
         {
+            var mapNode = node.CheckMapNode("header");
             var header = new Header();
-            foreach (var node in mapNode.Children)
+            foreach (var property in mapNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField(key.Value, node.Value, header, fixedFields, patternFields);
+                property.ParseField(header, fixedFields, patternFields);
             }
 
             return header;

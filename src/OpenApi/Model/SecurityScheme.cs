@@ -40,13 +40,14 @@ namespace Tavis.OpenApi.Model
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
         };
 
-        public static SecurityScheme Load(YamlMappingNode mapNode)
+        public static SecurityScheme Load(ParseNode node)
         {
+            var mapNode = node.CheckMapNode("securityScheme");
+
             var securityScheme = new SecurityScheme();
-            foreach (var node in mapNode.Children)
+            foreach (var property in mapNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField(key.Value, node.Value, securityScheme, fixedFields, patternFields);
+                property.ParseField(securityScheme, fixedFields, patternFields);
             }
 
             return securityScheme;

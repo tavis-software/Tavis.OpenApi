@@ -46,7 +46,8 @@ namespace Tavis.OpenApi.Model
 
         public static OpenApiDocument Parse(Stream stream)
         {
-            var ctx = new ParsingContext();
+            IReferenceStore referenceStore = new ReferenceStore();
+            var ctx = new ParsingContext(referenceStore);
             var rootNode = new RootNode(ctx,stream);
             return Load(rootNode);
         }
@@ -96,7 +97,16 @@ namespace Tavis.OpenApi.Model
         }
     }
 
-    
+    public class ReferenceStore : IReferenceStore
+    {
+        private Dictionary<string, object> store = new Dictionary<string, object>();
+        public object GetReferencedObject(string pointer)
+        {
+            object returnValue = null; 
+            store.TryGetValue(pointer, out returnValue);
+            return returnValue;
+        }
+    }
     public class FixedFieldMap<T> : Dictionary<string, Action<T, ParseNode>>
     {
    
@@ -106,9 +116,5 @@ namespace Tavis.OpenApi.Model
     {
     }
 
-    public class ParsingContext
-    {
-
-    }
 
 }

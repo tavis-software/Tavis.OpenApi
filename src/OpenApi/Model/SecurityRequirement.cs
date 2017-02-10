@@ -9,19 +9,20 @@ namespace Tavis.OpenApi.Model
     {
         public string Name { get; set; }
         public string[] Scopes { get; set; }
-        internal static SecurityRequirement Load(YamlMappingNode n)
+        internal static SecurityRequirement Load(ParseNode node)
         {
+
+            var mapNode = node.CheckMapNode("security");
 
             var obj = new SecurityRequirement();
 
-            foreach (var node in n.Children)
+            foreach (var property in mapNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                switch (key.Value)
+                switch (property.Name)  // What's this for?
                 {
                     default:
-                        obj.Name = key.Value;
-                        var scopeSequence = (YamlSequenceNode)node.Value;
+                        obj.Name = property.Name ;
+                        var scopeSequence = (ListNode)property.Value;
                         obj.Scopes =  scopeSequence.Select(s => s.GetScalarValue()).ToArray<string>();
                         break;
 

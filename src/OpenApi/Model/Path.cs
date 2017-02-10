@@ -22,7 +22,7 @@ namespace Tavis.OpenApi.Model
         {
             { "summary", (o,n) => { o.Summary = n.GetScalarValue(); } },
             { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
-            { "server", (o,n) => { o.Server = Server.Load((YamlMappingNode)n); } },
+            { "server", (o,n) => { o.Server = Server.Load(n)    ; } },
             { "parameters", (o,n) => { o.Parameters = n.CreateList(Parameter.Load); } },
 
         };
@@ -31,18 +31,18 @@ namespace Tavis.OpenApi.Model
         {
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
             { (s)=> "get,put,post,delete,patch,options,head".Contains(s),
-                (o,k,n)=> o.Operations.Add(k, Operation.Load((YamlMappingNode)n)) }
+                (o,k,n)=> o.Operations.Add(k, Operation.Load(n)    ) }
         };
 
 
-        internal static Path Load(YamlMappingNode value)
+        internal static Path Load(ParseNode node)
         {
+            var mapNode = node.CheckMapNode("Path");
             var path = new Path();
 
-            foreach(var node in value.Children)
+            foreach(var property in mapNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField(key.Value, node.Value, path, fixedFields, patternFields);
+                property.ParseField(path, fixedFields, patternFields);
             }
 
             return path;

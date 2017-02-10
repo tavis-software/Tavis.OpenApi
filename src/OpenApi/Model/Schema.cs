@@ -1,4 +1,4 @@
-﻿using SharpYaml.Serialization;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Tavis.OpenApi.Model
@@ -18,8 +18,8 @@ namespace Tavis.OpenApi.Model
         {
                 { "type", (o,n) => { o.Type = n.GetScalarValue(); } },
                 { "format", (o,n) => { o.Format = n.GetScalarValue(); } },
-                { "required", (o,n) => { o.Required = YamlHelper.CreateSimpleList<string>(n, n2 => n2.GetScalarValue()).ToArray(); } },
-                { "items", (o,n) => { o.Items = Schema.Load((YamlMappingNode)n); } },
+                { "required", (o,n) => { o.Required = n.CreateSimpleList<string>(n2 => n2.GetScalarValue()).ToArray(); } },
+                { "items", (o,n) => { o.Items = Schema.Load(n); } },
                 { "properties", (o,n) => { o.Properties = n.CreateMap(Schema.Load); } },
         };
 
@@ -29,17 +29,21 @@ namespace Tavis.OpenApi.Model
         };
 
 
-        public static Schema Load(YamlMappingNode mapNode)
+        public static Schema Load(ParseNode node)
         {
-            var contentType = new Schema();
-            foreach (var node in mapNode.Children)
+            MapNode mapNode = node.CheckMapNode("schema");
+
+            Schema domainObject = mapNode.CreateOrReferenceDomainObject(()=> new Schema());
+
+            foreach (var propertyNode in mapNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField(key.Value, node.Value, contentType, fixedFields, patternFields);
+                propertyNode.ParseField(domainObject, fixedFields, patternFields);
             }
 
-            return contentType;
+            return domainObject;
         }
+
+
 
     }
 }

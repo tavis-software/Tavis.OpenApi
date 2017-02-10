@@ -19,16 +19,17 @@ namespace Tavis.OpenApi.Model
         private static PatternFieldMap<Content> patternFields = new PatternFieldMap<Content>
         {
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
-            { (s) => true, (o,k,n)=> o.ContentTypes.Add(k, ContentType.Load((YamlMappingNode)n)) }
+            { (s) => true, (o,k,n)=> o.ContentTypes.Add(k, ContentType.Load(n)    ) }
         };        
         
-        public static Content Load(YamlMappingNode mapNode)
+        public static Content Load(ParseNode node)
         {
+            var mapNode = node.CheckMapNode("content");
+
             var content = new Content();
-            foreach (var node in mapNode.Children)
+            foreach (var property in mapNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField(key.Value, node.Value, content, fixedFields, patternFields);
+                property.ParseField(content, fixedFields, patternFields);
             }
 
             return content;

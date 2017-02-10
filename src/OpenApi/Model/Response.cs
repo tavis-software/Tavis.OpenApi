@@ -22,7 +22,7 @@ namespace Tavis.OpenApi.Model
         {
             { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
             
-            { "content", (o,n) => { o.Content = Content.Load((YamlMappingNode)n);  } },
+            { "content", (o,n) => { o.Content = Content.Load(n)    ;  } },
             { "headers", (o,n) => { o.Headers = n.CreateMap(Header.Load); } },
             { "links", (o,n) => { o.Links = n.CreateMap(Link.Load); } },
             { "callback", (o,n) => { o.Callbacks = n.CreateMap(Callback.Load); } }
@@ -33,13 +33,14 @@ namespace Tavis.OpenApi.Model
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
         };
 
-        public static Response Load(YamlMappingNode mapNode)
+        public static Response Load(ParseNode node)
         {
+            var mapNode = node.CheckMapNode("response");
+
             var response = new Response();
-            foreach (var node in mapNode.Children)
+            foreach (var property in mapNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField(key.Value, node.Value, response, fixedFields, patternFields);
+                property.ParseField(response, fixedFields, patternFields);
             }
 
             return response;

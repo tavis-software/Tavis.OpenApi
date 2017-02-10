@@ -25,7 +25,7 @@ namespace Tavis.OpenApi.Model
 
         private static PatternFieldMap<Paths> patternFields = new PatternFieldMap<Paths>
         {
-            { (s)=> s.StartsWith("/"), (o,k,n)=> o.PathMap.Add(k, Path.Load((YamlMappingNode)n)) },
+            { (s)=> s.StartsWith("/"), (o,k,n)=> o.PathMap.Add(k, Path.Load(n)    ) },
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
         };
 
@@ -39,17 +39,19 @@ namespace Tavis.OpenApi.Model
         {
             return PathMap[key];
         }
-        internal static Paths Load(YamlMappingNode value)
+        internal static Paths Load(ParseNode node)
         {
-            var paths = new Paths();
+            MapNode mapNode = node.CheckMapNode("Paths");
 
-            foreach(var node in value.Children)
+            //Schema domainObject = CreateOrReferenceDomainObject(mapNode, () => new Paths());
+
+            Paths domainObject = new Paths();
+            foreach (var propertyNode in mapNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField(key.Value, node.Value, paths, fixedFields, patternFields);
+                propertyNode.ParseField(domainObject, fixedFields, patternFields);
             }
 
-            return paths;
+            return domainObject;
         }
 
         internal void Validate(List<string> errors)

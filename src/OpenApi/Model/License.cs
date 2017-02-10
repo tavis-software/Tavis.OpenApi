@@ -18,27 +18,27 @@ namespace Tavis.OpenApi.Model
             Extensions = new Dictionary<string, string>();
         }
 
-        internal static License Load(YamlMappingNode licenseNode)
+        internal static License Load(ParseNode node)
         {
+            var mapNode = node.CheckMapNode("License");
             var license = new License();
 
-            foreach (var node in licenseNode.Children)
+            foreach (var property in mapNode)
             {
-                var key = ((YamlScalarNode)node.Key).Value;
-                switch (key)
+                switch (property.Name)
                 {
                     case "name":
-                        license.Name = node.Value.GetScalarValue();
+                        license.Name = property.Value.GetScalarValue();
                         break;
 
                     case "url":
-                        license.Url = new Uri(node.Value.GetScalarValue());
+                        license.Url = new Uri(property.Value.GetScalarValue());
                         break;
 
                     default:
-                        if (key.StartsWith("x-"))
+                        if (property.Name.StartsWith("x-"))
                         {
-                            license.Extensions.Add(key, node.Value.GetScalarValue());
+                            license.Extensions.Add(property.Name, property.Value.GetScalarValue());
                         }
                         break;
                 }

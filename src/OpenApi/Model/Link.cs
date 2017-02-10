@@ -25,13 +25,13 @@ namespace Tavis.OpenApi.Model
 
 
 
-        public static Link Load(YamlMappingNode mapNode)
+        public static Link Load(ParseNode node)
         {
+            var mapNode = node.CheckMapNode("link");
             var link = new Link();
-            foreach (var node in mapNode.Children)
+            foreach (var property in mapNode)
             {
-                var key = (YamlScalarNode)node.Key;
-                ParseHelper.ParseField(key.Value, node.Value, link, fixedFields, patternFields);
+               property.ParseField(link, fixedFields, patternFields);
             }
 
             return link;
