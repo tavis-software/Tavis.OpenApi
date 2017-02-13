@@ -8,7 +8,7 @@ using System.Collections;
 namespace Tavis.OpenApi.Model
 {
 
-    
+
     public class OpenApiDocument
     {
         string version;
@@ -19,7 +19,7 @@ namespace Tavis.OpenApi.Model
                     version = value;
                 } else
                 {
-                    throw new OpenApiParseException("`openapi` property does not match the required format major.minor.patch");
+                    throw new DomainParseException("`openapi` property does not match the required format major.minor.patch");
                 }
             } } // Swagger
         public Info Info { get; set; } = new Info();
@@ -51,47 +51,9 @@ namespace Tavis.OpenApi.Model
         };
 
 
-
-
-        public List<string> Validate()
-        {
-            var errors = new List<string>();
-
-            Validate(errors);
-            return errors;
-        }
-
         private static Regex versionRegex = new Regex(@"\d+\.\d+\.\d+");
 
-        private void Validate(List<string> errors)
-        {
-
-
-            if (Paths == null)
-            {
-                errors.Add("`paths` is a required property");
-            } 
-        }
     }
-
-    public class ReferenceStore : IReferenceStore
-    {
-        private Dictionary<string, object> store = new Dictionary<string, object>();
-        public object GetReferencedObject(string pointer)
-        {
-            object returnValue = null; 
-            store.TryGetValue(pointer, out returnValue);
-            return returnValue;
-        }
-    }
-    public class FixedFieldMap<T> : Dictionary<string, Action<T, ParseNode>>
-    {
    
-    }
-
-    public class PatternFieldMap<T> : Dictionary<Func<string, bool>, Action<T, string, ParseNode>>
-    {
-    }
-
 
 }

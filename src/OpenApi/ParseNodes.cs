@@ -4,13 +4,36 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tavis.OpenApi.Model;
 using System.Text.RegularExpressions;
 
 namespace Tavis.OpenApi
 {
+
+    public static class YamlHelper
+    {
+        public static string GetScalarValue(this YamlNode node)
+        {
+            var scalarNode = node as YamlScalarNode;
+            if (scalarNode == null) throw new DomainParseException($"Expected scalar at line {node.Start.Line}");
+
+            return scalarNode.Value;
+        }
+    }
+
+    public class DomainParseException : Exception
+    {
+        public DomainParseException(string message) : base(message)
+        {
+
+        }
+    }
+    public class FixedFieldMap<T> : Dictionary<string, Action<T, ParseNode>>
+    {
+    }
+
+    public class PatternFieldMap<T> : Dictionary<Func<string, bool>, Action<T, string, ParseNode>>
+    {
+    }
 
     public interface IReferenceStore
     {
@@ -135,7 +158,7 @@ namespace Tavis.OpenApi
                 try
                 {
                     fixedFieldMap(parentInstance, this.Value);
-                } catch (OpenApiParseException ex)
+                } catch (DomainParseException ex)
                 {
                     this.Context.ParseErrors.Add(new OpenApiError(ex));
                 }
@@ -181,7 +204,7 @@ namespace Tavis.OpenApi
         {
 
             var scalarNode = this.node as YamlScalarNode;
-            if (scalarNode == null) throw new OpenApiParseException($"Expected scalar at line {node.Start.Line}");
+            if (scalarNode == null) throw new DomainParseException($"Expected scalar at line {node.Start.Line}");
 
             return scalarNode.Value;
         }
@@ -200,7 +223,7 @@ namespace Tavis.OpenApi
         public override List<T> CreateList<T>(Func<MapNode, T> map)
         {
             var yamlSequence = nodeList as YamlSequenceNode;
-            if (yamlSequence == null) throw new OpenApiParseException($"Expected list at line {nodeList.Start.Line} while parsing {typeof(T).Name}");
+            if (yamlSequence == null) throw new DomainParseException($"Expected list at line {nodeList.Start.Line} while parsing {typeof(T).Name}");
 
             return yamlSequence.Select(n => map(new MapNode(this.context,(YamlMappingNode)n))).ToList();
         }
@@ -208,7 +231,7 @@ namespace Tavis.OpenApi
         public override List<T> CreateSimpleList<T>(Func<ValueNode, T> map)
         {
             var yamlSequence = this.nodeList as YamlSequenceNode;
-            if (yamlSequence == null) throw new OpenApiParseException($"Expected list at line {nodeList.Start.Line} while parsing {typeof(T).Name}");
+            if (yamlSequence == null) throw new DomainParseException($"Expected list at line {nodeList.Start.Line} while parsing {typeof(T).Name}");
 
             return yamlSequence.Select(n => map(new ValueNode(this.Context,(YamlScalarNode)n))).ToList();
         }
@@ -246,7 +269,7 @@ namespace Tavis.OpenApi
         public string GetScalarValue(ValueNode key)
         {
             var scalarNode = this.node.Children[new YamlScalarNode(key.GetScalarValue())] as YamlScalarNode;
-            if (scalarNode == null) throw new OpenApiParseException($"Expected scalar at line {this.node.Start.Line} for key {key.GetScalarValue()}");
+            if (scalarNode == null) throw new DomainParseException($"Expected scalar at line {this.node.Start.Line} for key {key.GetScalarValue()}");
 
             return scalarNode.Value;
         }
@@ -274,7 +297,7 @@ namespace Tavis.OpenApi
         public override Dictionary<string, T> CreateMap<T>(Func<MapNode, T> map)
         {
             var yamlMap = this.node;
-            if (yamlMap == null) throw new OpenApiParseException($"Expected map at line {yamlMap.Start.Line} while parsing {typeof(T).Name}");
+            if (yamlMap == null) throw new DomainParseException($"Expected map at line {yamlMap.Start.Line} while parsing {typeof(T).Name}");
             var nodes = yamlMap.Select(n => new { key = n.Key.GetScalarValue(), value = map(new MapNode(this.Context,(YamlMappingNode)n.Value)) });
             return nodes.ToDictionary(k => k.key, v => v.value);
         }

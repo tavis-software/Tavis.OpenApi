@@ -8,7 +8,7 @@ namespace Tavis.OpenApi
         string pointer;
         string message;
 
-        public OpenApiError(OpenApiParseException ex)
+        public OpenApiError(DomainParseException ex)
         {
             this.message = ex.Message;
         }

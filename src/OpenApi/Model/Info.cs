@@ -17,7 +17,7 @@ namespace Tavis.OpenApi.Model
             {
                 if (!Uri.IsWellFormedUriString(value, UriKind.RelativeOrAbsolute))
                 {
-                    throw new OpenApiParseException("`info.termsOfService` MUST be a URL");
+                    throw new DomainParseException("`info.termsOfService` MUST be a URL");
                 };
                 this.termsOfService = value;
             }
