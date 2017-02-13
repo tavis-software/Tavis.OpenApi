@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tavis.OpenApi;
 using Tavis.OpenApi.Model;
 using Xunit;
 
@@ -15,9 +16,9 @@ namespace OpenApiTests
   //      private Operation _PostOperation;
         public OperationTests()
         {
-
+            var parser = new OpenApiParser();
             var stream = this.GetType().Assembly.GetManifestResourceStream("OpenApiTests.Samples.petstore30.yaml");
-            _PetStoreDoc = OpenApiDocument.Parse(stream);
+            _PetStoreDoc = parser.Parse(stream);
             //_PostOperation = _PetStoreDoc.Paths.PathMap.Where(pm=>pm.Key == "/pets").Value
             //    .Operations.Where()
         }

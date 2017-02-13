@@ -7,10 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tavis.OpenApi.Model;
+using System.Text.RegularExpressions;
 
 namespace Tavis.OpenApi
 {
- 
+
     public interface IReferenceStore
     {
         object GetReferencedObject(string pointer);
@@ -19,6 +20,7 @@ namespace Tavis.OpenApi
     public class ParsingContext
     {
         public string Version { get; set; }
+        public List<OpenApiError> ParseErrors { get; set; } = new List<OpenApiError>();
 
         IReferenceStore referenceStore;
         public ParsingContext(IReferenceStore referenceStore)
@@ -35,7 +37,6 @@ namespace Tavis.OpenApi
             throw new NotImplementedException();
         }
     }
-
     public abstract class ParseNode
     {
         public ParseNode(ParsingContext ctx)
@@ -49,7 +50,7 @@ namespace Tavis.OpenApi
             var mapNode = this as MapNode;
             if (mapNode == null)
             {
-                throw new OpenApiParseException($"{nodeName} must be a map/object");
+                this.Context.ParseErrors.Add(new OpenApiError("", $"{nodeName} must be a map/object"));
             }
 
             return mapNode;
@@ -94,8 +95,15 @@ namespace Tavis.OpenApi
             throw new Exception();
         }
 
-
-
+        internal string CheckRegex(string value, Regex versionRegex, string defaultValue)
+        {
+            if (!versionRegex.IsMatch(value))
+            {
+                this.Context.ParseErrors.Add(new OpenApiError("", "Value does not match regex: " + versionRegex.ToString()));
+                return defaultValue;
+            }
+            return value;
+        }
     }
 
     public class PropertyNode : ParseNode
@@ -124,7 +132,13 @@ namespace Tavis.OpenApi
 
             if (fixedFieldMap != null)
             {
-                fixedFieldMap(parentInstance, this.Value);
+                try
+                {
+                    fixedFieldMap(parentInstance, this.Value);
+                } catch (OpenApiParseException ex)
+                {
+                    this.Context.ParseErrors.Add(new OpenApiError(ex));
+                }
             }
             else
             {

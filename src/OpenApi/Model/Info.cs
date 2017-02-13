@@ -11,10 +11,23 @@ namespace Tavis.OpenApi.Model
     {
         public string Title { get; set; }
         public string Description { get; set; }
-        public string TermsOfService { get; set; }
+        public string TermsOfService {
+            get { return this.termsOfService; } 
+            set
+            {
+                if (!Uri.IsWellFormedUriString(value, UriKind.RelativeOrAbsolute))
+                {
+                    throw new OpenApiParseException("`info.termsOfService` MUST be a URL");
+                };
+                this.termsOfService = value;
+            }
+        }
+        string termsOfService;
         public Contact Contact { get; set; }
         public License License { get; set; }
+
         public string Version { get; set; }
+
         public Dictionary<string, string> Extensions { get; set; }
 
         private static FixedFieldMap<Info> fixedFields
@@ -44,33 +57,20 @@ namespace Tavis.OpenApi.Model
             var mapNode = node.CheckMapNode("Info");
             var info = new Info();
 
+            var required = new List<string>() { "title", "version" };
+
             foreach (var propertyNode in mapNode)
             {
                 propertyNode.ParseField(info, fixedFields, patternFields);
+                required.Remove(propertyNode.Name);
             }
+            node.Context.ParseErrors.AddRange(required.Select(r => new OpenApiError("", $"{r} is a required property")));
 
             return info;
         }
 
         private static Regex versionRegex = new Regex(@"\d+\.\d+\.\d+");
 
-        public static Dictionary<Func<Info, bool>, string> ValidationRules = new Dictionary<Func<Info, bool>, string> { 
-            { i => String.IsNullOrEmpty(i.Title), "`info.title` is a required property"   },
-            { i => String.IsNullOrEmpty(i.Version), "`info.version` is a required property"   },
-            { i => !versionRegex.IsMatch(i.Version), "`info.version` property does not match the required format major.minor.patch"},
-            { i => !String.IsNullOrEmpty(i.TermsOfService) && !CheckUrl(i.TermsOfService), "`info.termsOfService` MUST be a URL"   }
-        };
-
-        private static bool CheckUrl(string href)
-        {
-            Uri output;
-            return Uri.TryCreate(href, UriKind.RelativeOrAbsolute, out output);
-        }
-
-        public void Validate(List<string> errors)
-        {
-            errors.AddRange(ValidationRules.Where(kvp => kvp.Key(this)).Select(kvp => kvp.Value));
-        }
 
     }
         

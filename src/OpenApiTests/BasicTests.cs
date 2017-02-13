@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Tavis.OpenApi;
 
 namespace OpenApiTests
 {
@@ -35,13 +36,15 @@ namespace OpenApiTests
 
             var stream = this.GetType().Assembly.GetManifestResourceStream("OpenApiTests.Samples.Simplest.yaml");
 
-            var openApiDoc = OpenApiDocument.Parse(stream);
+            var parser = new OpenApiParser();
+             
+            var openApiDoc = parser.Parse(stream); 
 
             Assert.Equal("1.0.0", openApiDoc.Version);
             Assert.Equal(0, openApiDoc.Paths.PathMap.Count());
             Assert.Equal("The Api", openApiDoc.Info.Title);
             Assert.Equal("0.9.1", openApiDoc.Info.Version);
-            Assert.Equal(0, openApiDoc.ParseErrors.Count);
+            Assert.Equal(0, parser.ParseErrors.Count);
 
         }
 
@@ -51,12 +54,12 @@ namespace OpenApiTests
 
             var stream = this.GetType().Assembly.GetManifestResourceStream("OpenApiTests.Samples.BrokenSimplest.yaml");
 
-            var openApiDoc = OpenApiDocument.Parse(stream);
+            var parser = new OpenApiParser();
+            var openApiDoc = parser.Parse(stream);
 
-            Assert.Equal(3, openApiDoc.ParseErrors.Count);
-            Assert.NotNull(openApiDoc.ParseErrors.Where(s=> s == "`openapi` property does not match the required format major.minor.patch").FirstOrDefault());
-            Assert.NotNull(openApiDoc.ParseErrors.Where(s => s == "`info.title` is a required property").FirstOrDefault());
-            Assert.NotNull(openApiDoc.ParseErrors.Where(s => s == "`info.version` property does not match the required format major.minor.patch"));
+            Assert.Equal(2, parser.ParseErrors.Count);
+            Assert.NotNull(parser.ParseErrors.Where(s=> s.ToString() == "`openapi` property does not match the required format major.minor.patch").FirstOrDefault());
+            Assert.NotNull(parser.ParseErrors.Where(s => s.ToString() == "title is a required property").FirstOrDefault());
 
         }
 
@@ -65,8 +68,8 @@ namespace OpenApiTests
         {
 
             var stream = this.GetType().Assembly.GetManifestResourceStream("OpenApiTests.Samples.petstore30.yaml");
-
-            var openApiDoc = OpenApiDocument.Parse(stream);
+            var parser = new OpenApiParser();
+            var openApiDoc = parser.Parse(stream);
 
             Assert.Equal("3.0.0", openApiDoc.Version);
 
