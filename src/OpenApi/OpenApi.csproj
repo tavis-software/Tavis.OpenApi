@@ -42,6 +42,7 @@
     <Compile Include="Model\Example.cs" />
     <Compile Include="Model\ExternalDocs.cs" />
     <Compile Include="Model\Header.cs" />
+    <Compile Include="Model\ReferenceStore.cs" />
     <Compile Include="Model\Server.cs" />
     <Compile Include="Model\Info.cs" />
     <Compile Include="Model\License.cs" />
@@ -52,7 +53,6 @@
     <Compile Include="Model\SecurityRequirement.cs" />
     <Compile Include="Model\ServerTemplate.cs" />
     <Compile Include="Model\Tag.cs" />
-    <Compile Include="Model\YamlHelper.cs" />
     <Compile Include="Model\OpenApiDocument.cs" />
     <Compile Include="Model\Operation.cs" />
     <Compile Include="Model\Parameter.cs" />
