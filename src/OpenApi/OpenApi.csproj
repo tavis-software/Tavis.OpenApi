@@ -35,6 +35,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="JsonPointer.cs" />
     <Compile Include="Model\Callback.cs" />
     <Compile Include="Model\Contact.cs" />
     <Compile Include="Model\Content.cs" />
@@ -42,7 +43,6 @@
     <Compile Include="Model\Example.cs" />
     <Compile Include="Model\ExternalDocs.cs" />
     <Compile Include="Model\Header.cs" />
-    <Compile Include="Model\ReferenceStore.cs" />
     <Compile Include="Model\Server.cs" />
     <Compile Include="Model\Info.cs" />
     <Compile Include="Model\License.cs" />
@@ -60,6 +60,7 @@
     <Compile Include="OpenApiError.cs" />
     <Compile Include="OpenApiParser.cs" />
     <Compile Include="ParseNodes.cs" />
+    <Compile Include="ParsingContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model\Response.cs" />
     <Compile Include="Model\Schema.cs" />

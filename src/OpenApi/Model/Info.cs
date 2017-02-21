@@ -52,7 +52,7 @@ namespace Tavis.OpenApi.Model
             Extensions = new Dictionary<string, string>();
         }
 
-        internal static Info Load(ParseNode node)
+        public static Info Load(ParseNode node)
         {
             var mapNode = node.CheckMapNode("Info");
             var info = new Info();

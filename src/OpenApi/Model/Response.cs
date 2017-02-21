@@ -21,8 +21,7 @@ namespace Tavis.OpenApi.Model
         private static FixedFieldMap<Response> fixedFields = new FixedFieldMap<Response>
         {
             { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
-            
-            { "content", (o,n) => { o.Content = Content.Load(n)    ;  } },
+            { "content", (o,n) => { o.Content = Content.Load(n); } },
             { "headers", (o,n) => { o.Headers = n.CreateMap(Header.Load); } },
             { "links", (o,n) => { o.Links = n.CreateMap(Link.Load); } },
             { "callback", (o,n) => { o.Callbacks = n.CreateMap(Callback.Load); } }

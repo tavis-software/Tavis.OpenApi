@@ -12,7 +12,8 @@ namespace Tavis.OpenApi
     {
 
         ParsingContext context;
-
+        private RootNode rootNode;
+        
         public List<OpenApiError> ParseErrors
         {
             get
@@ -23,10 +24,9 @@ namespace Tavis.OpenApi
 
         public OpenApiDocument Parse(Stream stream)
         {
-            IReferenceStore referenceStore = new ReferenceStore();
-            this.context = new ParsingContext(referenceStore);
-            var rootNode = new RootNode(this.context, stream);
-            return Load(rootNode);
+            this.context = new ParsingContext(LoadReference);
+            this.rootNode = new RootNode(this.context, stream);
+            return Load(this.rootNode);
         }
 
         public static OpenApiDocument Load(RootNode rootNode)
@@ -51,6 +51,29 @@ namespace Tavis.OpenApi
 
             return openApidoc;
         }
+
+        private object LoadReference(string pointer)
+        {
+            var refPointer = new JsonPointer(pointer);
+            ParseNode node = this.rootNode.Find(refPointer);
+            node.DomainType = pointer.Split('/')[2];
+            object referencedObject = null;
+            switch (node.DomainType) // Not sure how to get this...
+            {
+                case "definitions":
+                    referencedObject = Schema.Load(node);
+                    break;
+                case "parameters":
+                    referencedObject = Parameter.Load(node);
+                    break;
+                // etc
+                default:
+                    throw new DomainParseException($"Unknown $ref {node.DomainType}");
+            }
+            return referencedObject;
+        }
+
+
     }
 
 

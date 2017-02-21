@@ -34,32 +34,6 @@ namespace Tavis.OpenApi
     public class PatternFieldMap<T> : Dictionary<Func<string, bool>, Action<T, string, ParseNode>>
     {
     }
-
-    public interface IReferenceStore
-    {
-        object GetReferencedObject(string pointer);
-    }
-
-    public class ParsingContext
-    {
-        public string Version { get; set; }
-        public List<OpenApiError> ParseErrors { get; set; } = new List<OpenApiError>();
-
-        IReferenceStore referenceStore;
-        public ParsingContext(IReferenceStore referenceStore)
-        {
-            this.referenceStore = referenceStore;
-        }
-        public Object GetReferencedObject(string pointer)
-        {
-            return this.referenceStore.GetReferencedObject(pointer);
-        }
-
-        internal object GetInstance(string pointer)
-        {
-            throw new NotImplementedException();
-        }
-    }
     public abstract class ParseNode
     {
         public ParseNode(ParsingContext ctx)
@@ -67,6 +41,7 @@ namespace Tavis.OpenApi
             this.Context = ctx;
         }
         public ParsingContext Context { get; }
+        public string DomainType { get; internal set; }
 
         public MapNode CheckMapNode(string nodeName)
         {
@@ -189,6 +164,12 @@ namespace Tavis.OpenApi
         public MapNode GetMap()
         {
             return new MapNode(Context, (YamlMappingNode)yamlDocument.RootNode);
+        }
+
+        internal ParseNode Find(JsonPointer refPointer)
+        {
+            var yamlNode = refPointer.Find(this.yamlDocument.RootNode);
+            return ParseNode.Create(this.Context, yamlNode);
         }
     }
 
