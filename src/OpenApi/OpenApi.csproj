@@ -43,6 +43,7 @@
     <Compile Include="Model\Example.cs" />
     <Compile Include="Model\ExternalDocs.cs" />
     <Compile Include="Model\Header.cs" />
+    <Compile Include="IReference.cs" />
     <Compile Include="Model\Server.cs" />
     <Compile Include="Model\Info.cs" />
     <Compile Include="Model\License.cs" />
@@ -67,14 +68,14 @@
     <Compile Include="Model\SecurityScheme.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="SharpYaml, Version=1.5.3.20680, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SharpYaml.1.5.3\lib\SharpYaml.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="Model\ClassModel.cd" />
     <None Include="Overview.cd" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="SharpYaml, Version=1.5.4.13160, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpYaml.1.5.4\lib\SharpYaml.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -4,7 +4,8 @@ using System.Collections.Generic;
 namespace Tavis.OpenApi.Model
 {
  
-    public class Schema
+    public class Schema : IReference
+
     {
         public string Type { get; set; }
         public string Format { get; set; }
@@ -13,6 +14,12 @@ namespace Tavis.OpenApi.Model
         public Dictionary<string,Schema> Properties { get; set; }
 
         public Dictionary<string, string> Extensions { get; set; }
+
+        public string Pointer
+        {
+            get;
+            set;
+        }
 
         private static FixedFieldMap<Schema> fixedFields = new FixedFieldMap<Schema>
         {

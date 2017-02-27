@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Tavis.OpenApi.Model;
 
 namespace Tavis.OpenApi
 {
@@ -10,22 +11,23 @@ namespace Tavis.OpenApi
         public string Version { get; set; }
         public List<OpenApiError> ParseErrors { get; set; } = new List<OpenApiError>();
 
-        private Dictionary<string, object> referenceStore = new Dictionary<string, object>();
+        private Dictionary<string, IReference> referenceStore = new Dictionary<string, IReference>();
 
-        private Func<string, object> referenceLoader;
-        public ParsingContext(Func<string,object> referenceLoader)
+        private Func<string, IReference> referenceLoader;
+        public ParsingContext(Func<string,IReference> referenceLoader)
         {
             this.referenceLoader = referenceLoader;
         }
 
-        public object GetReferencedObject(string pointer)
+        public IReference GetReferencedObject(string pointer)
         {
-            object returnValue = null;
+            IReference returnValue = null;
             referenceStore.TryGetValue(pointer, out returnValue);
 
             if (returnValue == null)
             {
                 returnValue = this.referenceLoader(pointer);
+                returnValue.Pointer = pointer;
                 referenceStore.Add(pointer, returnValue);
             }
 

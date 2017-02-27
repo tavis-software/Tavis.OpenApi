@@ -52,12 +52,12 @@ namespace Tavis.OpenApi
             return openApidoc;
         }
 
-        private object LoadReference(string pointer)
+        private IReference LoadReference(string pointer)
         {
             var refPointer = new JsonPointer(pointer);
             ParseNode node = this.rootNode.Find(refPointer);
             node.DomainType = pointer.Split('/')[2];
-            object referencedObject = null;
+            IReference referencedObject = null;
             switch (node.DomainType) // Not sure how to get this...
             {
                 case "definitions":
@@ -66,6 +66,10 @@ namespace Tavis.OpenApi
                 case "parameters":
                     referencedObject = Parameter.Load(node);
                     break;
+                case "callbacks":
+                    referencedObject = Callbacks.Load(node);
+                    break;
+
                 // etc
                 default:
                     throw new DomainParseException($"Unknown $ref {node.DomainType}");

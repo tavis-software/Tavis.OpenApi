@@ -7,9 +7,27 @@ using System.Threading.Tasks;
 
 namespace Tavis.OpenApi.Model
 {
+
+    public class Headers : Dictionary<string, Header>
+    {
+        public static Headers Load(ParseNode node)
+        {
+            var mapNode = node.CheckMapNode("header");
+
+            var headers = new Headers();
+            var nodes = mapNode.Select(n => new KeyValuePair<string,Header>(n.GetScalarValue(), Header.Load(n) ));
+
+            foreach (var item in nodes)
+            {
+                headers.Add(item.Key,item.Value );
+            }
+
+            return headers;
+        }
+    } 
+
     public class Header
     {
-
 
         public Dictionary<string, string> Extensions { get; set; }
 

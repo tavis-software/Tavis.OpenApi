@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Tavis.OpenApi.Model;
 
 namespace Tavis.OpenApi
 {
@@ -144,6 +145,9 @@ namespace Tavis.OpenApi
                 if (map != null)
                 {
                     map(parentInstance, this.Name, this.Value);
+                } else
+                {
+                    this.Context.ParseErrors.Add(new OpenApiError("",$"{this.Name} is not a valid property"));
                 }
             }
         }
@@ -255,7 +259,7 @@ namespace Tavis.OpenApi
             return scalarNode.Value;
         }
 
-        public T CreateOrReferenceDomainObject<T>(Func<T> factory)
+        public T CreateOrReferenceDomainObject<T>(Func<T> factory) where T: IReference
         {
             T domainObject;
             var refPointer = GetReferencePointer(); // What should the DOM of a reference look like?
@@ -266,6 +270,7 @@ namespace Tavis.OpenApi
             if (refPointer != null)
             {
                 domainObject = (T)this.Context.GetReferencedObject(refPointer);
+                
             }
             else
             {
