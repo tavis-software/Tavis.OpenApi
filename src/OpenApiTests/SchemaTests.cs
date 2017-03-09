@@ -18,7 +18,7 @@ namespace OpenApiTests
 
             var parser = new OpenApiParser();
             var openApiDoc = parser.Parse(stream);
-            var operation = openApiDoc.Paths.PathMap["/pets"].Operations["get"];
+            var operation = openApiDoc.Paths.PathItems["/pets"].Operations["get"];
             var schema = operation.Responses["200"].Content.ContentTypes["application/json"].Schema;
             Assert.NotNull(schema);
 

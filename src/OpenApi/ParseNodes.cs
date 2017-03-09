@@ -133,10 +133,15 @@ namespace Tavis.OpenApi
             {
                 try
                 {
+                    this.Context.StartObject(this.Name);
                     fixedFieldMap(parentInstance, this.Value);
                 } catch (DomainParseException ex)
                 {
                     this.Context.ParseErrors.Add(new OpenApiError(ex));
+                }
+                finally
+                {
+                    this.Context.EndObject();
                 }
             }
             else
@@ -144,10 +149,23 @@ namespace Tavis.OpenApi
                 var map = patternFields.Where(p => p.Key(this.Name)).Select(p => p.Value).FirstOrDefault();
                 if (map != null)
                 {
-                    map(parentInstance, this.Name, this.Value);
-                } else
+                    try
+                    {
+                        this.Context.StartObject(this.Name);
+                        map(parentInstance, this.Name, this.Value);
+                    }
+                    catch (DomainParseException ex)
+                    {
+                        this.Context.ParseErrors.Add(new OpenApiError(ex));
+                    }
+                    finally
+                    {
+                        this.Context.EndObject();
+                    }
+                }
+                else
                 {
-                    this.Context.ParseErrors.Add(new OpenApiError("",$"{this.Name} is not a valid property"));
+                    this.Context.ParseErrors.Add(new OpenApiError("", $"{this.Name} is not a valid property at {this.Context.GetLocation()}" ));
                 }
             }
         }
@@ -173,6 +191,7 @@ namespace Tavis.OpenApi
         internal ParseNode Find(JsonPointer refPointer)
         {
             var yamlNode = refPointer.Find(this.yamlDocument.RootNode);
+            if (yamlNode == null) return null;
             return ParseNode.Create(this.Context, yamlNode);
         }
     }
@@ -259,6 +278,10 @@ namespace Tavis.OpenApi
             return scalarNode.Value;
         }
 
+        public T GetReferencedObject<T>(string refPointer) where T : IReference
+        {
+            return (T)this.Context.GetReferencedObject(refPointer); 
+        }
         public T CreateOrReferenceDomainObject<T>(Func<T> factory) where T: IReference
         {
             T domainObject;

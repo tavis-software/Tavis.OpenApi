@@ -21,9 +21,7 @@ namespace Tavis.OpenApi.Model
         public string Description { get; set; }
         public bool Required { get; set; }
         public bool Deprecated { get; set; }
-        public string Type { get; set; }
-
-        public string Format { get; set; } 
+        public Schema Schema { get; set; }
         public bool AllowReserved { get; set; }
         public string Style { get; set; }
         public Dictionary<string, string> Extensions { get; set; }
@@ -37,9 +35,8 @@ namespace Tavis.OpenApi.Model
             { "required", (o,n) => { o.Required = bool.Parse(n.GetScalarValue()); } },
             { "deprecated", (o,n) => { o.Deprecated = bool.Parse(n.GetScalarValue()); } },
             { "allowReserved", (o,n) => { o.AllowReserved = bool.Parse(n.GetScalarValue()); } },
-            { "type", (o,n) => { o.Type = n.GetScalarValue(); } },
-            { "format", (o,n) => { o.Type = n.GetScalarValue(); } },
             { "style", (o,n) => { o.Style = n.GetScalarValue(); } },
+            { "schema", (o,n) => { o.Schema = Schema.Load(n); } },
 
         };
 
@@ -52,6 +49,12 @@ namespace Tavis.OpenApi.Model
         public static Parameter Load(ParseNode node)
         {
             var mapNode = node.CheckMapNode("parameter");
+
+            var refpointer = mapNode.GetReferencePointer();
+            if (refpointer != null)
+            {
+                return mapNode.GetReferencedObject<Parameter>(refpointer);
+            }
 
             var parameter = new Parameter();
 

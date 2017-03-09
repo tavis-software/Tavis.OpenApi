@@ -39,7 +39,7 @@ namespace OpenApiTests.Samples
 
             Assert.Equal("1.0.0", openApiDoc.Version);
 
-            Assert.Equal(0, openApiDoc.Paths.PathMap.Count());
+            Assert.Equal(0, openApiDoc.Paths.PathItems.Count());
             Assert.Equal("The Api", openApiDoc.Info.Title);
             Assert.Equal("0.9.1", openApiDoc.Info.Version);
             Assert.Equal("This is an api", openApiDoc.Info.Description);

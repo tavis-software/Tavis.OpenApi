@@ -9,7 +9,7 @@ namespace Tavis.OpenApi.Model
 {
     public class Content
     {
-        public Dictionary<string, ContentType> ContentTypes { get; set; } = new Dictionary<string, ContentType>();
+        public Dictionary<string, MediaType> ContentTypes { get; set; } = new Dictionary<string, MediaType>();
         public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
 
         private static FixedFieldMap<Content> fixedFields = new FixedFieldMap<Content>
@@ -19,7 +19,7 @@ namespace Tavis.OpenApi.Model
         private static PatternFieldMap<Content> patternFields = new PatternFieldMap<Content>
         {
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
-            { (s) => true, (o,k,n)=> o.ContentTypes.Add(k, ContentType.Load(n)    ) }
+            { (s) => true, (o,k,n)=> o.ContentTypes.Add(k, MediaType.Load(n)    ) }
         };        
         
         public static Content Load(ParseNode node)

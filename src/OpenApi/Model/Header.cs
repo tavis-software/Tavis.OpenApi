@@ -29,11 +29,24 @@ namespace Tavis.OpenApi.Model
     public class Header
     {
 
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public bool Required { get; set; }
+        public bool Deprecated { get; set; }
+        public Schema Schema { get; set; }
+        public bool AllowReserved { get; set; }
+        public string Style { get; set; }
         public Dictionary<string, string> Extensions { get; set; }
-
 
         private static FixedFieldMap<Header> fixedFields = new FixedFieldMap<Header>
         {
+            { "name", (o,n) => { o.Name = n.GetScalarValue(); } },
+            { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
+            { "required", (o,n) => { o.Required = bool.Parse(n.GetScalarValue()); } },
+            { "deprecated", (o,n) => { o.Deprecated = bool.Parse(n.GetScalarValue()); } },
+            { "allowReserved", (o,n) => { o.AllowReserved = bool.Parse(n.GetScalarValue()); } },
+            { "style", (o,n) => { o.Style = n.GetScalarValue(); } },
+            { "schema", (o,n) => { o.Schema = Schema.Load(n); } }
         };
 
         private static PatternFieldMap<Header> patternFields = new PatternFieldMap<Header>

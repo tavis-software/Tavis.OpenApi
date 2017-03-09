@@ -6,7 +6,7 @@ namespace Tavis.OpenApi.Model
 
 {
 
-    public class Path
+    public class PathItem
     {
         public Dictionary<string, string> Extensions { get; set; }
 
@@ -18,7 +18,7 @@ namespace Tavis.OpenApi.Model
         public Server Server { get; set; }
         public List<Parameter> Parameters { get; set; } = new List<Parameter>();
 
-        private static FixedFieldMap<Path> fixedFields = new FixedFieldMap<Path>
+        private static FixedFieldMap<PathItem> fixedFields = new FixedFieldMap<PathItem>
         {
             { "summary", (o,n) => { o.Summary = n.GetScalarValue(); } },
             { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
@@ -27,7 +27,7 @@ namespace Tavis.OpenApi.Model
 
         };
 
-        private static PatternFieldMap<Path> patternFields = new PatternFieldMap<Path>
+        private static PatternFieldMap<PathItem> patternFields = new PatternFieldMap<PathItem>
         {
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
             { (s)=> "get,put,post,delete,patch,options,head".Contains(s),
@@ -35,10 +35,10 @@ namespace Tavis.OpenApi.Model
         };
 
 
-        internal static Path Load(ParseNode node)
+        internal static PathItem Load(ParseNode node)
         {
             var mapNode = node.CheckMapNode("Path");
-            var path = new Path();
+            var path = new PathItem();
 
             foreach(var property in mapNode)
             {

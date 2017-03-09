@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Tavis.OpenApi.Model
 {
-    public class ContentType
+    public class MediaType
     {
         public Schema Schema { get; set; }
         public List<Example> Examples { get; set; }
@@ -15,22 +15,22 @@ namespace Tavis.OpenApi.Model
 
         public Dictionary<string, string> Extensions { get; set; }
 
-        private static FixedFieldMap<ContentType> fixedFields = new FixedFieldMap<ContentType>
+        private static FixedFieldMap<MediaType> fixedFields = new FixedFieldMap<MediaType>
         {
             { "schema", (o,n) => { o.Schema = Schema.Load(n); } },
             { "examples", (o,n) => { o.Examples=  n.CreateList(Example.Load); } },
             { "example", (o,n) => { o.Example=  Example.Load(n); } },
         };
 
-        private static PatternFieldMap<ContentType> patternFields = new PatternFieldMap<ContentType>
+        private static PatternFieldMap<MediaType> patternFields = new PatternFieldMap<MediaType>
         {
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
         };
 
-        public static ContentType Load(ParseNode node)
+        public static MediaType Load(ParseNode node)
         {
             var mapNode = node.CheckMapNode("contentType");
-            var contentType = new ContentType();
+            var contentType = new MediaType();
             foreach (var property in mapNode)
             {
                 property.ParseField(contentType, fixedFields, patternFields);

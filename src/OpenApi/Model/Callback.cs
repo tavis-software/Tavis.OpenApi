@@ -22,9 +22,11 @@ namespace Tavis.OpenApi.Model
 
     }
 
-    public class Callback
+    public class Callback : IReference
     {
-        public Dictionary<string, Operation> Operations { get; set; } = new Dictionary<string, Operation>();
+        public Dictionary<string, PathItem> PathItems { get; set; } = new Dictionary<string, PathItem>();
+
+        public string Pointer { get; set; }
 
         public Dictionary<string, string> Extensions { get; set; }
 
@@ -34,59 +36,27 @@ namespace Tavis.OpenApi.Model
 
         private static PatternFieldMap<Callback> patternFields = new PatternFieldMap<Callback>
         {
-             { (s)=> "get,put,post,delete,patch,options,head".Contains(s),
-                (o,k,n)=> o.Operations.Add(k, Operation.Load(n)    ) }
+             { (s)=> s.StartsWith("$"),
+                (o,k,n)=> o.PathItems.Add(k, PathItem.Load(n)    ) }
         };
 
         public static Callback Load(ParseNode node)
         {
             var mapNode = node.CheckMapNode("callback");
 
-            Callback domainObject = new Callback();
+            var refpointer = mapNode.GetReferencePointer();
+            if (refpointer != null)
+            {
+                return mapNode.GetReferencedObject<Callback>(refpointer);
+            }
+
+            var domainObject = new Callback();
 
             foreach (var property in mapNode)
             {
                 property.ParseField(domainObject, fixedFields, patternFields);
             }
-
-            return domainObject;
-        }
-    }
-
-    public class Callbacks : IReference
-    {
-        public Dictionary<string, Callback> Items { get; set; } = new Dictionary<string, Callback>();
-
-        public Dictionary<string, string> Extensions { get; set; }
-
-
-        public string Pointer { get; set; }
-
-        private static FixedFieldMap<Callbacks> fixedFields = new FixedFieldMap<Callbacks>
-        {
-        };
-
-        private static PatternFieldMap<Callbacks> patternFields = new PatternFieldMap<Callbacks>
-        {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
-            { (s)=> s.StartsWith("$"), (o,k,n)=> o.Items.Add(k, Callback.Load(n)    ) }
-        };
-
-
-        public static Callbacks Load(ParseNode node)
-        {
-            var mapNode = node.CheckMapNode("callbacks");
             
-            Callbacks domainObject = mapNode.CreateOrReferenceDomainObject(() => new Callbacks());
-
-            if (!domainObject.IsReference())
-            {
-                foreach (var property in mapNode)
-                {
-                    property.ParseField(domainObject, fixedFields, patternFields);
-                }
-            }
-
             return domainObject;
         }
     }

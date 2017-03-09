@@ -54,26 +54,60 @@ namespace Tavis.OpenApi
 
         private IReference LoadReference(string pointer)
         {
-            var refPointer = new JsonPointer(pointer);
-            ParseNode node = this.rootNode.Find(refPointer);
-            node.DomainType = pointer.Split('/')[2];
+            var parts = pointer.Split('/').Reverse().Take(2).ToArray();
+            var refType = parts[1];  
             IReference referencedObject = null;
-            switch (node.DomainType) // Not sure how to get this...
-            {
-                case "definitions":
-                    referencedObject = Schema.Load(node);
-                    break;
-                case "parameters":
-                    referencedObject = Parameter.Load(node);
-                    break;
-                case "callbacks":
-                    referencedObject = Callbacks.Load(node);
-                    break;
 
-                // etc
-                default:
-                    throw new DomainParseException($"Unknown $ref {node.DomainType}");
+            if ("schemas|parameters|callbacks".Contains(refType))
+            {
+                var refPointer = new JsonPointer(pointer);
+                ParseNode node = this.rootNode.Find(refPointer);
+                if (node == null) return null;
+                node.DomainType = refType;
+
+                switch (refType)
+                {
+                    case "schemas":
+                        referencedObject = Schema.Load(node);
+                        break;
+                    case "parameters":
+                        referencedObject = Parameter.Load(node);
+                        break;
+                    case "callbacks":
+                        referencedObject = Callback.Load(node);
+                        break;
+                    case "tags":
+                        referencedObject = Callback.Load(node);
+                        break;
+                }
             }
+            else if ("tags".Contains(refType))
+            {
+                
+                ListNode list = (ListNode)this.rootNode.Find(new JsonPointer("/tags"));
+                if (list != null)
+                {
+                    foreach (var item in list)
+                    {
+                        var tag = Tag.Load(item);
+
+                        if (tag.Name == parts[0])
+                        {
+                            return tag;
+                        }
+                    }
+                } else
+                {
+                    return new Tag() { Name = parts[0] };
+                }
+            }
+            else
+            {
+                throw new DomainParseException($"Unknown $ref {refType}");
+
+            }
+
+
             return referencedObject;
         }
 

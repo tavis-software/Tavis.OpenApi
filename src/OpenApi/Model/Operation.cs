@@ -16,8 +16,9 @@ namespace Tavis.OpenApi.Model
         public RequestBody RequestBody { get; set; }
         public Dictionary<string,Response> Responses { get; set; }
         public Server Server { get; set; }
+        public List<Tag> Tags { get; set; } = new List<Tag>();
         public Dictionary<string, string> Extensions { get; set; }
-        public Callbacks Callbacks { get; set; }
+        public Dictionary<string,Callback> Callbacks { get; set; }
 
         private static FixedFieldMap<Operation> fixedFields = new FixedFieldMap<Operation>
         {
@@ -27,9 +28,10 @@ namespace Tavis.OpenApi.Model
             { "deprecated", (o,n) => { o.Deprecated = bool.Parse(n.GetScalarValue()); } },
             { "requestBody", (o,n) => { o.RequestBody = RequestBody.Load(n)    ; } },
             { "responses", (o,n) => { o.Responses = n.CreateMap(Response.Load); } },
-            { "callbacks", (o,n) => { o.Callbacks = Callbacks.Load(n); } },
-            { "server", (o,n) => { o.Server = Server.Load(n)    ; } },
-//            { "security", (o,n) => { o.Se = n.GetScalarValue(); } },
+            { "callbacks", (o,n) => { o.Callbacks = n.CreateMap(Model.Callback.Load); } },
+            { "server", (o,n) => { o.Server = Server.Load(n); }},
+            { "tags", (o,n) => o.Tags = n.CreateSimpleList(Tag.LoadByReference)},
+//          { "security", (o,n) => { o.Se = n.GetScalarValue(); } },
             { "parameters", (o,n) => { o.Parameters = n.CreateList(Parameter.Load); } },
         };
 
@@ -38,11 +40,11 @@ namespace Tavis.OpenApi.Model
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
         };
 
-
         internal static Operation Load(ParseNode node)
         {
             var mapNode = node.CheckMapNode("Operation");
-            
+
+
             Operation domainObject = new Operation();
             foreach (var property in mapNode)
             {

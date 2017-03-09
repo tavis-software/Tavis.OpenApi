@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Tavis.OpenApi.Model;
 
 namespace Tavis.OpenApi
@@ -14,9 +15,24 @@ namespace Tavis.OpenApi
         private Dictionary<string, IReference> referenceStore = new Dictionary<string, IReference>();
 
         private Func<string, IReference> referenceLoader;
+
+        private Stack<string> currentLocation = new Stack<string>();
         public ParsingContext(Func<string,IReference> referenceLoader)
         {
             this.referenceLoader = referenceLoader;
+        }
+
+        internal void StartObject(string objectName)
+        {
+            this.currentLocation.Push(objectName);
+        }
+
+        internal void EndObject()
+        {
+            this.currentLocation.Pop();
+        }
+        public string GetLocation() {
+            return "#/" + String.Join("/", this.currentLocation.Reverse().ToArray());
         }
 
         public IReference GetReferencedObject(string pointer)

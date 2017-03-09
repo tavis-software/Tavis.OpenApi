@@ -14,7 +14,8 @@ paths:
         200:
           description: Register for webhook
       callbacks:
-        $ref: "#/components/callbacks/simplehook" 
+        simplehook:
+          $ref: "#/components/callbacks/simplehook" 
 components:
   callbacks:
     simplehook:

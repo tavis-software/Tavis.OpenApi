@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tavis.OpenApi;
+using Tavis.OpenApi.Model;
 using Xunit;
 
 namespace OpenApiTests
@@ -19,12 +20,14 @@ namespace OpenApiTests
             var parser = new OpenApiParser();
             var openApiDoc = parser.Parse(stream);
 
-            var path = openApiDoc.Paths.PathMap.First().Value;
-            var operation = path.Operations.First().Value;
+            PathItem path = openApiDoc.Paths.PathItems.First().Value;
+            Operation subscribeOperation = path.Operations["post"];
 
-            var callback = operation.Callbacks.Items.First().Value.Operations.First();
+            var callback = subscribeOperation.Callbacks["mainHook"];
+            var pathItem = callback.PathItems.First().Value;
+            var operation = pathItem.Operations["post"];
 
-            Assert.NotNull(callback);
+            Assert.NotNull(operation);
 
         }
 
@@ -36,11 +39,21 @@ namespace OpenApiTests
             var parser = new OpenApiParser();
             var openApiDoc = parser.Parse(stream);
 
-            var path = openApiDoc.Paths.PathMap.First().Value;
+            var path = openApiDoc.Paths.PathItems.First().Value;
             var operation = path.Operations.First().Value;
 
-            var callback = operation.Callbacks.Items.First();
-            var cboperation = callback.Value.Operations.First();
+            var callbackPair = operation.Callbacks.First();
+            Assert.Equal("simplehook", callbackPair.Key);
+
+            Callback callback = callbackPair.Value;
+            var pathItemPair = callback.PathItems.First();
+            Assert.Equal("$request.body(/url)", pathItemPair.Key);
+
+            PathItem pathItem = pathItemPair.Value;
+
+            var operationPair = pathItem.Operations.First();
+            Operation cboperation = operationPair.Value;
+            Assert.Equal("post", operationPair.Key);
 
             Assert.NotNull(callback);
 

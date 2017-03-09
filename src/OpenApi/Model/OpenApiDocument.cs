@@ -36,6 +36,7 @@ namespace Tavis.OpenApi.Model
         public static FixedFieldMap<OpenApiDocument> fixedFields = new FixedFieldMap<OpenApiDocument> {
             { "openapi", (o,n) => { o.Version = n.GetScalarValue(); } },
             { "info", (o,n) => o.Info = Info.Load(n) },
+            { "servers", (o,n) => o.Servers = n.CreateList<Server>(Server.Load) },
             { "paths", (o,n) => o.Paths = Paths.Load(n) },
             { "components", (o,n) => o.Components = Components.Load(n) },
             { "tags", (o,n) => o.Tags = n.CreateList(Tag.Load)},

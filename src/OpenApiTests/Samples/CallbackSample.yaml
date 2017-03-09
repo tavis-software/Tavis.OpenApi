@@ -14,11 +14,12 @@ paths:
         200:
           description: Subscribed to webhook
       callbacks:
-        '$request.body(/url)':
-          post:
-            requestBody:
-              content:
-                application/json: {}
-            responses:
-              200:
-                description: webhook successfully processed an no retries will be performed
+        mainHook:
+          "$request.body(/url)":
+            post:
+              requestBody:
+                content:
+                  application/json: {}
+              responses:
+                200:
+                  description: webhook successfully processed an no retries will be performed

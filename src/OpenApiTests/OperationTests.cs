@@ -26,7 +26,7 @@ namespace OpenApiTests
         [Fact]
         public void CheckPetStoreFirstOperation()
         {
-            var firstPath = _PetStoreDoc.Paths.PathMap.First().Value;
+            var firstPath = _PetStoreDoc.Paths.PathItems.First().Value;
             var firstOperation = firstPath.Operations.First();
             Assert.Equal("get", firstOperation.Key);
             Assert.Equal("findPets", firstOperation.Value.OperationId);
@@ -37,7 +37,7 @@ namespace OpenApiTests
         public void CheckPetStoreFirstOperationParameters()
         {
 
-            var firstPath = _PetStoreDoc.Paths.PathMap.First().Value;
+            var firstPath = _PetStoreDoc.Paths.PathItems.First().Value;
             var firstOperation = firstPath.Operations.First().Value;
             var firstParameter = firstOperation.Parameters.First();
 
@@ -50,7 +50,7 @@ namespace OpenApiTests
         public void CheckPetStoreFirstOperationRequest()
         {
 
-            var firstPath = _PetStoreDoc.Paths.PathMap.First().Value;
+            var firstPath = _PetStoreDoc.Paths.PathItems.First().Value;
             var firstOperation = firstPath.Operations.First().Value;
             var requestBody = firstOperation.RequestBody;
             
@@ -62,7 +62,7 @@ namespace OpenApiTests
         public void GetPostOperation()
         {
 
-            var postOperation = _PetStoreDoc.Paths.PathMap["/pets"].Operations["post"];
+            var postOperation = _PetStoreDoc.Paths.PathItems["/pets"].Operations["post"];
 
             Assert.Equal("addPet", postOperation.OperationId);
 
@@ -74,7 +74,7 @@ namespace OpenApiTests
         public void GetResponses()
         {
 
-            var getOperation = _PetStoreDoc.Paths.PathMap["/pets"].Operations["get"];
+            var getOperation = _PetStoreDoc.Paths.PathItems["/pets"].Operations["get"];
 
             var responses = getOperation.Responses;
             
@@ -93,7 +93,7 @@ namespace OpenApiTests
         public void DoesAPathExist()
         {
 
-            Assert.Equal(2, _PetStoreDoc.Paths.PathMap.Count());
+            Assert.Equal(2, _PetStoreDoc.Paths.PathItems.Count());
             Assert.NotNull(_PetStoreDoc.Paths.GetPath("/pets"));
         }
 

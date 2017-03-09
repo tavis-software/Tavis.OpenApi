@@ -40,7 +40,13 @@ namespace Tavis.OpenApi.Model
         {
             MapNode mapNode = node.CheckMapNode("schema");
 
-            Schema domainObject = mapNode.CreateOrReferenceDomainObject(()=> new Schema());
+            var refpointer = mapNode.GetReferencePointer();
+            if (refpointer != null)
+            {
+                return mapNode.GetReferencedObject<Schema>(refpointer);
+            }
+
+            var domainObject = new Schema();
 
             foreach (var propertyNode in mapNode)
             {

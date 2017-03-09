@@ -9,7 +9,7 @@ namespace Tavis.OpenApi.Model
 {
     public class Paths
     {
-        public IDictionary<string, Path> PathMap { get; set; }
+        public IDictionary<string, PathItem> PathItems { get; set; }
         public Dictionary<string,string> Extensions { get; set; }
 
 
@@ -25,19 +25,19 @@ namespace Tavis.OpenApi.Model
 
         private static PatternFieldMap<Paths> patternFields = new PatternFieldMap<Paths>
         {
-            { (s)=> s.StartsWith("/"), (o,k,n)=> o.PathMap.Add(k, Path.Load(n)    ) },
+            { (s)=> s.StartsWith("/"), (o,k,n)=> o.PathItems.Add(k, PathItem.Load(n)    ) },
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
         };
 
 
         public Paths()
         {
-            PathMap = new Dictionary<string, Path>();  
+            PathItems = new Dictionary<string, PathItem>();  
         }
 
-        public Path GetPath(string key)
+        public PathItem GetPath(string key)
         {
-            return PathMap[key];
+            return PathItems[key];
         }
         internal static Paths Load(ParseNode node)
         {

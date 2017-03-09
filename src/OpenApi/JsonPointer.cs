@@ -60,13 +60,10 @@ namespace Tavis.OpenApi
                         var map = pointer as YamlMappingNode;
                         if (map != null)
                         {
-                            pointer = map.Children[new YamlScalarNode(token)];
-                            if (pointer == null)
-                            {
-                                throw new ArgumentException("Cannot find " + token);
+                            if (!map.Children.TryGetValue(new YamlScalarNode(token), out pointer)) {
+                                return null;
                             }
                         }
-
                     }
                 }
                 return pointer;
