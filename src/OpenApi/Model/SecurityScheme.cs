@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Tavis.OpenApi.Model
 {
-    public class SecurityScheme
+    public class SecurityScheme : IReference
     {
         public string Type { get; set; }
         public string Description { get; set; }
@@ -19,6 +19,11 @@ namespace Tavis.OpenApi.Model
         public Dictionary<string,string> Scopes { get; set; }
 
         public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
+
+        public string Pointer
+        {
+            get; set;
+        }
 
         private static FixedFieldMap<SecurityScheme> fixedFields = new FixedFieldMap<SecurityScheme>
         {
@@ -51,6 +56,15 @@ namespace Tavis.OpenApi.Model
             }
 
             return securityScheme;
+        }
+
+        internal static SecurityScheme LoadByReference(ParseNode node)
+        {
+            var schemeName = node.GetScalarValue();
+            var context = node.Context;
+            var schemeObject = (SecurityScheme)context.GetReferencedObject($"#/components/securitySchemes/{schemeName}");
+
+            return schemeObject;
         }
 
     }

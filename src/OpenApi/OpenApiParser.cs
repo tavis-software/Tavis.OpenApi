@@ -58,7 +58,7 @@ namespace Tavis.OpenApi
             var refType = parts[1];  
             IReference referencedObject = null;
 
-            if ("schemas|parameters|callbacks".Contains(refType))
+            if ("schemas|parameters|callbacks|securitySchemes".Contains(refType))
             {
                 var refPointer = new JsonPointer(pointer);
                 ParseNode node = this.rootNode.Find(refPointer);
@@ -76,8 +76,8 @@ namespace Tavis.OpenApi
                     case "callbacks":
                         referencedObject = Callback.Load(node);
                         break;
-                    case "tags":
-                        referencedObject = Callback.Load(node);
+                    case "securitySchemes":
+                        referencedObject = SecurityScheme.Load(node);
                         break;
                 }
             }

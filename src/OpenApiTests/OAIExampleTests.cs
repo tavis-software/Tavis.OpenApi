@@ -23,6 +23,14 @@ namespace OpenApiTests
             Assert.Equal(0,parser.ParseErrors.Count());
         }
 
+        [Fact]
+        public void UberExample()
+        {
+            var stream = new FileStream(ExamplesFolder + "examples\\v3.0\\uber.yaml", FileMode.Open);
+            var parser = new OpenApiParser();
+            var openApiDoc = parser.Parse(stream);
 
+            Assert.Equal(0, parser.ParseErrors.Count());
+        }
     }
 }

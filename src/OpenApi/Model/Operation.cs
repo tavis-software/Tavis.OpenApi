@@ -16,6 +16,7 @@ namespace Tavis.OpenApi.Model
         public RequestBody RequestBody { get; set; }
         public Dictionary<string,Response> Responses { get; set; }
         public Server Server { get; set; }
+        public List<SecurityRequirement> Security { get; set; }
         public List<Tag> Tags { get; set; } = new List<Tag>();
         public Dictionary<string, string> Extensions { get; set; }
         public Dictionary<string,Callback> Callbacks { get; set; }
@@ -31,7 +32,7 @@ namespace Tavis.OpenApi.Model
             { "callbacks", (o,n) => { o.Callbacks = n.CreateMap(Model.Callback.Load); } },
             { "server", (o,n) => { o.Server = Server.Load(n); }},
             { "tags", (o,n) => o.Tags = n.CreateSimpleList(Tag.LoadByReference)},
-//          { "security", (o,n) => { o.Se = n.GetScalarValue(); } },
+            { "security", (o,n) => { o.Security = n.CreateList(SecurityRequirement.Load); } },
             { "parameters", (o,n) => { o.Parameters = n.CreateList(Parameter.Load); } },
         };
 

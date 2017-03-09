@@ -1,4 +1,5 @@
 ﻿using SharpYaml.Serialization;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Tavis.OpenApi.Model
@@ -7,8 +8,8 @@ namespace Tavis.OpenApi.Model
 
     public class SecurityRequirement
     {
-        public string Name { get; set; }
-        public string[] Scopes { get; set; }
+
+        public Dictionary<SecurityScheme, List<string>> Schemes { get; set; } = new Dictionary<SecurityScheme, List<string>>();
         internal static SecurityRequirement Load(ParseNode node)
         {
 
@@ -18,15 +19,9 @@ namespace Tavis.OpenApi.Model
 
             foreach (var property in mapNode)
             {
-                switch (property.Name)  // What's this for?
-                {
-                    default:
-                        obj.Name = property.Name ;
-                        var scopeSequence = (ListNode)property.Value;
-                        obj.Scopes =  scopeSequence.Select(s => s.GetScalarValue()).ToArray<string>();
-                        break;
+                var scheme = SecurityScheme.LoadByReference(new ValueNode(mapNode.Context, property.Name));
 
-                }
+                obj.Schemes.Add(scheme, property.Value.CreateSimpleList<string>(n2 => n2.GetScalarValue()));
             }
             return obj;
         }

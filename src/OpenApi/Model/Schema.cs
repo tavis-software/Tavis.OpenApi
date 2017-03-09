@@ -9,6 +9,7 @@ namespace Tavis.OpenApi.Model
     {
         public string Type { get; set; }
         public string Format { get; set; }
+        public string Description { get; set; }
         public string[] Required { get; set; }
         public Schema Items { get; set; }
         public Dictionary<string,Schema> Properties { get; set; }
@@ -24,7 +25,8 @@ namespace Tavis.OpenApi.Model
         private static FixedFieldMap<Schema> fixedFields = new FixedFieldMap<Schema>
         {
                 { "type", (o,n) => { o.Type = n.GetScalarValue(); } },
-                { "format", (o,n) => { o.Format = n.GetScalarValue(); } },
+                { "format", (o,n) => { o.Description = n.GetScalarValue(); } },
+                { "description", (o,n) => { o.Type = n.GetScalarValue(); } },
                 { "required", (o,n) => { o.Required = n.CreateSimpleList<string>(n2 => n2.GetScalarValue()).ToArray(); } },
                 { "items", (o,n) => { o.Items = Schema.Load(n); } },
                 { "properties", (o,n) => { o.Properties = n.CreateMap(Schema.Load); } },
