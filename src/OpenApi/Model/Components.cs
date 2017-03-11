@@ -17,20 +17,6 @@ namespace Tavis.OpenApi.Model
 
         public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
 
-        private static FixedFieldMap<Components> fixedFields = new FixedFieldMap<Components> {
-            { "schemas", (o,n) => { o.Schemas = n.CreateMap(Schema.Load); } },
-            { "parameters", (o,n) => o.Parameters = n.CreateMap(Parameter.Load) },
-            { "responses", (o,n) => o.Responses = n.CreateMap(Response.Load) },
-            { "responseHeaders", (o,n) => o.ResponseHeaders = n.CreateMap(Headers.Load) },
-            { "securitySchemes", (o,n) => o.SecuritySchemes = n.CreateMap(SecurityScheme.Load) },
-            { "callbacks", (o,n) => o.Callbacks = n.CreateMap(Model.Callback.Load) },
-            { "links", (o,n) => o.Links = n.CreateMap(Link.Load) },
-            };
-
-        private static PatternFieldMap<Components> patternFields = new PatternFieldMap<Components>
-        {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
-        };
 
 
         public static Components Load(ParseNode node)
@@ -41,7 +27,7 @@ namespace Tavis.OpenApi.Model
 
             foreach (var itemNode in mapNode)
             {
-                itemNode.ParseField(components, fixedFields, patternFields);
+                itemNode.ParseField(components, OpenApiParser.ComponentsFixedFields, OpenApiParser.ComponentsPatternFields);
             }
             return components;
         }

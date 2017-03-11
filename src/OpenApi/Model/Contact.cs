@@ -12,16 +12,6 @@ namespace Tavis.OpenApi.Model
         public string Email { get; set; }
         public Dictionary<string,string> Extensions { get; set; }
 
-        private static FixedFieldMap<Contact> fixedFields = new FixedFieldMap<Contact> {
-            { "name", (o,n) => { o.Name = n.GetScalarValue(); } },
-            { "email", (o,n) => { o.Email = n.GetScalarValue(); } },
-            { "url", (o,n) => { o.Url = new Uri(n.GetScalarValue()); } },
-            };
-
-        private static PatternFieldMap<Contact> patternFields = new PatternFieldMap<Contact>
-        {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
-        };
 
         public Contact()
         {
@@ -40,7 +30,7 @@ namespace Tavis.OpenApi.Model
 
             foreach (var propertyNode in contactNode)
             {
-                propertyNode.ParseField(contact, fixedFields, patternFields);
+                propertyNode.ParseField(contact, OpenApiParser.ContactFixedFields, OpenApiParser.ContactPatternFields);
             }
 
             return contact;

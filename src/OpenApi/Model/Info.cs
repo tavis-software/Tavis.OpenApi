@@ -30,23 +30,6 @@ namespace Tavis.OpenApi.Model
 
         public Dictionary<string, string> Extensions { get; set; }
 
-        private static FixedFieldMap<Info> fixedFields
-             = new FixedFieldMap<Info> {
-            { "title", (o,n) => { o.Title = n.GetScalarValue(); } },
-            { "version", (o,n) => { o.Version = n.GetScalarValue(); } },
-            { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
-            { "termsOfService", (o,n) => { o.TermsOfService = n.GetScalarValue(); } },
-            { "contact", (o,n) => { o.Contact = Contact.Load(n); } },
-            { "license", (o,n) => { o.License = License.Load(n); } }
-        };
-
-        private static PatternFieldMap<Info> patternFields
-           = new PatternFieldMap<Info>
-           {
-               { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
-           };
-
-
         public Info()
         {
             Extensions = new Dictionary<string, string>();
@@ -61,7 +44,7 @@ namespace Tavis.OpenApi.Model
 
             foreach (var propertyNode in mapNode)
             {
-                propertyNode.ParseField(info, fixedFields, patternFields);
+                propertyNode.ParseField(info, OpenApiParser.InfoFixedFields, OpenApiParser.InfoPatternFields);
                 required.Remove(propertyNode.Name);
             }
             node.Context.ParseErrors.AddRange(required.Select(r => new OpenApiError("", $"{r} is a required property")));
