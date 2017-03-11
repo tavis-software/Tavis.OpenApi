@@ -49,7 +49,7 @@ namespace Tavis.OpenApi
             var mapNode = this as MapNode;
             if (mapNode == null)
             {
-                this.Context.ParseErrors.Add(new OpenApiError("", $"{nodeName} must be a map/object"));
+                this.Context.ParseErrors.Add(new OpenApiError("", $"{nodeName} must be a map/object at " + this.Context.GetLocation() ));
             }
 
             return mapNode;

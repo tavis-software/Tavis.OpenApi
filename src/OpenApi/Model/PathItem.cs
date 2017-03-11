@@ -37,15 +37,18 @@ namespace Tavis.OpenApi.Model
 
         internal static PathItem Load(ParseNode node)
         {
-            var mapNode = node.CheckMapNode("Path");
-            var path = new PathItem();
+            var mapNode = node.CheckMapNode("PathItem");
+            if (mapNode == null) return null;
 
-            foreach(var property in mapNode)
+            var pathItem = new PathItem();
+            
+
+            foreach (var property in mapNode)
             {
-                property.ParseField(path, fixedFields, patternFields);
+                property.ParseField(pathItem, fixedFields, patternFields);
             }
 
-            return path;
+            return pathItem;
         }
     }
 }

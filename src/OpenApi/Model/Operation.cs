@@ -44,7 +44,7 @@ namespace Tavis.OpenApi.Model
         internal static Operation Load(ParseNode node)
         {
             var mapNode = node.CheckMapNode("Operation");
-
+            if (mapNode == null) return null;
 
             Operation domainObject = new Operation();
             foreach (var property in mapNode)
