@@ -32,5 +32,25 @@ namespace OpenApiTests
 
             Assert.Equal(0, parser.ParseErrors.Count());
         }
+
+        [Fact]
+        public void PetStoreExpandedExample()
+        {
+            var stream = new FileStream(ExamplesFolder + "examples\\v3.0\\petstore-expanded.yaml", FileMode.Open);
+            var parser = new OpenApiParser();
+            var openApiDoc = parser.Parse(stream);
+
+            Assert.Equal(0, parser.ParseErrors.Count());
+        }
+
+        [Fact]
+        public void ApiWithExamples()
+        {
+            var stream = new FileStream(ExamplesFolder + "examples\\v3.0\\api-with-examples.yaml", FileMode.Open);
+            var parser = new OpenApiParser();
+            var openApiDoc = parser.Parse(stream);
+
+            Assert.Equal(0, parser.ParseErrors.Count());
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Tavis.OpenApi.Model
 {
@@ -10,9 +11,12 @@ namespace Tavis.OpenApi.Model
         public string Type { get; set; }
         public string Format { get; set; }
         public string Description { get; set; }
+        public List<Schema> AllOf { get; set; }
         public string[] Required { get; set; }
         public Schema Items { get; set; }
         public Dictionary<string,Schema> Properties { get; set; }
+        public List<AnyNode> Examples { get; set; }
+        public AnyNode Example { get; set; }
 
         public Dictionary<string, string> Extensions { get; set; }
 
@@ -30,6 +34,10 @@ namespace Tavis.OpenApi.Model
                 { "required", (o,n) => { o.Required = n.CreateSimpleList<string>(n2 => n2.GetScalarValue()).ToArray(); } },
                 { "items", (o,n) => { o.Items = Schema.Load(n); } },
                 { "properties", (o,n) => { o.Properties = n.CreateMap(Schema.Load); } },
+                { "allOf", (o,n) => { o.AllOf = n.CreateList(Schema.Load); } },
+                { "examples", (o,n) => { o.Examples = ((ListNode)n).Select(s=> new AnyNode(s)).ToList(); } },
+                { "example", (o,n) => { o.Example = new AnyNode(n); } },
+
         };
 
         private static PatternFieldMap<Schema> patternFields = new PatternFieldMap<Schema>

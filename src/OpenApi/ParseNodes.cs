@@ -105,6 +105,15 @@ namespace Tavis.OpenApi
         }
     }
 
+    public class AnyNode : ParseNode
+    {
+        ParseNode node;
+        public AnyNode(ParseNode node) : base(node.Context)
+        {
+            this.node = node;
+        }
+    }
+
     public class PropertyNode : ParseNode
     {
         public PropertyNode(ParsingContext ctx, string name, YamlNode node) : base(ctx)

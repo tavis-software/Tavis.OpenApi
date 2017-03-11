@@ -1,6 +1,7 @@
 ﻿using System;
 using SharpYaml.Serialization;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Tavis.OpenApi.Model
 {
@@ -25,6 +26,8 @@ namespace Tavis.OpenApi.Model
         public bool AllowReserved { get; set; }
         public string Style { get; set; }
         public Dictionary<string, string> Extensions { get; set; }
+        public List<AnyNode> Examples { get; set; }
+        public AnyNode Example { get; set; }
 
 
         private static FixedFieldMap<Parameter> fixedFields = new FixedFieldMap<Parameter>
@@ -37,6 +40,9 @@ namespace Tavis.OpenApi.Model
             { "allowReserved", (o,n) => { o.AllowReserved = bool.Parse(n.GetScalarValue()); } },
             { "style", (o,n) => { o.Style = n.GetScalarValue(); } },
             { "schema", (o,n) => { o.Schema = Schema.Load(n); } },
+            { "examples", (o,n) => { o.Examples = ((ListNode)n).Select(s=> new AnyNode(s)).ToList(); } },
+            { "example", (o,n) => { o.Example = new AnyNode(n); } },
+
 
         };
 
