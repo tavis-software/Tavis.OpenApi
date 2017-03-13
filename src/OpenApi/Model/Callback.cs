@@ -37,7 +37,7 @@ namespace Tavis.OpenApi.Model
         private static PatternFieldMap<Callback> patternFields = new PatternFieldMap<Callback>
         {
              { (s)=> s.StartsWith("$"),
-                (o,k,n)=> o.PathItems.Add(k, PathItem.Load(n)    ) }
+                (o,k,n)=> o.PathItems.Add(k, OpenApiV3.LoadPathItem(n)    ) }
         };
 
         public static Callback Load(ParseNode node)

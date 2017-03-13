@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Export\IParseNodeWriter.cs" />
+    <Compile Include="Export\JsonParseNodeWriter.cs" />
+    <Compile Include="Export\YamlParseNodeWriter.cs" />
     <Compile Include="JsonPointer.cs" />
     <Compile Include="Model\Callback.cs" />
     <Compile Include="Model\Contact.cs" />
@@ -60,6 +63,8 @@
     <Compile Include="Model\PathItem.cs" />
     <Compile Include="OpenApiError.cs" />
     <Compile Include="OpenApiParser.cs" />
+    <Compile Include="OpenApiV3.cs" />
+    <Compile Include="Export\OpenApiV3Writer.cs" />
     <Compile Include="ParseNodes.cs" />
     <Compile Include="ParsingContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

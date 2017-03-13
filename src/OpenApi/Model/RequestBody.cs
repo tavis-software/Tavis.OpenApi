@@ -19,7 +19,7 @@ namespace Tavis.OpenApi.Model
         {
             { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
             { "required", (o,n) => { o.Required = bool.Parse(n.GetScalarValue()); } },
-            { "content", (o,n) => { o.Content = Content.Load(n);  } },
+            { "content", (o,n) => { o.Content = OpenApiV3.LoadContent(n);  } },
         };
 
         private static PatternFieldMap<RequestBody> patternFields = new PatternFieldMap<RequestBody>

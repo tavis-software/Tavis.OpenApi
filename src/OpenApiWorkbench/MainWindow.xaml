@@ -5,15 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OpenApiWorkbench"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="600" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition Width="259.333"/>
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <TextBox x:Name="txtInput" Margin="10" TextWrapping="Wrap" Text="TextBox" AcceptsReturn="True" />
+        <TextBox x:Name="txtInput" Margin="10" TextWrapping="Wrap" Text="TextBox" AcceptsReturn="True" FontFamily="Consolas" />
         <Button Content="Validate" HorizontalAlignment="Left" Height="20" Margin="10" VerticalAlignment="Top" Width="131" Click="Button_Click" Grid.Column="1"/>
-        <TextBlock x:Name="txtErrors" Margin="10,57,10,10" TextWrapping="Wrap" Text="TextBlock"  Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" Grid.Column="1"/>
-
+        <StackPanel Grid.Column="1">
+            <TextBlock x:Name="txtErrors" Margin="10,57,10,10" TextWrapping="Wrap" Text="TextBlock"  Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" />
+            <TextBlock x:Name="txtOutput" Margin="10,10,10,10" TextWrapping="Wrap" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" FontFamily="Consolas" />
+        </StackPanel>
     </Grid>
 </Window>

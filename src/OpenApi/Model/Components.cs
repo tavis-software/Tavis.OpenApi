@@ -14,22 +14,19 @@ namespace Tavis.OpenApi.Model
         public Dictionary<string, SecurityScheme> SecuritySchemes { get; set; } = new Dictionary<string, SecurityScheme>();
         public Dictionary<string, Callback> Callbacks { get; set; } = new Dictionary<string, Callback>();
         public Dictionary<string, Link> Links { get; set; } = new Dictionary<string, Link>();
-
         public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
 
-
-
-        public static Components Load(ParseNode node)
+        public bool IsEmpty()
         {
-            var mapNode = node.CheckMapNode("components");
+            return !(this.Schemas.Count > 0 
+                || this.Parameters.Count > 0 
+                || this.Responses.Count > 0
+                || this.ResponseHeaders.Count > 0 
+                || this.SecuritySchemes.Count > 0
+                || this.Callbacks.Count > 0 
+                || this.Links.Count > 0 
+                || this.Extensions.Count > 0);
 
-            var components = new Components();
-
-            foreach (var itemNode in mapNode)
-            {
-                itemNode.ParseField(components, OpenApiParser.ComponentsFixedFields, OpenApiParser.ComponentsPatternFields);
-            }
-            return components;
         }
 
     }

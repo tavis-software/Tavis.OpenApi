@@ -39,11 +39,12 @@ namespace OpenApiWorkbench
             writer.Write(this.txtInput.Text);
             writer.Flush();
             stream.Position = 0;
-            openApiParser.Parse(stream);
+            var doc = openApiParser.Parse(stream);
             
             if (openApiParser.ParseErrors.Count == 0)
             {
                 txtErrors.Text = "OK";
+
             }
             else
             {
@@ -54,6 +55,12 @@ namespace OpenApiWorkbench
                 }
                 txtErrors.Text = errorReport.ToString();
             }
+            var outputwriter = new OpenApiV3Writer(doc);
+            var outputstream = new MemoryStream();
+            outputwriter.Writer(outputstream);
+            outputstream.Position = 0;
+            txtOutput.Text = new StreamReader(outputstream).ReadToEnd();
+
         }
     }
 }

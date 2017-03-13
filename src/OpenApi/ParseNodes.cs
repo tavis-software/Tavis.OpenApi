@@ -279,6 +279,20 @@ namespace Tavis.OpenApi
             return this.nodes.GetEnumerator();
         }
 
+        public PropertyNode this[string key]
+        {
+            get
+            {
+                YamlNode node = null;
+                if (this.node.Children.TryGetValue(new YamlScalarNode(key), out node))
+                {
+                    return new PropertyNode(this.Context, key, this.node.Children[new YamlScalarNode(key)]);
+                } else
+                {
+                    return null;
+                }
+            }
+        }
         public string GetScalarValue(ValueNode key)
         {
             var scalarNode = this.node.Children[new YamlScalarNode(key.GetScalarValue())] as YamlScalarNode;

@@ -31,33 +31,10 @@ namespace Tavis.OpenApi.Model
         public ExternalDocs ExternalDocs { get; set; } = new ExternalDocs();
         public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
 
-
         private static Regex versionRegex = new Regex(@"\d+\.\d+\.\d+");
 
+        
 
-        public static OpenApiDocument Load(RootNode rootNode)
-        {
-            var openApidoc = new OpenApiDocument();
-
-            var rootMap = rootNode.GetMap();
-            bool haspaths = false;
-            foreach (var node in rootMap)
-            {
-                node.ParseField<OpenApiDocument>(openApidoc, OpenApiParser.OpenApiFixedFields, OpenApiParser.OpenApiPatternFields);
-
-                if (node.Name == "paths")
-                {
-                    haspaths = true;
-                }
-            }
-
-            if (!haspaths)
-            {
-                rootMap.Context.ParseErrors.Add(new OpenApiError("", "`paths` is a required property"));
-            }
-
-            return openApidoc;
-        }
 
     }
 

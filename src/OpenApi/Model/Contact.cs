@@ -18,22 +18,5 @@ namespace Tavis.OpenApi.Model
             Extensions = new Dictionary<string, string>();
         }
 
-
-        public static Contact Load(ParseNode node)
-        {
-            var contactNode = node as MapNode;
-            if (contactNode == null)
-            {
-                throw new Exception("Contact node should be a map");
-            }
-            var contact = new Contact();
-
-            foreach (var propertyNode in contactNode)
-            {
-                propertyNode.ParseField(contact, OpenApiParser.ContactFixedFields, OpenApiParser.ContactPatternFields);
-            }
-
-            return contact;
-        }
     }
 }

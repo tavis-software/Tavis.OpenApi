@@ -30,46 +30,5 @@ namespace Tavis.OpenApi.Model
         public AnyNode Example { get; set; }
 
 
-        private static FixedFieldMap<Parameter> fixedFields = new FixedFieldMap<Parameter>
-        {
-            { "name", (o,n) => { o.Name = n.GetScalarValue(); } },
-            { "in", (o,n) => { o.In = (InEnum)Enum.Parse(typeof(InEnum), n.GetScalarValue()); } },
-            { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
-            { "required", (o,n) => { o.Required = bool.Parse(n.GetScalarValue()); } },
-            { "deprecated", (o,n) => { o.Deprecated = bool.Parse(n.GetScalarValue()); } },
-            { "allowReserved", (o,n) => { o.AllowReserved = bool.Parse(n.GetScalarValue()); } },
-            { "style", (o,n) => { o.Style = n.GetScalarValue(); } },
-            { "schema", (o,n) => { o.Schema = Schema.Load(n); } },
-            { "examples", (o,n) => { o.Examples = ((ListNode)n).Select(s=> new AnyNode(s)).ToList(); } },
-            { "example", (o,n) => { o.Example = new AnyNode(n); } },
-
-
-        };
-
-        private static PatternFieldMap<Parameter> patternFields = new PatternFieldMap<Parameter>
-        {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
-        };
-
-
-        public static Parameter Load(ParseNode node)
-        {
-            var mapNode = node.CheckMapNode("parameter");
-
-            var refpointer = mapNode.GetReferencePointer();
-            if (refpointer != null)
-            {
-                return mapNode.GetReferencedObject<Parameter>(refpointer);
-            }
-
-            var parameter = new Parameter();
-
-            foreach (var item in mapNode)
-            {
-                item.ParseField(parameter, fixedFields, patternFields);
-            }
-
-            return parameter;
-        }
     }
 }

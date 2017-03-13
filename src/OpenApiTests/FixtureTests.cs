@@ -24,7 +24,7 @@ namespace OpenApiTests
 
             var ctx = new ParsingContext(s => null);
             var node = new MapNode(ctx, (YamlMappingNode)yamlNode);
-            var info = Info.Load(node);
+            var info = OpenApiV3.LoadInfo(node);
 
             Assert.NotNull(info);
             Assert.Equal("Swagger Sample App", info.Title);
@@ -41,7 +41,7 @@ namespace OpenApiTests
 
             var ctx = new ParsingContext(s => null);
             var node = new MapNode(ctx, (YamlMappingNode)yamlNode);
-            var info = Info.Load(node);
+            var info = OpenApiV3.LoadInfo(node);
 
             Assert.NotNull(info);
             Assert.Equal("Swagger Sample App", info.Title);
@@ -57,7 +57,7 @@ namespace OpenApiTests
 
             var ctx = new ParsingContext(s => null);
             var node = new MapNode(ctx, (YamlMappingNode)yamlNode);
-            var info = Info.Load(node);
+            var info = OpenApiV3.LoadInfo(node);
 
             Assert.NotNull(info);
             Assert.Equal(2, ctx.ParseErrors.Count);
