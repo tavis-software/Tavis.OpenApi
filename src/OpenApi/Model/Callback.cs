@@ -7,20 +7,6 @@ using System.Threading.Tasks;
 
 namespace Tavis.OpenApi.Model
 {
-    public class VariableExpression
-    {
-        public static VariableExpression Load(string expression)
-        {
-            return new VariableExpression(expression);
-        }
-
-        string expression;
-        public VariableExpression(string expression)
-        {
-            this.expression = expression;
-        }
-
-    }
 
     public class Callback : IReference
     {
@@ -30,34 +16,5 @@ namespace Tavis.OpenApi.Model
 
         public Dictionary<string, string> Extensions { get; set; }
 
-        private static FixedFieldMap<Callback> fixedFields = new FixedFieldMap<Callback>
-        {
-        };
-
-        private static PatternFieldMap<Callback> patternFields = new PatternFieldMap<Callback>
-        {
-             { (s)=> s.StartsWith("$"),
-                (o,k,n)=> o.PathItems.Add(k, OpenApiV3.LoadPathItem(n)    ) }
-        };
-
-        public static Callback Load(ParseNode node)
-        {
-            var mapNode = node.CheckMapNode("callback");
-
-            var refpointer = mapNode.GetReferencePointer();
-            if (refpointer != null)
-            {
-                return mapNode.GetReferencedObject<Callback>(refpointer);
-            }
-
-            var domainObject = new Callback();
-
-            foreach (var property in mapNode)
-            {
-                property.ParseField(domainObject, fixedFields, patternFields);
-            }
-            
-            return domainObject;
-        }
     }
 }

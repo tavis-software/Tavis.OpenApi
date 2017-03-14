@@ -11,26 +11,5 @@ namespace Tavis.OpenApi.Model
     {
         public Dictionary<string, string> Extensions { get; set; }
 
-        private static FixedFieldMap<Example> fixedFields = new FixedFieldMap<Example>
-        {
-        };
-
-        private static PatternFieldMap<Example> patternFields = new PatternFieldMap<Example>
-        {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
-        };
-
-        public static Example Load(ParseNode node)
-        {
-            var mapNode = node.CheckMapNode("Example");
-            var example = new Example();
-            foreach (var property in mapNode)
-            {
-                property.ParseField(example, fixedFields, patternFields);
-            }
-
-            return example;
-        }
-
     }
 }

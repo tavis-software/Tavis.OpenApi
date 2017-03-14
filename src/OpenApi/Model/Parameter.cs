@@ -20,15 +20,19 @@ namespace Tavis.OpenApi.Model
         public string Name { get; set; }
         public InEnum In { get; set; }  
         public string Description { get; set; }
-        public bool Required { get; set; }
+        public bool Required { get; set; } = false;
         public bool Deprecated { get; set; }
-        public Schema Schema { get; set; }
-        public bool AllowReserved { get; set; }
+        public bool AllowEmptyValue { get; set; } = false;
+
         public string Style { get; set; }
-        public Dictionary<string, string> Extensions { get; set; }
+        public bool Explode { get; set; }
+        public bool AllowReserved { get; set; }
+        public Schema Schema { get; set; }
+       
         public List<AnyNode> Examples { get; set; }
         public AnyNode Example { get; set; }
+        public Dictionary<string, string> Extensions { get; set; }
 
-
+        public Content Content { get; set; }
     }
 }

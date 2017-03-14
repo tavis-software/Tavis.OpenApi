@@ -9,32 +9,12 @@ namespace Tavis.OpenApi.Model
 {
     public class Link
     {
-
-
+        public string Href { get; set; }
+        public string OperationId { get; set; }
+        public Dictionary<string, VariableExpression> Parameters { get; set; }
+        public Dictionary<string, Header> Headers { get; set; }
+        public string Description { get; set; }
         public Dictionary<string, string> Extensions { get; set; }
 
-
-        private static FixedFieldMap<Link> fixedFields = new FixedFieldMap<Link>
-        {
-        };
-
-        private static PatternFieldMap<Link> patternFields = new PatternFieldMap<Link>
-        {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
-        };
-
-
-
-        public static Link Load(ParseNode node)
-        {
-            var mapNode = node.CheckMapNode("link");
-            var link = new Link();
-            foreach (var property in mapNode)
-            {
-               property.ParseField(link, fixedFields, patternFields);
-            }
-
-            return link;
-        }
     }
 }

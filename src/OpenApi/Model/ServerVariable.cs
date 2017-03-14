@@ -7,13 +7,12 @@ using System.Threading.Tasks;
 
 namespace Tavis.OpenApi.Model
 {
-    public class RequestBody
+    public class ServerVariable
     {
         public string Description { get; set; }
-        public Content Content { get; set; }
-        public Boolean Required { get; set; }
-        public Dictionary<string,string> Extensions { get; set; }
+        public string Default { get; set; }
+        public List<string> Enum { get; set; }
 
-
+        public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
     }
 }

@@ -45,16 +45,16 @@ namespace Tavis.OpenApi
                 switch (refType)
                 {
                     case "schemas":
-                        referencedObject = Schema.Load(node);
+                        referencedObject = OpenApiV3.LoadSchema(node);
                         break;
                     case "parameters":
                         referencedObject = OpenApiV3.LoadParameter(node);
                         break;
                     case "callbacks":
-                        referencedObject = Callback.Load(node);
+                        referencedObject = OpenApiV3.LoadCallback(node);
                         break;
                     case "securitySchemes":
-                        referencedObject = SecurityScheme.Load(node);
+                        referencedObject = OpenApiV3.LoadSecurityScheme(node);
                         break;
                 }
             }
@@ -66,7 +66,7 @@ namespace Tavis.OpenApi
                 {
                     foreach (var item in list)
                     {
-                        var tag = Tag.Load(item);
+                        var tag = OpenApiV3.LoadTag(item);
 
                         if (tag.Name == parts[0])
                         {

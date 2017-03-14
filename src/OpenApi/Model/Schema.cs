@@ -26,47 +26,6 @@ namespace Tavis.OpenApi.Model
             set;
         }
 
-        private static FixedFieldMap<Schema> fixedFields = new FixedFieldMap<Schema>
-        {
-                { "type", (o,n) => { o.Type = n.GetScalarValue(); } },
-                { "format", (o,n) => { o.Description = n.GetScalarValue(); } },
-                { "description", (o,n) => { o.Type = n.GetScalarValue(); } },
-                { "required", (o,n) => { o.Required = n.CreateSimpleList<string>(n2 => n2.GetScalarValue()).ToArray(); } },
-                { "items", (o,n) => { o.Items = Schema.Load(n); } },
-                { "properties", (o,n) => { o.Properties = n.CreateMap(Schema.Load); } },
-                { "allOf", (o,n) => { o.AllOf = n.CreateList(Schema.Load); } },
-                { "examples", (o,n) => { o.Examples = ((ListNode)n).Select(s=> new AnyNode(s)).ToList(); } },
-                { "example", (o,n) => { o.Example = new AnyNode(n); } },
-
-        };
-
-        private static PatternFieldMap<Schema> patternFields = new PatternFieldMap<Schema>
-        {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
-        };
-
-
-        public static Schema Load(ParseNode node)
-        {
-            MapNode mapNode = node.CheckMapNode("schema");
-
-            var refpointer = mapNode.GetReferencePointer();
-            if (refpointer != null)
-            {
-                return mapNode.GetReferencedObject<Schema>(refpointer);
-            }
-
-            var domainObject = new Schema();
-
-            foreach (var propertyNode in mapNode)
-            {
-                propertyNode.ParseField(domainObject, fixedFields, patternFields);
-            }
-
-            return domainObject;
-        }
-
-
 
     }
 }

@@ -51,7 +51,7 @@ namespace OpenApiWorkbench
                 var errorReport = new StringBuilder();
                 foreach (var error in openApiParser.ParseErrors)
                 {
-                    errorReport.Append(error.ToString());
+                    errorReport.AppendLine(error.ToString());
                 }
                 txtErrors.Text = errorReport.ToString();
             }
