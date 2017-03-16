@@ -9,9 +9,17 @@ namespace Tavis.OpenApi.Export
 {
     public class YamlParseNodeWriter : IParseNodeWriter
     {
+        enum State
+        {
+            InDocument,
+            InList,
+            InMap, 
+            InProperty
+        }
 
+        Stack<State> state = new Stack<State>();
         StreamWriter writer;
-
+        
         public YamlParseNodeWriter(Stream stream)
         {
             this.writer = new StreamWriter(stream);
@@ -23,7 +31,6 @@ namespace Tavis.OpenApi.Export
         }
 
         string Indent = "";
-        bool inList = false;
         void IncreaseIndent()
         {
             Indent += "  ";
@@ -36,63 +43,82 @@ namespace Tavis.OpenApi.Export
 
         public void WriteEndDocument()
         {
+            state.Pop();
         }
 
         public void WriteEndList()
         {
-            inList = false;
+            state.Pop();
             DecreaseIndent();
         }
 
         public void WriteEndMap()
         {
+            state.Pop();
             DecreaseIndent();
         }
 
+        private bool InList()
+        {
+            return state.Peek() == State.InList;
+        }
         public void WritePropertyName(string name)
         {
             writer.Write(Indent + name + ": ");
-
+            state.Push(State.InProperty);
         }
 
         public void WriteStartDocument()
         {
+            state.Push(State.InDocument);
         }
 
         public void WriteStartList()
         {
-            if (inList) writer.Write(Indent + "- ");
+            if (InList()) writer.Write(Indent + "- ");
             IncreaseIndent();
-            inList = true;
+            state.Push(State.InList);
             writer.WriteLine();
+
         }
 
         public void WriteStartMap()
         {
-            if (inList) writer.Write(Indent + "- ");
-            IncreaseIndent();
+            if (InList())
+            {
+                writer.Write(Indent + "- ");
+            }
             writer.WriteLine();
+            IncreaseIndent();
+            state.Push(State.InMap);
         }
 
         public void WriteValue(string value)
         {
-            if (inList) writer.Write(Indent + "- ");
+            if (InList()) writer.Write(Indent + "- ");
             writer.WriteLine( value );
+            state.Pop();
         }
 
         public void WriteValue(Decimal value)
         {
+            if (InList()) writer.Write(Indent + "- ");
             writer.WriteLine(value.ToString());  //TODO deal with culture issues
+            state.Pop();
         }
 
         public void WriteValue(int value)
         {
+            if (state.Peek() == State.InList) writer.Write(Indent + "- ");
             writer.WriteLine(value.ToString());  //TODO deal with culture issues
+            state.Pop();
         }
 
         public void WriteValue(bool value)
         {
+            if (state.Peek() == State.InList) writer.Write(Indent + "- ");
             writer.WriteLine(value.ToString().ToLower());  //TODO deal with culture issues
+            state.Pop();
         }
     }
 }

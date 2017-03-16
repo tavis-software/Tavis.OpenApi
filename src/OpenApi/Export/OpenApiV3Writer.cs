@@ -20,11 +20,6 @@ namespace Tavis.OpenApi
 
         public void Writer(Stream stream)
         {
-            //var serializer = new Serializer();
-
-            //var writer = new StreamWriter(stream);
-
-            //writer.Write(serializer.Serialize(this.document));
 
             var writer = new YamlParseNodeWriter(stream);
             writer.WriteStartDocument();
@@ -47,9 +42,7 @@ namespace Tavis.OpenApi
                 WriteExternalDocs(writer, doc.ExternalDocs);
                 WriteSecurity(writer, doc.SecurityRequirements);
             writer.WriteEndMap();
-
         }
-
 
         private void WriteInfo(IParseNodeWriter writer, Info info)
         {
@@ -59,25 +52,60 @@ namespace Tavis.OpenApi
             WriteStringProperty(writer,"title", info.Title);
             WriteStringProperty(writer,"description",info.Description);
             WriteStringProperty(writer,"termsOfService", info.TermsOfService);
+            WriteContact(writer, info.Contact);
+            WriteLicense(writer, info.License);
             WriteStringProperty(writer, "version", info.Version);
 
             writer.WriteEndMap();
 
         }
 
-        private void WriteStringProperty(IParseNodeWriter writer, string name, string value) {
-            if (!String.IsNullOrEmpty(value))
-            {
-                writer.WritePropertyName(name);
-                writer.WriteValue(value);
-            }
+        private void WriteContact(IParseNodeWriter writer, Contact contact)
+        {
+            writer.WritePropertyName("contact");
+            writer.WriteStartMap();
+
+            WriteStringProperty(writer, "name", contact.Name);
+            WriteStringProperty(writer, "url", contact.Url.OriginalString);
+            WriteStringProperty(writer, "email", contact.Email);
+
+            writer.WriteEndMap();
+
+        }
+
+        private void WriteLicense(IParseNodeWriter writer, License license)
+        {
+            writer.WritePropertyName("license");
+            writer.WriteStartMap();
+
+            WriteStringProperty(writer, "name", license.Name);
+            WriteStringProperty(writer, "url", license.Url.OriginalString);
+
+            writer.WriteEndMap();
+
         }
 
         private void WritePaths(IParseNodeWriter writer, Paths paths)
         {
             writer.WritePropertyName("paths");
             writer.WriteStartMap();
+            foreach (var pathItem in paths.PathItems)
+            {
+                writer.WritePropertyName(pathItem.Key);
+                WritePathItem(writer, pathItem.Value);
+            }
+            writer.WriteEndMap();
+        }
 
+        private void WritePathItem(IParseNodeWriter writer, PathItem pathItem)
+        {
+            writer.WriteStartMap();
+            WriteStringProperty(writer,"summary",pathItem.Summary);
+            WriteStringProperty(writer, "description", pathItem.Description);
+            foreach (var operation in pathItem.Operations) 
+            {
+
+            }
             writer.WriteEndMap();
         }
 
@@ -87,22 +115,81 @@ namespace Tavis.OpenApi
             {
                 writer.WritePropertyName("servers");
                 writer.WriteStartList();
-
+                foreach (var server in servers)
+                {
+                    WriteServer(writer, server);
+                }
+                
                 writer.WriteEndList();
             }
 
         }
 
-        private void WriteTags(IParseNodeWriter writer, List<Tag> tags)
+        private void WriteServer(IParseNodeWriter writer, Server server)
+        {
+            writer.WriteStartMap();
+
+            WriteStringProperty(writer, "url", server.Url);
+            WriteStringProperty(writer, "description", server.Description);
+
+            if (server.Variables.Count > 0)
+            {
+                writer.WritePropertyName("variables");
+                WriteServerVariables(writer, server);
+            }
+            writer.WriteEndMap();
+
+        }
+
+        private void WriteServerVariables(IParseNodeWriter writer, Server server)
+        {
+                writer.WriteStartMap();
+
+                foreach (var variable in server.Variables)
+                {
+                    writer.WritePropertyName(variable.Key);
+                    WriteServerVariable(writer, variable.Value);
+                }
+
+                writer.WriteEndMap();
+        }
+
+        private void WriteServerVariable(IParseNodeWriter writer, ServerVariable servervariable)
+        {
+            writer.WriteStartMap();
+
+            if ( servervariable.Enum.Count > 0)
+            {
+                writer.WriteStartList();
+                foreach (var enumItem in servervariable.Enum)
+                {
+                    writer.WriteValue(enumItem);
+                }
+                writer.WriteEndList();
+            }
+            WriteStringProperty(writer, "default", servervariable.Default);
+            WriteStringProperty(writer, "description", servervariable.Description);
+
+            writer.WriteEndMap();
+
+        }
+
+        void WriteTags(IParseNodeWriter writer, List<Tag> tags)
         {
             if (tags.Count > 0)
             {
                 writer.WritePropertyName("tags");
                 writer.WriteStartList();
+                foreach (var tag in tags)
+                {
+                    writer.WriteStartMap();
+                    WriteStringProperty(writer, "name", tag.Name);
+                    WriteStringProperty(writer, "description", tag.Description);
+                    writer.WriteEndMap();
 
+                }
                 writer.WriteEndList();
             }
-
         }
 
         private void WriteComponents(IParseNodeWriter writer, Components components)
@@ -114,7 +201,6 @@ namespace Tavis.OpenApi
 
                 writer.WriteEndMap();
             }
-
         }
 
         private void WriteExternalDocs(IParseNodeWriter writer, ExternalDocs externalDocs)
@@ -133,5 +219,16 @@ namespace Tavis.OpenApi
             }
 
         }
+
+
+        private void WriteStringProperty(IParseNodeWriter writer, string name, string value)
+        {
+            if (!String.IsNullOrEmpty(value))
+            {
+                writer.WritePropertyName(name);
+                writer.WriteValue(value);
+            }
+        }
+
     }
 }
