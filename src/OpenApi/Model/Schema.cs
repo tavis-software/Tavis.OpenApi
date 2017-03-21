@@ -17,6 +17,7 @@ namespace Tavis.OpenApi.Model
         public Dictionary<string,Schema> Properties { get; set; }
         public List<AnyNode> Examples { get; set; }
         public AnyNode Example { get; set; }
+        public List<string> Enum { get; set; } = new List<string>();
 
         public Dictionary<string, string> Extensions { get; set; }
 

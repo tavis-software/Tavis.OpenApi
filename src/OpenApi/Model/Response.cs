@@ -10,7 +10,7 @@ namespace Tavis.OpenApi.Model
 
         public string Description { get; set; }
         public Content Content { get; set; }
-        public Dictionary<string,Header> Headers { get; set; }
+        public Dictionary<string, Header> Headers { get; set; }
         public Dictionary<string, Link> Links { get; set; }
         public Dictionary<string, string> Extensions { get; set; }
 

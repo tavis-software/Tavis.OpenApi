@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Tavis.OpenApi.Model
 {
-    public class Link
+    public class Link : IReference
     {
         public string Href { get; set; }
         public string OperationId { get; set; }
@@ -16,5 +16,6 @@ namespace Tavis.OpenApi.Model
         public string Description { get; set; }
         public Dictionary<string, string> Extensions { get; set; }
 
+        public string Pointer { get; set;  }
     }
 }

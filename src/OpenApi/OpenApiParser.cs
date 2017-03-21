@@ -25,7 +25,14 @@ namespace Tavis.OpenApi
         public OpenApiDocument Parse(Stream stream)
         {
             this.context = new ParsingContext(LoadReference);
-            this.rootNode = new RootNode(this.context, stream);
+            try
+            {
+                this.rootNode = new RootNode(this.context, stream);
+            } catch(SharpYaml.SyntaxErrorException ex)
+            {
+                ParseErrors.Add(new OpenApiError("", ex.Message));
+                return new OpenApiDocument();
+            }
             return OpenApiV3.LoadOpenApi(this.rootNode);
         }
 
@@ -35,7 +42,7 @@ namespace Tavis.OpenApi
             var refType = parts[1];  
             IReference referencedObject = null;
 
-            if ("schemas|parameters|callbacks|securitySchemes".Contains(refType))
+            if ("schemas|parameters|callbacks|securitySchemes|links".Contains(refType))
             {
                 var refPointer = new JsonPointer(pointer);
                 ParseNode node = this.rootNode.Find(refPointer);
@@ -56,6 +63,10 @@ namespace Tavis.OpenApi
                     case "securitySchemes":
                         referencedObject = OpenApiV3.LoadSecurityScheme(node);
                         break;
+                    case "links":
+                        referencedObject = OpenApiV3.LoadLink(node);
+                        break;
+
                 }
             }
             else if ("tags".Contains(refType))
@@ -80,7 +91,7 @@ namespace Tavis.OpenApi
             }
             else
             {
-                throw new DomainParseException($"Unknown $ref {refType}");
+                throw new DomainParseException($"Unknown $ref {refType} at {pointer}");
 
             }
 

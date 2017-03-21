@@ -76,19 +76,17 @@ namespace Tavis.OpenApi
         public static Info LoadInfo(ParseNode node)
         {
             var mapNode = node.CheckMapNode("Info");
-            var info = new Info();
 
+            var info = new Info();
             var required = new List<string>() { "title", "version" };
 
-            foreach (var propertyNode in mapNode)
-            {
-                propertyNode.ParseField(info, OpenApiV3.InfoFixedFields, OpenApiV3.InfoPatternFields);
-                required.Remove(propertyNode.Name);
-            }
-            node.Context.ParseErrors.AddRange(required.Select(r => new OpenApiError("", $"{r} is a required property")));
+            ParseMap(mapNode, info, InfoFixedFields, InfoPatternFields, required);
+
+            ReportMissing(node, required);
 
             return info;
         }
+
 
         #endregion
 
@@ -107,17 +105,10 @@ namespace Tavis.OpenApi
 
         public static Contact LoadContact(ParseNode node)
         {
-            var contactNode = node as MapNode;
-            if (contactNode == null)
-            {
-                throw new Exception("Contact node should be a map");
-            }
+            var mapNode = node as MapNode;
             var contact = new Contact();
 
-            foreach (var propertyNode in contactNode)
-            {
-                propertyNode.ParseField(contact, OpenApiV3.ContactFixedFields, OpenApiV3.ContactPatternFields);
-            }
+            ParseMap(mapNode, contact, ContactFixedFields,ContactPatternFields);
 
             return contact;
         }
@@ -126,31 +117,23 @@ namespace Tavis.OpenApi
 
         #region LicenseObject
 
+        public static FixedFieldMap<License> LicenseFixedFields = new FixedFieldMap<License> {
+            { "name", (o,n) => { o.Name = n.GetScalarValue(); } },
+            { "url", (o,n) => { o.Url = new Uri(n.GetScalarValue()); } },
+        };
+
+        public static PatternFieldMap<License> LicensePatternFields = new PatternFieldMap<License>
+        {
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
+        };
+
         internal static License LoadLicense(ParseNode node)
         {
             var mapNode = node.CheckMapNode("License");
+
             var license = new License();
 
-            foreach (var property in mapNode)
-            {
-                switch (property.Name)
-                {
-                    case "name":
-                        license.Name = property.Value.GetScalarValue();
-                        break;
-
-                    case "url":
-                        license.Url = new Uri(property.Value.GetScalarValue());
-                        break;
-
-                    default:
-                        if (property.Name.StartsWith("x-"))
-                        {
-                            license.Extensions.Add(property.Name, property.Value.GetScalarValue());
-                        }
-                        break;
-                }
-            }
+            ParseMap(mapNode, license, LicenseFixedFields, LicensePatternFields);
 
             return license;
         }
@@ -176,10 +159,8 @@ namespace Tavis.OpenApi
             var mapNode = node.CheckMapNode("server");
 
             var server = new Server();
-            foreach (var property in mapNode)
-            {
-                property.ParseField(server, ServerFixedFields, ServerPatternFields);
-            }
+
+            ParseMap(mapNode, server, ServerFixedFields, ServerPatternFields);
 
             return server;
         }
@@ -190,7 +171,7 @@ namespace Tavis.OpenApi
 
         private static FixedFieldMap<ServerVariable> ServerVariableFixedFields = new FixedFieldMap<ServerVariable>
         {
-            { "enum", (o,n) => { o.Enum =  n.CreateList<string>((s)=> s.GetScalarValue()); } },
+            { "enum", (o,n) => { o.Enum =  n.CreateSimpleList<string>((s)=> s.GetScalarValue()); } },
             { "default", (o,n) => { o.Default =  n.GetScalarValue(); } },
             { "description", (o,n) => { o.Description = n.GetScalarValue();  } },
         };
@@ -205,10 +186,8 @@ namespace Tavis.OpenApi
             var mapNode = node.CheckMapNode("serverVariable");
 
             var serverVariable = new ServerVariable();
-            foreach (var property in mapNode)
-            {
-                property.ParseField(serverVariable, ServerVariableFixedFields, ServerVariablePatternFields);
-            }
+
+            ParseMap(mapNode, serverVariable, ServerVariableFixedFields, ServerVariablePatternFields);
 
             return serverVariable;
         }
@@ -222,7 +201,7 @@ namespace Tavis.OpenApi
             { "responses", (o,n) => o.Responses = n.CreateMap(LoadResponse) },
             { "parameters", (o,n) => o.Parameters = n.CreateMap(LoadParameter) },
             { "examples", (o,n) => o.Examples = n.CreateMap(LoadExample) },
-            { "headers", (o,n) => o.Headers = n.CreateMap(LoadHeaders) },
+            { "headers", (o,n) => o.Headers = n.CreateMap(LoadHeader) },
             { "securitySchemes", (o,n) => o.SecuritySchemes = n.CreateMap(LoadSecurityScheme) },
             { "links", (o,n) => o.Links = n.CreateMap(LoadLink) },
             { "callbacks", (o,n) => o.Callbacks = n.CreateMap(LoadCallback) },
@@ -233,17 +212,13 @@ namespace Tavis.OpenApi
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
         };
 
-
         public static Components LoadComponents(ParseNode node)
         {
             var mapNode = node.CheckMapNode("components");
-
             var components = new Components();
 
-            foreach (var itemNode in mapNode)
-            {
-                itemNode.ParseField(components, ComponentsFixedFields, ComponentsPatternFields);
-            }
+            ParseMap(mapNode, components, ComponentsFixedFields, ComponentsPatternFields);
+
             return components;
         }
 
@@ -265,13 +240,9 @@ namespace Tavis.OpenApi
         {
             MapNode mapNode = node.CheckMapNode("Paths");
 
-            //Schema domainObject = CreateOrReferenceDomainObject(mapNode, () => new Paths());
-
             Paths domainObject = new Paths();
-            foreach (var propertyNode in mapNode)
-            {
-                propertyNode.ParseField(domainObject, PathsFixedFields, PathsPatternFields);
-            }
+
+            ParseMap(mapNode, domainObject, PathsFixedFields, PathsPatternFields);
 
             return domainObject;
         }
@@ -300,15 +271,10 @@ namespace Tavis.OpenApi
         public static PathItem LoadPathItem(ParseNode node)
         {
             var mapNode = node.CheckMapNode("PathItem");
-            if (mapNode == null) return null;
 
             var pathItem = new PathItem();
 
-
-            foreach (var property in mapNode)
-            {
-                property.ParseField(pathItem, PathItemFixedFields, PathItemPatternFields);
-            }
+            ParseMap(mapNode, pathItem, PathItemFixedFields, PathItemPatternFields);
 
             return pathItem;
         }
@@ -341,40 +307,39 @@ namespace Tavis.OpenApi
         internal static Operation LoadOperation(ParseNode node)
         {
             var mapNode = node.CheckMapNode("Operation");
-            if (mapNode == null) return null;
 
-            Operation domainObject = new Operation();
-            foreach (var property in mapNode)
-            {
-                property.ParseField(domainObject, OperationFixedFields, OperationPatternFields);
-            }
+            Operation operation = new Operation();
 
-            return domainObject;
+            ParseMap(mapNode, operation, OperationFixedFields, OperationPatternFields);
+
+            return operation;
         }
 
         #endregion
 
         #region ExternalDocsObject
+
+        private static FixedFieldMap<ExternalDocs> ExternalDocsFixedFields = new FixedFieldMap<ExternalDocs>
+        {
+            // $ref
+            { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
+            { "url", (o,n) => { o.Url = new Uri(n.GetScalarValue()); } },
+        };
+
+        private static PatternFieldMap<ExternalDocs> ExternalDocsPatternFields = new PatternFieldMap<ExternalDocs>
+        {
+        };
+
+
         public static ExternalDocs LoadExternalDocs(ParseNode node)
         {
             var mapNode = node.CheckMapNode("externalDocs");
 
-            var obj = new ExternalDocs();
+            var externalDocs = new ExternalDocs();
 
-            foreach (var property in mapNode)
-            {
-                switch (property.Name)
-                {
-                    case "description":
-                        obj.Description = property.Value.GetScalarValue();
-                        break;
-                    case "url":
-                        obj.Url = new Uri(property.Value.GetScalarValue());
-                        break;
+            ParseMap(mapNode, externalDocs, ExternalDocsFixedFields, ExternalDocsPatternFields);
 
-                }
-            }
-            return obj;
+            return externalDocs;
         }
 
         #endregion
@@ -414,10 +379,7 @@ namespace Tavis.OpenApi
 
             var parameter = new Parameter();
 
-            foreach (var item in mapNode)
-            {
-                item.ParseField(parameter, ParameterFixedFields, ParameterPatternFields);
-            }
+            ParseMap(mapNode, parameter, ParameterFixedFields, ParameterPatternFields);
 
             return parameter;
         }
@@ -469,10 +431,8 @@ namespace Tavis.OpenApi
             var mapNode = node.CheckMapNode("content");
 
             var content = new Content();
-            foreach (var property in mapNode)
-            {
-                property.ParseField(content, ContentFixedFields, ContentPatternFields);
-            }
+
+            ParseMap(mapNode, content, ContentFixedFields, ContentPatternFields);
 
             return content;
         }
@@ -496,11 +456,10 @@ namespace Tavis.OpenApi
         public static MediaType LoadMediaType(ParseNode node)
         {
             var mapNode = node.CheckMapNode("contentType");
+
             var contentType = new MediaType();
-            foreach (var property in mapNode)
-            {
-                property.ParseField(contentType, MediaTypeFixedFields, MediaTypePatternFields);
-            }
+
+            ParseMap(mapNode, contentType, MediaTypeFixedFields, MediaTypePatternFields);
 
             return contentType;
         }
@@ -590,10 +549,7 @@ namespace Tavis.OpenApi
 
             var domainObject = new Callback();
 
-            foreach (var property in mapNode)
-            {
-                property.ParseField(domainObject, CallbackFixedFields, CallbackPatternFields);
-            }
+            ParseMap(mapNode, domainObject, CallbackFixedFields, CallbackPatternFields);
 
             return domainObject;
         }
@@ -621,10 +577,14 @@ namespace Tavis.OpenApi
         {
             var mapNode = node.CheckMapNode("link");
             var link = new Link();
-            foreach (var property in mapNode)
+
+            var refpointer = mapNode.GetReferencePointer();
+            if (refpointer != null)
             {
-                property.ParseField(link, LinkFixedFields, LinkPatternFields);
+                return mapNode.GetReferencedObject<Link>(refpointer);
             }
+
+            ParseMap(mapNode, link, LinkFixedFields, LinkPatternFields);
 
             return link;
         }
@@ -728,6 +688,8 @@ namespace Tavis.OpenApi
                 { "allOf", (o,n) => { o.AllOf = n.CreateList(LoadSchema); } },
                 { "examples", (o,n) => { o.Examples = ((ListNode)n).Select(s=> new AnyNode(s)).ToList(); } },
                 { "example", (o,n) => { o.Example = new AnyNode(n); } },
+                { "enum", (o,n) => { o.Enum =  n.CreateSimpleList<string>((s)=> s.GetScalarValue()); } },
+
 
         };
 
@@ -815,5 +777,22 @@ namespace Tavis.OpenApi
         }
 
         #endregion
+
+        private static void ParseMap<T>(MapNode mapNode, T domainObject, FixedFieldMap<T> fixedFieldMap, PatternFieldMap<T> patternFieldMap, List<string> requiredFields  = null)
+        {
+            if (mapNode == null) return;
+
+            foreach (var propertyNode in mapNode)
+            {
+                propertyNode.ParseField<T>(domainObject, fixedFieldMap, patternFieldMap);
+                if (requiredFields != null) requiredFields.Remove(propertyNode.Name);
+            }
+        }
+
+        private static void ReportMissing(ParseNode node, List<string> required)
+        {
+            node.Context.ParseErrors.AddRange(required.Select(r => new OpenApiError("", $"{r} is a required property")));
+        }
+
     }
 }

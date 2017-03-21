@@ -25,7 +25,7 @@ namespace Tavis.OpenApi.Model
         public Info Info { get; set; } = new Info();
         public List<Server> Servers { get; set; } = new List<Server>();
         public List<SecurityRequirement> SecurityRequirements { get; set; }
-        public Paths Paths { get; set; }
+        public Paths Paths { get; set; } = new Paths();
         public Components Components { get; set; } = new Components();
         public List<Tag> Tags { get; set; } = new List<Tag>();
         public ExternalDocs ExternalDocs { get; set; } = new ExternalDocs();

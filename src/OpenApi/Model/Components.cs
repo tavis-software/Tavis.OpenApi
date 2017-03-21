@@ -12,7 +12,7 @@ namespace Tavis.OpenApi.Model
         public Dictionary<string, Parameter> Parameters { get; set; } = new Dictionary<string, Parameter>();
         public Dictionary<string, Example> Examples { get; set; } = new Dictionary<string, Example>();
         public Dictionary<string, RequestBody> RequestBodies { get; set; } = new Dictionary<string, RequestBody>();
-        public Dictionary<string, Headers> Headers { get; set; } = new Dictionary<string, Headers>();
+        public Dictionary<string, Header> Headers { get; set; } = new Dictionary<string, Header>();
         public Dictionary<string, SecurityScheme> SecuritySchemes { get; set; } = new Dictionary<string, SecurityScheme>();
         public Dictionary<string, Link> Links { get; set; } = new Dictionary<string, Link>();
         public Dictionary<string, Callback> Callbacks { get; set; } = new Dictionary<string, Callback>();

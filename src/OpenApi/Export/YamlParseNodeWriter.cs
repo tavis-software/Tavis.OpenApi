@@ -62,6 +62,11 @@ namespace Tavis.OpenApi.Export
         {
             return state.Peek() == State.InList;
         }
+        private bool InProperty()
+        {
+            return state.Peek() == State.InProperty;
+        }
+
         public void WritePropertyName(string name)
         {
             writer.Write(Indent + name + ": ");
@@ -97,28 +102,28 @@ namespace Tavis.OpenApi.Export
         {
             if (InList()) writer.Write(Indent + "- ");
             writer.WriteLine( value );
-            state.Pop();
+            if (InProperty()) state.Pop();
         }
 
         public void WriteValue(Decimal value)
         {
             if (InList()) writer.Write(Indent + "- ");
             writer.WriteLine(value.ToString());  //TODO deal with culture issues
-            state.Pop();
+            if (InProperty()) state.Pop();
         }
 
         public void WriteValue(int value)
         {
-            if (state.Peek() == State.InList) writer.Write(Indent + "- ");
+            if (InList()) writer.Write(Indent + "- ");
             writer.WriteLine(value.ToString());  //TODO deal with culture issues
-            state.Pop();
+            if (InProperty()) state.Pop();
         }
 
         public void WriteValue(bool value)
         {
-            if (state.Peek() == State.InList) writer.Write(Indent + "- ");
+            if (InList()) writer.Write(Indent + "- ");
             writer.WriteLine(value.ToString().ToLower());  //TODO deal with culture issues
-            state.Pop();
+            if (InProperty()) state.Pop();
         }
     }
 }
