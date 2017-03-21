@@ -33,9 +33,26 @@ namespace Tavis.OpenApi.Model
 
         private static Regex versionRegex = new Regex(@"\d+\.\d+\.\d+");
 
-        
 
 
+        public void Write(IParseNodeWriter writer)
+        {
+            writer.WriteStartMap();
+
+            writer.WritePropertyName("openapi");
+            writer.WriteValue("3.0.0-RC0");
+
+            writer.WriteObject("info", Info, Info.Write);
+            writer.WriteList("servers", Servers, Server.Write);
+            writer.WritePropertyName("paths");
+            Paths.Write(writer);
+            writer.WriteList("tags", Tags, Tag.Write);
+            writer.WriteObject("components", Components, Components.Write);
+            writer.WriteObject("externalDocs", ExternalDocs, ExternalDocs.Write);
+            writer.WriteList("security", SecurityRequirements, SecurityRequirement.Write);
+
+            writer.WriteEndMap();
+        }
     }
 
 

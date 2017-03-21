@@ -16,6 +16,22 @@ namespace Tavis.OpenApi.Model
         public string Description { get; set; }
         public Dictionary<string, string> Extensions { get; set; }
 
-        public string Pointer { get; set;  }
+        public string Pointer { get; set; }
+
+
+        public void Write(IParseNodeWriter writer)
+        {
+            writer.WriteStartMap();
+            writer.WriteStringProperty("href", Href);
+            writer.WriteStringProperty("operationId", OperationId);
+            writer.WriteMap("parameters", Parameters, (w, x) => { w.WriteValue(x.ToString()); });
+
+            writer.WriteEndMap();
+        }
+
+        public static void Write(IParseNodeWriter writer, Link link)
+        {
+            link.Write(writer);
+        }
     }
 }

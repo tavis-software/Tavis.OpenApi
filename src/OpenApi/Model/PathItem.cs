@@ -18,5 +18,24 @@ namespace Tavis.OpenApi.Model
         public Server Server { get; set; }
         public List<Parameter> Parameters { get; set; } = new List<Parameter>();
 
+
+        public void Write(IParseNodeWriter writer)
+        {
+            writer.WriteStartMap();
+            writer.WriteStringProperty("summary", Summary);
+            writer.WriteStringProperty("description", Description);
+            foreach (var operationPair in Operations)
+            {
+                writer.WritePropertyName(operationPair.Key);
+                operationPair.Value.Write(writer);
+            }
+            writer.WriteEndMap();
+        }
+
+        public static void Write(IParseNodeWriter writer, PathItem pathItem)
+        {
+            pathItem.Write(writer);
+        }
+
     }
 }

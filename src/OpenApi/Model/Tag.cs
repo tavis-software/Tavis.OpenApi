@@ -25,5 +25,18 @@ namespace Tavis.OpenApi.Model
             }
             return tagObject;
         }
+
+        public void Write(IParseNodeWriter writer)
+        {
+            writer.WriteStartMap();
+            writer.WriteStringProperty("name", Name);
+            writer.WriteStringProperty("description", Description);
+            writer.WriteEndMap();
+        }
+
+        public static void Write(IParseNodeWriter writer, Tag tag)
+        {
+            tag.Write(writer);
+        }
     }
 }

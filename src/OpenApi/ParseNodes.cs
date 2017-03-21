@@ -117,6 +117,16 @@ namespace Tavis.OpenApi
         {
             this.node = node;
         }
+
+        public void Write(IParseNodeWriter writer)
+        {
+
+        }
+
+        public static void Write(IParseNodeWriter writer, AnyNode node)
+        {
+            node.Write(writer);
+        }
     }
 
     public class PropertyNode : ParseNode

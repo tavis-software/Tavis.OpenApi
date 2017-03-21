@@ -28,5 +28,21 @@ namespace Tavis.OpenApi.Model
         }
 
 
+        public void Write(IParseNodeWriter writer)
+        {
+                writer.WriteStartMap();
+
+                writer.WriteStringProperty("type", Type);
+                writer.WriteStringProperty("format", Format);
+                writer.WriteStringProperty("description", Description);
+
+                writer.WriteEndMap();
+        }
+
+        public static void Write(IParseNodeWriter writer, Schema schema)
+        {
+            schema.Write(writer);
+        }
+
     }
 }

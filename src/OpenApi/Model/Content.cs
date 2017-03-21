@@ -12,6 +12,19 @@ namespace Tavis.OpenApi.Model
         public Dictionary<string, MediaType> ContentTypes { get; set; } = new Dictionary<string, MediaType>();
         public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
 
+        public void Write(IParseNodeWriter writer)
+        {
+            writer.WriteStartMap();
+            foreach (var mediaType in ContentTypes)
+            {
+                writer.WriteObject(mediaType.Key, mediaType.Value, MediaType.Write);
+            }
+            writer.WriteEndMap();
+        }
 
+        public static void Write(IParseNodeWriter writer, Content content)
+        {
+            content.Write(writer);
+        }
     }
 }

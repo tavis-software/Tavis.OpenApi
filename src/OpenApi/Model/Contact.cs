@@ -18,5 +18,18 @@ namespace Tavis.OpenApi.Model
             Extensions = new Dictionary<string, string>();
         }
 
+        public void Write(IParseNodeWriter writer)
+        {
+
+            writer.WriteStartMap();
+
+            writer.WriteStringProperty("name", Name);
+            writer.WriteStringProperty("url", Url.OriginalString);
+            writer.WriteStringProperty("email", Email);
+
+            writer.WriteEndMap();
+
+        }
+
     }
 }

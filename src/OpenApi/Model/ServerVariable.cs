@@ -14,5 +14,32 @@ namespace Tavis.OpenApi.Model
         public List<string> Enum { get; set; } = new List<string>();
 
         public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
+
+        public void Write(IParseNodeWriter writer)
+        {
+            writer.WriteStartMap();
+
+            if (Enum.Count > 0)
+            {
+                writer.WritePropertyName("enum");
+                writer.WriteStartList();
+                foreach (var enumItem in Enum)
+                {
+                    writer.WriteValue(enumItem);
+                }
+                writer.WriteEndList();
+            }
+            writer.WriteStringProperty("default", Default);
+            writer.WriteStringProperty("description", Description);
+
+            writer.WriteEndMap();
+
+        }
+
+        public static void Write(IParseNodeWriter writer, ServerVariable variable)
+        {
+            variable.Write(writer);
+        }
+
     }
 }

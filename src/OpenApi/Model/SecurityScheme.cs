@@ -34,5 +34,15 @@ namespace Tavis.OpenApi.Model
             return schemeObject;
         }
 
+        public void Write(IParseNodeWriter writer)
+        {
+            
+        }
+
+        public static void Write(IParseNodeWriter writer, SecurityScheme scheme)
+        {
+            scheme.Write(writer);
+        }
+
     }
 }

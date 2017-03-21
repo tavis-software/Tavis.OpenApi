@@ -19,5 +19,18 @@ namespace Tavis.OpenApi.Model
         public string Style { get; set; }
         public Dictionary<string, string> Extensions { get; set; }
 
+
+        public void Write(IParseNodeWriter writer)
+        {
+            writer.WriteStartMap();
+
+            writer.WriteEndMap();
+        }
+
+        public static void Write(IParseNodeWriter writer, Header header)
+        {
+            header.Write(writer);
+        }
+
     }
 }

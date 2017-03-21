@@ -14,6 +14,22 @@ namespace Tavis.OpenApi.Model
         public Boolean Required { get; set; }
         public Dictionary<string,string> Extensions { get; set; }
 
+        public void Write(IParseNodeWriter writer)
+        {
+            writer.WriteStartMap();
+
+            writer.WriteStringProperty("description", Description);
+            writer.WriteBoolProperty("required", Required);
+            writer.WriteObject("content", Content, Content.Write);
+
+            writer.WriteEndMap();
+        }
+
+        public static void Write(IParseNodeWriter writer, RequestBody requestBody)
+        {
+            requestBody.Write(writer);
+        }
+
 
     }
 }
