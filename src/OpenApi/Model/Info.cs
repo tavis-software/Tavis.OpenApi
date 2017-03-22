@@ -26,51 +26,29 @@ namespace Tavis.OpenApi.Model
         string termsOfService;
         public Contact Contact { get; set; }
         public License License { get; set; }
-
         public string Version { get; set; }
-
-        public Dictionary<string, string> Extensions { get; set; }
-
-        public Info()
-        {
-            Extensions = new Dictionary<string, string>();
-        }
-
+        public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
 
         private static Regex versionRegex = new Regex(@"\d+\.\d+\.\d+");
 
-
-        public static void Write(IParseNodeWriter writer, Info info)
-        {
-            info.Write(writer);
-        }
-
-
         public void Write(IParseNodeWriter writer)
         {
-
-
             writer.WriteStartMap();
 
             writer.WriteStringProperty("title", Title);
             writer.WriteStringProperty("description", Description);
             writer.WriteStringProperty("termsOfService", TermsOfService);
-            if (Contact != null)
-            {
-                writer.WritePropertyName("contact");
-                Contact.Write(writer);
-            }
-            if (License != null)
-            {
-                writer.WritePropertyName("license");
-                License.Write(writer);
-            }
+            writer.WriteObject("contact", Contact, Contact.Write);
+            writer.WriteObject("license", License, License.Write);
             writer.WriteStringProperty("version", Version);
 
             writer.WriteEndMap();
-
         }
 
+        public static void Write(IParseNodeWriter writer, Info info)
+        {
+            info.Write(writer);
+        }
     }
 
 }

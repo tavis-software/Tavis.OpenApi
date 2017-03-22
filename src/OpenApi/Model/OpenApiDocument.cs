@@ -7,8 +7,6 @@ using System.Collections;
 
 namespace Tavis.OpenApi.Model
 {
-
-
     public class OpenApiDocument
     {
         string version;

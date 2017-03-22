@@ -23,19 +23,14 @@ namespace Tavis.OpenApi.Model
         public bool Required { get; set; } = false;
         public bool Deprecated { get; set; }
         public bool AllowEmptyValue { get; set; } = false;
-
         public string Style { get; set; }
         public bool Explode { get; set; }
         public bool AllowReserved { get; set; }
         public Schema Schema { get; set; }
-
-        public List<AnyNode> Examples { get; set; }
+        public List<AnyNode> Examples { get; set; } = new List<AnyNode>();
         public AnyNode Example { get; set; }
-        public Dictionary<string, string> Extensions { get; set; }
-
         public Content Content { get; set; }
-
-
+        public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
 
         public void Write(IParseNodeWriter writer)
         {

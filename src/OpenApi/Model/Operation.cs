@@ -11,16 +11,16 @@ namespace Tavis.OpenApi.Model
         public List<Tag> Tags { get; set; } = new List<Tag>();
         public string Summary { get; set; }
         public string Description { get; set; }
-        public ExternalDocs ExternalDocs { get; set; }
+        public ExternalDocs ExternalDocs { get; set; } 
         public string OperationId { get; set; }
-        public List<Parameter> Parameters {get;set;}
+        public List<Parameter> Parameters { get; set; } = new List<Parameter>();
         public RequestBody RequestBody { get; set; }
-        public Dictionary<string,Response> Responses { get; set; }
-        public Dictionary<string, Callback> Callbacks { get; set; }
+        public Dictionary<string, Response> Responses { get; set; } = new Dictionary<string, Response>();
+        public Dictionary<string, Callback> Callbacks { get; set; } = new Dictionary<string, Callback>();
         public bool Deprecated { get; set; }
-        public List<SecurityRequirement> Security { get; set; }
+        public List<SecurityRequirement> Security { get; set; } = new List<SecurityRequirement>();
         public Server Server { get; set; }
-        public Dictionary<string, string> Extensions { get; set; }
+        public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
 
 
         public void Write(IParseNodeWriter writer)
@@ -32,19 +32,12 @@ namespace Tavis.OpenApi.Model
             writer.WriteObject("externalDocs", ExternalDocs, ExternalDocs.Write);
 
             writer.WriteStringProperty("operationId", OperationId);
-
             writer.WriteList<Parameter>("parameters", Parameters, Parameter.Write);
-
             writer.WriteObject("requestBody",RequestBody, Model.RequestBody.Write);
-
             writer.WriteMap<Response>("responses", Responses, Response.Write);
-
             writer.WriteMap<Callback>("callbacks", Callbacks, Callback.Write);
-
             writer.WriteBoolProperty("deprecated", Deprecated);
-
-            //operation.Security
-
+            writer.WriteList("security", Security, SecurityRequirement.Write);
             writer.WriteObject("server",Server, Server.Write);
 
             writer.WriteEndMap();

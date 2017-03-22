@@ -10,8 +10,8 @@ namespace Tavis.OpenApi.Model
     public class RequestBody
     {
         public string Description { get; set; }
-        public Content Content { get; set; }
         public Boolean Required { get; set; }
+        public Content Content { get; set; }
         public Dictionary<string,string> Extensions { get; set; }
 
         public void Write(IParseNodeWriter writer)

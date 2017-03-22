@@ -78,9 +78,9 @@ namespace OpenApiTests
 
             var responses = getOperation.Responses;
             
-            Assert.Equal(2, responses["200"].Content.ContentTypes.Values.Count());
+            Assert.Equal(2, responses["200"].Content.MediaTypes.Values.Count());
             var response = getOperation.Responses["200"];
-            var content = response.Content.ContentTypes["application/json"];
+            var content = response.Content.MediaTypes["application/json"];
 
             Assert.NotNull(content.Schema);
 

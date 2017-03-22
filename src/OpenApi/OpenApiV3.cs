@@ -200,7 +200,7 @@ namespace Tavis.OpenApi
             { "schemas", (o,n) => { o.Schemas = n.CreateMap(LoadSchema); } },
             { "responses", (o,n) => o.Responses = n.CreateMap(LoadResponse) },
             { "parameters", (o,n) => o.Parameters = n.CreateMap(LoadParameter) },
-            { "examples", (o,n) => o.Examples = n.CreateMap(LoadExample) },
+            { "examples", (o,n) => o.Examples = n.CreateMap(mn => { return new AnyNode(mn); }) },
             { "headers", (o,n) => o.Headers = n.CreateMap(LoadHeader) },
             { "securitySchemes", (o,n) => o.SecuritySchemes = n.CreateMap(LoadSecurityScheme) },
             { "links", (o,n) => o.Links = n.CreateMap(LoadLink) },
@@ -423,7 +423,7 @@ namespace Tavis.OpenApi
         private static PatternFieldMap<Content> ContentPatternFields = new PatternFieldMap<Content>
         {
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
-            { (s) => true, (o,k,n)=> o.ContentTypes.Add(k, LoadMediaType(n)    ) }
+            { (s) => true, (o,k,n)=> o.MediaTypes.Add(k, LoadMediaType(n)    ) }
         };
 
         public static Content LoadContent(ParseNode node)
@@ -508,24 +508,6 @@ namespace Tavis.OpenApi
 
         #endregion
 
-        #region HeadersObject
-        public static Headers LoadHeaders(ParseNode node)
-        {
-            var mapNode = node.CheckMapNode("header");
-
-            var headers = new Headers();
-            var nodes = mapNode.Select(n => new KeyValuePair<string, Header>(n.GetScalarValue(), OpenApiV3.LoadHeader(n)));
-
-            foreach (var item in nodes)
-            {
-                headers.Add(item.Key, item.Value);
-            }
-
-            return headers;
-        }
-
-        #endregion
-
         #region CallbackObject
         private static FixedFieldMap<Callback> CallbackFixedFields = new FixedFieldMap<Callback>
         {
@@ -594,7 +576,6 @@ namespace Tavis.OpenApi
         #region HeaderObject
         private static FixedFieldMap<Header> HeaderFixedFields = new FixedFieldMap<Header>
         {
-            { "name", (o,n) => { o.Name = n.GetScalarValue(); } },
             { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
             { "required", (o,n) => { o.Required = bool.Parse(n.GetScalarValue()); } },
             { "deprecated", (o,n) => { o.Deprecated = bool.Parse(n.GetScalarValue()); } },

@@ -3,7 +3,7 @@
   <Class Name="Tavis.OpenApi.Model.OpenApiDocument" Collapsed="true">
     <Position X="0.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>IAAAACIIAAAAAIEBAAAAAAAAAAAAAEAAABgAAEAAAAA=</HashCode>
+      <HashCode>IAAAACIIAAAAAIEBAAAAAAAAAAAAAEAAABgAAEEAAAA=</HashCode>
       <FileName>Model\OpenApiDocument.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -21,28 +21,28 @@
   <Class Name="Tavis.OpenApi.Model.Info" Collapsed="true">
     <Position X="3.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>IAAAAAIAAAAgAEAACAAAAAAAAAAABAAAAAwAAAAACAA=</HashCode>
+      <HashCode>IAAAAAIAAAAgAEAACAAAAAAAAAAABAAAAAwAAAEACAA=</HashCode>
       <FileName>Model\Info.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Tavis.OpenApi.Model.Server" Collapsed="true">
     <Position X="3.25" Y="2" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAACAwAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAACAwAAAEAAAA=</HashCode>
       <FileName>Model\Server.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Tavis.OpenApi.Model.Components" Collapsed="true">
     <Position X="3.25" Y="4.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AABAAAAAAABAAAAAAAIAAAAACAAAAAAACIgAQAAAwAI=</HashCode>
+      <HashCode>AABAAAAAAABAAAAAAAIAAAAACAAAAAAACIgAQAEAwAI=</HashCode>
       <FileName>Model\Components.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Tavis.OpenApi.Model.Tag" Collapsed="true">
     <Position X="3.25" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAgAAAAAAAAAAQAAAABAAAAAAAAAIAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAQAAAABAAAAAAAAAIEAAAA=</HashCode>
       <FileName>Model\Tag.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -50,28 +50,28 @@
   <Class Name="Tavis.OpenApi.Model.ExternalDocs" Collapsed="true">
     <Position X="3.25" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAACAAAAAEAAAA=</HashCode>
       <FileName>Model\ExternalDocs.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Tavis.OpenApi.Model.Paths" Collapsed="true">
     <Position X="3.25" Y="1.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAACAAABAAgAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAACAAABAAgAAAEAAAA=</HashCode>
       <FileName>Model\Paths.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Tavis.OpenApi.Model.SecurityRequirement" Collapsed="true">
     <Position X="3.25" Y="5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAgAA=</HashCode>
       <FileName>Model\SecurityRequirement.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Tavis.OpenApi.Model.PathItem" Collapsed="true">
     <Position X="5.5" Y="1.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AACAAAACAAAgAAAAAAAAAAAAAAAAAAAAAIgAAgAAAAA=</HashCode>
+      <HashCode>AACAAAACAAAgAAAAAAAAAAAAAAAAAAAAAIgAAgEAAAA=</HashCode>
       <FileName>Model\PathItem.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -85,7 +85,7 @@
   <Class Name="Tavis.OpenApi.Model.Operation" Collapsed="true">
     <Position X="7.75" Y="1.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ACCgAAAIAABgAAAAAAAAAAABAAAAAEAAAIgEAgAAQAA=</HashCode>
+      <HashCode>ACCgAAAIAABgAAAAAAAAAAABAAAAAEAAAIgEAgEAQAA=</HashCode>
       <FileName>Model\Operation.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -100,7 +100,7 @@
   <Class Name="Tavis.OpenApi.Model.Parameter" Collapsed="true">
     <Position X="5.5" Y="3" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAggAIQAgEgAAAAAAIAAAwEAAAAAAAABAgAQAAAACA=</HashCode>
+      <HashCode>AAAggAIQAgEgAAAAAAIAAAwEAAAAAAAABAgAQAEAACA=</HashCode>
       <FileName>Model\Parameter.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -108,7 +108,7 @@
   <Class Name="Tavis.OpenApi.Model.RequestBody" Collapsed="true">
     <Position X="10.25" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAgEgAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAgEgAAAAAAAAAAAAAAAAAAAAAAgAAAEAAAA=</HashCode>
       <FileName>Model\RequestBody.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -118,7 +118,7 @@
   <Class Name="Tavis.OpenApi.Model.Response" Collapsed="true">
     <Position X="10.25" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAgAgAAAAAAAAAAAACAAAAAAACAgAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAgAgAAAAAAAAAAAACAAAAAAACAgAAAEAAAA=</HashCode>
       <FileName>Model\Response.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -132,7 +132,7 @@
   <Class Name="Tavis.OpenApi.Model.Content" Collapsed="true">
     <Position X="14" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgQAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgQAAEAAAA=</HashCode>
       <FileName>Model\Content.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -142,22 +142,22 @@
   <Class Name="Tavis.OpenApi.Model.Header" Collapsed="true">
     <Position X="12.75" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAggAAAAAEgAAAAAAAAAAQEAAAAAAAABAgAAAAAAAA=</HashCode>
+      <HashCode>AAAggAAAAAEgAAAAAAAAAAQEAAAAAAAABAgAAAEAAAA=</HashCode>
       <FileName>Model\Header.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Tavis.OpenApi.Model.Link" Collapsed="true">
     <Position X="12.75" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ACAAAAIAAAAgAAAAAAAAAAAACAAAAABAAIgAAAAAAAA=</HashCode>
+      <HashCode>ACAAAAIAAAAgAAAAAAAAAAAACAAAAABAAIgAAAEAAAA=</HashCode>
       <FileName>Model\Link.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="Tavis.OpenApi.Model.MediaType">
+  <Class Name="Tavis.OpenApi.Model.MediaType" Collapsed="true">
     <Position X="16.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAIAAAAEAAAAAAAAAAgAQAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAIAAAAEAAAAAAAAAAgAQAEAAAA=</HashCode>
       <FileName>Model\MediaType.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -167,7 +167,7 @@
   <Class Name="Tavis.OpenApi.Model.Schema" Collapsed="true">
     <Position X="19" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAIAAAEgCAAQAAYAAAAAAAgAAAAAAQgAQAACAAA=</HashCode>
+      <HashCode>AAAAAAIAAAEgCAAQAAYAAAAAAAgAAAAAAQgAQAECAAA=</HashCode>
       <FileName>Model\Schema.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -175,7 +175,7 @@
   <Class Name="Tavis.OpenApi.Model.Example" Collapsed="true">
     <Position X="19" Y="3" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhAAAEAAAA=</HashCode>
       <FileName>Model\Example.cs</FileName>
     </TypeIdentifier>
   </Class>

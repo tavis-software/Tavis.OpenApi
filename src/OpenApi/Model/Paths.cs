@@ -1,23 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SharpYaml.Serialization;
 
 namespace Tavis.OpenApi.Model
 {
     public class Paths
     {
-        public IDictionary<string, PathItem> PathItems { get; set; }
-        public Dictionary<string, string> Extensions { get; set; }
-
-
-        public Paths()
-        {
-            PathItems = new Dictionary<string, PathItem>();  
-        }
-
+        public IDictionary<string, PathItem> PathItems { get; set; } = new Dictionary<string, PathItem>();
+        public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
+        
         public PathItem GetPath(string key)
         {
             return PathItems[key];
@@ -26,7 +16,6 @@ namespace Tavis.OpenApi.Model
         {
             //TODO:
         }
-
 
         public void Write(IParseNodeWriter writer)
         {

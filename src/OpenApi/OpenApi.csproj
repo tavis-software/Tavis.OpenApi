@@ -42,7 +42,6 @@
     <Compile Include="Model\Callback.cs" />
     <Compile Include="Model\Contact.cs" />
     <Compile Include="Model\Content.cs" />
-    <Compile Include="Model\Headers.cs" />
     <Compile Include="Model\MediaType.cs" />
     <Compile Include="Model\Example.cs" />
     <Compile Include="Model\ExternalDocs.cs" />

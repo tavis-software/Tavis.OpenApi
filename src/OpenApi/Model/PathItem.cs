@@ -8,7 +8,6 @@ namespace Tavis.OpenApi.Model
 
     public class PathItem
     {
-        public Dictionary<string, string> Extensions { get; set; }
 
         public string Summary { get; set; }
         public string Description { get; set; }
@@ -17,7 +16,7 @@ namespace Tavis.OpenApi.Model
 
         public Server Server { get; set; }
         public List<Parameter> Parameters { get; set; } = new List<Parameter>();
-
+        public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
 
         public void Write(IParseNodeWriter writer)
         {
