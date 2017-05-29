@@ -7,21 +7,66 @@ using Tavis.OpenApi.Model;
 
 namespace Tavis.OpenApi
 {
-    public static class OpenApiV3
+    public static class OpenApiV2
     {
+
+        public static void AddConsumes(this ParsingContext context, List<string> mediaTypes )
+        {
+
+        }
+        public static void AddProduces(this ParsingContext context, List<string> mediaTypes)
+        {
+
+        }
 
         #region OpenApiObject
         public static FixedFieldMap<OpenApiDocument> OpenApiFixedFields = new FixedFieldMap<OpenApiDocument> {
-            { "openapi", (o,n) => { o.Version = n.GetScalarValue(); } },
+            { "swagger", (o,n) => { o.Version = n.GetScalarValue(); } },
             { "info", (o,n) => o.Info = LoadInfo(n) },
-            { "servers", (o,n) => o.Servers = n.CreateList(LoadServer) },
+            { "consumes", (o,n) => n.Context.AddConsumes( n.CreateList<String>((s) => s.GetScalarValue()))},
+            { "produces", (o,n) => n.Context.AddProduces( n.CreateList<String>((s) => s.GetScalarValue()))},
+            { "host", (o,n) => MakeUrlFromHost(o.Servers,n.GetScalarValue()) },
+            { "basePath", (o,n) => MakeUrlFromBasePath(o.Servers,n.GetScalarValue()) },
+            { "schemes", (o,n) => MakeUrlFromSchemes(o.Servers,n.CreateList<String>((s) => { return null; }))},
+            //{ "servers", (o,n) => o.Servers = n.CreateList(LoadServer) },
             { "paths", (o,n) => o.Paths = LoadPaths(n) },
-            { "components", (o,n) => o.Components = LoadComponents(n) },
+            { "definition", (o,n) => o.Components.Schemas = n.CreateMap(LoadSchema)  },
+            { "parameters", (o,n) => o.Components.Parameters = n.CreateMap(LoadParameter) },
+            { "responses", (o,n) => o.Components.Responses = n.CreateMap(LoadResponse) },
+            { "securityDefinitions", (o,n) => o.Components.SecuritySchemes = n.CreateMap(LoadSecurityScheme) },
             { "tags", (o,n) => o.Tags = n.CreateList(LoadTag)},
             { "externalDocs", (o,n) => o.ExternalDocs = LoadExternalDocs(n) },
             { "security", (o,n) => o.SecurityRequirements = n.CreateList(LoadSecurityRequirement)}
-
             };
+
+        private static void MakeUrlFromSchemes(List<Server> servers, List<string> list)
+        {
+            // add schemes.
+        }
+
+        private static void MakeUrlFromBasePath(List<Server> servers, string basePath)
+        {
+            if (servers.Count() == 0)
+            {
+                servers.Add(new Server());
+            }
+            foreach (var server in servers)
+            {
+                server.Url += basePath;
+            }
+        }
+
+        private static void MakeUrlFromHost(List<Server> servers, string host)
+        {
+            if (servers.Count() == 0 )
+            {
+                servers.Add(new Server());
+            }
+            foreach (var server in servers)
+            {
+                server.Url = host;
+            }
+        }
 
         public static PatternFieldMap<OpenApiDocument> OpenApiPatternFields = new PatternFieldMap<OpenApiDocument>
         {
@@ -38,7 +83,7 @@ namespace Tavis.OpenApi
             bool haspaths = false;
             foreach (var node in rootMap)
             {
-                node.ParseField(openApidoc, OpenApiV3.OpenApiFixedFields, OpenApiV3.OpenApiPatternFields);
+                node.ParseField(openApidoc, OpenApiV2.OpenApiFixedFields, OpenApiV2.OpenApiPatternFields);
                 if (node.Name == "paths")
                 {
                     haspaths = true;
@@ -140,90 +185,7 @@ namespace Tavis.OpenApi
 
         #endregion
 
-        #region ServerObject
-
-        private static FixedFieldMap<Server> ServerFixedFields = new FixedFieldMap<Server>
-        {
-            { "url", (o,n) => { o.Url=  n.GetScalarValue(); } },
-            { "description", (o,n) => { o.Description = n.GetScalarValue();  } },
-            { "variables", (o,n) => {  o.Variables = n.CreateMap(LoadServerVariable); } }
-        };
-
-        private static PatternFieldMap<Server> ServerPatternFields = new PatternFieldMap<Server>
-        {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
-        };
-
-        public static Server LoadServer(ParseNode node)
-        {
-            var mapNode = node.CheckMapNode("server");
-
-            var server = new Server();
-
-            ParseMap(mapNode, server, ServerFixedFields, ServerPatternFields);
-
-            return server;
-        }
-
-        #endregion
-
-        #region ServerVariable
-
-        private static FixedFieldMap<ServerVariable> ServerVariableFixedFields = new FixedFieldMap<ServerVariable>
-        {
-            { "enum", (o,n) => { o.Enum =  n.CreateSimpleList<string>((s)=> s.GetScalarValue()); } },
-            { "default", (o,n) => { o.Default =  n.GetScalarValue(); } },
-            { "description", (o,n) => { o.Description = n.GetScalarValue();  } },
-        };
-
-        private static PatternFieldMap<ServerVariable> ServerVariablePatternFields = new PatternFieldMap<ServerVariable>
-        {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
-        };
-
-        public static ServerVariable LoadServerVariable(ParseNode node)
-        {
-            var mapNode = node.CheckMapNode("serverVariable");
-
-            var serverVariable = new ServerVariable();
-
-            ParseMap(mapNode, serverVariable, ServerVariableFixedFields, ServerVariablePatternFields);
-
-            return serverVariable;
-        }
-
-        #endregion
-
-        #region ComponentsObject
-
-        public static FixedFieldMap<Components> ComponentsFixedFields = new FixedFieldMap<Components> {
-            { "schemas", (o,n) => { o.Schemas = n.CreateMap(LoadSchema); } },
-            { "responses", (o,n) => o.Responses = n.CreateMap(LoadResponse) },
-            { "parameters", (o,n) => o.Parameters = n.CreateMap(LoadParameter) },
-            { "examples", (o,n) => o.Examples = n.CreateMap(mn => { return new AnyNode(mn); }) },
-            { "headers", (o,n) => o.Headers = n.CreateMap(LoadHeader) },
-            { "securitySchemes", (o,n) => o.SecuritySchemes = n.CreateMap(LoadSecurityScheme) },
-            { "links", (o,n) => o.Links = n.CreateMap(LoadLink) },
-            { "callbacks", (o,n) => o.Callbacks = n.CreateMap(LoadCallback) },
-         };
-
-        public static PatternFieldMap<Components> ComponentsPatternFields = new PatternFieldMap<Components>
-        {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
-        };
-
-        public static Components LoadComponents(ParseNode node)
-        {
-            var mapNode = node.CheckMapNode("components");
-            var components = new Components();
-
-            ParseMap(mapNode, components, ComponentsFixedFields, ComponentsPatternFields);
-
-            return components;
-        }
-
-        #endregion
-
+ 
         #region PathsObject
 
         public static FixedFieldMap<Paths> PathsFixedFields = new FixedFieldMap<Paths>
@@ -232,7 +194,7 @@ namespace Tavis.OpenApi
 
         public static PatternFieldMap<Paths> PathsPatternFields = new PatternFieldMap<Paths>
         {
-            { (s)=> s.StartsWith("/"), (o,k,n)=> o.PathItems.Add(k, LoadPathItem(n)    ) },
+            { (s)=> s.StartsWith("/"), (o,k,n)=> o.PathItems.Add(k, OpenApiV2.LoadPathItem(n)    ) },
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
         };
 
@@ -255,8 +217,7 @@ namespace Tavis.OpenApi
             // $ref
             { "summary", (o,n) => { o.Summary = n.GetScalarValue(); } },
             { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
-            { "server", (o,n) => { o.Server = LoadServer(n)    ; } },
-            { "parameters", (o,n) => { o.Parameters = n.CreateList(LoadParameter); } },
+            { "parameters", (o,n) => { o.Parameters = n.CreateList(OpenApiV2.LoadParameter); } },
 
         };
 
@@ -264,7 +225,7 @@ namespace Tavis.OpenApi
         {
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
             { (s)=> "get,put,post,delete,patch,options,head,patch,trace".Contains(s),
-                (o,k,n)=> o.Operations.Add(k, LoadOperation(n)    ) }
+                (o,k,n)=> o.Operations.Add(k, OpenApiV2.LoadOperation(n)    ) }
         };
 
 
@@ -291,13 +252,10 @@ namespace Tavis.OpenApi
             { "externalDocs", (o,n) => { o.ExternalDocs = LoadExternalDocs(n); } },
             { "operationId", (o,n) => { o.OperationId = n.GetScalarValue(); } },
             { "parameters", (o,n) => { o.Parameters = n.CreateList(LoadParameter); } },
-            { "requestBody", (o,n) => { o.RequestBody = LoadRequestBody(n)    ; } },
             { "responses", (o,n) => { o.Responses = n.CreateMap(LoadResponse); } },
-            { "callbacks", (o,n) => { o.Callbacks = n.CreateMap(LoadCallback); } },
             { "deprecated", (o,n) => { o.Deprecated = bool.Parse(n.GetScalarValue()); } },
             { "security", (o,n) => { o.Security = n.CreateList(LoadSecurityRequirement); } },
-            { "server", (o,n) => { o.Server = LoadServer(n); }},
-        };
+          };
 
         private static PatternFieldMap<Operation> OperationPatternFields = new PatternFieldMap<Operation>
         {
@@ -354,11 +312,10 @@ namespace Tavis.OpenApi
             { "required",       (o,n) => { o.Required = bool.Parse(n.GetScalarValue()); } },
             { "deprecated",     (o,n) => { o.Deprecated = bool.Parse(n.GetScalarValue()); } },
             { "allowEmptyValue", (o,n) => { o.AllowEmptyValue = bool.Parse(n.GetScalarValue()); } },
-            { "allowReserved",  (o,n) => { o.AllowReserved = bool.Parse(n.GetScalarValue()); } },
-            { "style",          (o,n) => { o.Style = n.GetScalarValue(); } },
-            { "schema",         (o,n) => { o.Schema = LoadSchema(n); } },
             { "examples",       (o,n) => { o.Examples = ((ListNode)n).Select(s=> new AnyNode(s)).ToList(); } },
             { "example",        (o,n) => { o.Example = new AnyNode(n); } },
+            { "schema", (o,n) => { o.Schema = LoadSchema(n); } },
+
         };
 
         private static PatternFieldMap<Parameter> ParameterPatternFields = new PatternFieldMap<Parameter>
@@ -384,108 +341,16 @@ namespace Tavis.OpenApi
             return parameter;
         }
         #endregion
-
-        #region RequestBody
-
-        private static FixedFieldMap<RequestBody> RequestBodyFixedFields = new FixedFieldMap<RequestBody>
-        {
-            { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
-            { "content", (o,n) => { o.Content = LoadContent(n);  } },
-            { "required", (o,n) => { o.Required = bool.Parse(n.GetScalarValue()); } },
-        };
-
-        private static PatternFieldMap<RequestBody> RequestBodyPatternFields = new PatternFieldMap<RequestBody>
-        {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
-        };
-
-        public static RequestBody LoadRequestBody(ParseNode node)
-        {
-            var mapNode = node.CheckMapNode("requestBody");
-
-            var requestBody = new RequestBody();
-            foreach (var property in mapNode)
-            {
-                property.ParseField(requestBody, RequestBodyFixedFields, RequestBodyPatternFields);
-            }
-
-            return requestBody;
-        }
-
-        #endregion
-
-        #region ContentObject
-
-        private static FixedFieldMap<Content> ContentFixedFields = new FixedFieldMap<Content>
-        {
-        };
-
-        private static PatternFieldMap<Content> ContentPatternFields = new PatternFieldMap<Content>
-        {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
-            { (s) => true, (o,k,n)=> o.MediaTypes.Add(k, LoadMediaType(n)    ) }
-        };
-
-        public static Content LoadContent(ParseNode node)
-        {
-            var mapNode = node.CheckMapNode("content");
-
-            var content = new Content();
-
-            ParseMap(mapNode, content, ContentFixedFields, ContentPatternFields);
-
-            return content;
-        }
-
-        #endregion
-
-        #region MediaTypeObject
-        private static FixedFieldMap<MediaType> MediaTypeFixedFields = new FixedFieldMap<MediaType>
-        {
-            { "schema", (o,n) => { o.Schema = LoadSchema(n); } },
-            { "examples", (o,n) => { o.Examples = ((ListNode)n).Select(s=> new AnyNode(s)).ToList(); } },
-            { "example", (o,n) => { o.Example = new AnyNode(n); } },
-            //Encoding
-        };
-
-        private static PatternFieldMap<MediaType> MediaTypePatternFields = new PatternFieldMap<MediaType>
-        {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
-        };
-
-        public static MediaType LoadMediaType(ParseNode node)
-        {
-            var mapNode = node.CheckMapNode("contentType");
-
-            var contentType = new MediaType();
-
-            ParseMap(mapNode, contentType, MediaTypeFixedFields, MediaTypePatternFields);
-
-            return contentType;
-        }
-
-        #endregion
-
-        #region EncodingObject
-
-        #endregion
-
-        #region EncodingPropertyObject
-
-        #endregion
-
-        #region ResponsesObject
-        // Validate status codes
-        #endregion
-
+        
         #region ResponseObject
 
         private static FixedFieldMap<Response> ResponseFixedFields = new FixedFieldMap<Response>
         {
             { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
             { "headers", (o,n) => { o.Headers = n.CreateMap(LoadHeader); } },
-            { "content", (o,n) => { o.Content = LoadContent(n); } },
-            { "links", (o,n) => { o.Links = n.CreateMap(LoadLink); } }
+            { "examples",       (o,n) => { /*o.Examples = ((ListNode)n).Select(s=> new AnyNode(s)).ToList();*/ } },
+            { "schema", (o,n) => { /*o.Content.Schema = LoadSchema(n); */} },
+
         };
 
         private static PatternFieldMap<Response> ResponsePatternFields = new PatternFieldMap<Response>
@@ -504,71 +369,6 @@ namespace Tavis.OpenApi
             }
 
             return response;
-        }
-
-        #endregion
-
-        #region CallbackObject
-        private static FixedFieldMap<Callback> CallbackFixedFields = new FixedFieldMap<Callback>
-        {
-        };
-
-        private static PatternFieldMap<Callback> CallbackPatternFields = new PatternFieldMap<Callback>
-        {
-             { (s)=> s.StartsWith("$"),
-                (o,k,n)=> o.PathItems.Add(k, LoadPathItem(n)    ) }
-        };
-
-        public static Callback LoadCallback(ParseNode node)
-        {
-            var mapNode = node.CheckMapNode("callback");
-
-            var refpointer = mapNode.GetReferencePointer();
-            if (refpointer != null)
-            {
-                return mapNode.GetReferencedObject<Callback>(refpointer);
-            }
-
-            var domainObject = new Callback();
-
-            ParseMap(mapNode, domainObject, CallbackFixedFields, CallbackPatternFields);
-
-            return domainObject;
-        }
-
-        #endregion
-
-        #region LinkObject
-
-        private static FixedFieldMap<Link> LinkFixedFields = new FixedFieldMap<Link>
-        {
-            { "href", (o,n) => { o.Href = n.GetScalarValue(); } },
-            { "operationId", (o,n) => { o.OperationId = n.GetScalarValue(); } },
-            { "parameters", (o,n) => { o.Parameters = n.CreateSimpleMap(VariableExpression.Load); } },
-            { "headers", (o,n) => { o.Headers = n.CreateMap(LoadHeader); } },
-            { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
-        };
-
-        private static PatternFieldMap<Link> LinkPatternFields = new PatternFieldMap<Link>
-        {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
-        };
-
-
-        public static Link LoadLink(ParseNode node)
-        {
-            var mapNode = node.CheckMapNode("link");
-            var link = new Link();
-
-            var refpointer = mapNode.GetReferencePointer();
-            if (refpointer != null)
-            {
-                return mapNode.GetReferencedObject<Link>(refpointer);
-            }
-
-            ParseMap(mapNode, link, LinkFixedFields, LinkPatternFields);
-
-            return link;
         }
 
         #endregion
@@ -759,13 +559,15 @@ namespace Tavis.OpenApi
 
         #endregion
 
+
+
         public static IReference LoadReference(string pointer, RootNode rootNode)
         {
             var parts = pointer.Split('/').Reverse().Take(2).ToArray();
             var refType = parts[1];
             IReference referencedObject = null;
 
-            if ("schemas|parameters|callbacks|securitySchemes|links".Contains(refType))
+            if ("definitions|parameters|securityDefinitions".Contains(refType))
             {
                 var refPointer = new JsonPointer(pointer);
                 ParseNode node = rootNode.Find(refPointer);
@@ -774,22 +576,15 @@ namespace Tavis.OpenApi
 
                 switch (refType)
                 {
-                    case "schemas":
+                    case "definitions":
                         referencedObject = OpenApiV3.LoadSchema(node);
                         break;
                     case "parameters":
                         referencedObject = OpenApiV3.LoadParameter(node);
                         break;
-                    case "callbacks":
-                        referencedObject = OpenApiV3.LoadCallback(node);
-                        break;
-                    case "securitySchemes":
+                    case "securityDefinitions":
                         referencedObject = OpenApiV3.LoadSecurityScheme(node);
                         break;
-                    case "links":
-                        referencedObject = OpenApiV3.LoadLink(node);
-                        break;
-
                 }
             }
             else if ("tags".Contains(refType))
@@ -822,6 +617,7 @@ namespace Tavis.OpenApi
 
             return referencedObject;
         }
+
 
         private static void ParseMap<T>(MapNode mapNode, T domainObject, FixedFieldMap<T> fixedFieldMap, PatternFieldMap<T> patternFieldMap, List<string> requiredFields  = null)
         {

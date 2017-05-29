@@ -43,8 +43,14 @@ namespace Tavis.OpenApi
             if (returnValue == null)
             {
                 returnValue = this.referenceLoader(pointer);
-                returnValue.Pointer = pointer;
-                referenceStore.Add(pointer, returnValue);
+                if (returnValue != null)
+                {
+                    returnValue.Pointer = pointer;
+                    referenceStore.Add(pointer, returnValue);
+                } else
+                {
+                    ParseErrors.Add(new OpenApiError(this.GetLocation(), $"Cannot resolve $ref {pointer}"));
+                }
             }
 
             return returnValue;

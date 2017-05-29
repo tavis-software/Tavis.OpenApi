@@ -36,7 +36,23 @@ namespace Tavis.OpenApi.Model
 
         public void Write(IParseNodeWriter writer)
         {
-            
+            writer.WriteStartMap();
+            writer.WriteStringProperty("type",this.Type);
+            switch(this.Type) {
+                case "http" :
+                    writer.WriteStringProperty("scheme", this.Scheme);
+                    writer.WriteStringProperty("bearerFormat", this.BearerFormat);
+                    break;
+                case "oauth2":
+                //writer.WriteStringProperty("scheme", this.Scheme);
+                case "apikey":
+                    writer.WriteStringProperty("in", this.In);
+                    writer.WriteStringProperty("name", this.Name);
+
+                    break;
+            }
+            writer.WriteEndMap();
+
         }
 
         public static void Write(IParseNodeWriter writer, SecurityScheme scheme)

@@ -66,8 +66,13 @@ namespace Tavis.OpenApi
                 {
                     writer.WriteStartMap();
                     writer.WritePropertyName(item.Key);
-
-                    parser(writer, item.Value);
+                    if (item.Value != null)
+                    {
+                        parser(writer, item.Value);
+                    } else
+                    {
+                        writer.WriteValue(null);
+                    }
                     writer.WriteEndMap();
                 }
             }

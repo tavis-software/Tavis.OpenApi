@@ -53,7 +53,7 @@ namespace Tavis.OpenApi.Model
 
         public static void Write(IParseNodeWriter writer, Parameter parameter)
         {
-            parameter.Write(writer);
+                parameter.Write(writer);
         }
     }
     }
