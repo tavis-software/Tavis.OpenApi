@@ -14,7 +14,7 @@ namespace Tavis.OpenApi.Model
 
         public Dictionary<string, Operation> Operations { get; set; } = new Dictionary<string, Operation>();
 
-        public Server Server { get; set; }
+        public List<Server> Servers { get; set; } = new List<Server>();
         public List<Parameter> Parameters { get; set; } = new List<Parameter>();
         public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
 
@@ -23,6 +23,19 @@ namespace Tavis.OpenApi.Model
             writer.WriteStartMap();
             writer.WriteStringProperty("summary", Summary);
             writer.WriteStringProperty("description", Description);
+            if (Parameters != null && Parameters.Count >0)
+            {
+                writer.WritePropertyName("parameters");
+                writer.WriteStartList();
+                foreach (var parameter in this.Parameters)
+                {
+                    parameter.Write(writer);
+                }
+                writer.WriteEndList();
+
+            }
+            writer.WriteList("servers", Servers, Server.Write);
+
             foreach (var operationPair in Operations)
             {
                 writer.WritePropertyName(operationPair.Key);

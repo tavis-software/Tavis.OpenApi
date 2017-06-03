@@ -9,7 +9,7 @@ namespace Tavis.OpenApi.Model
     {
 
         public string Description { get; set; }
-        public Content Content { get; set; }
+        public Dictionary<string, MediaType> Content { get; set; }
         public Dictionary<string, Header> Headers { get; set; }
         public Dictionary<string, Link> Links { get; set; }
         public Dictionary<string, string> Extensions { get; set; }
@@ -19,7 +19,7 @@ namespace Tavis.OpenApi.Model
             writer.WriteStartMap();
 
             writer.WriteStringProperty("description", Description);
-            writer.WriteObject("content", Content, Content.Write);
+            writer.WriteMap("content", Content, MediaType.Write);
 
             writer.WriteMap("headers", Headers, Header.Write);
             writer.WriteMap("links", Links, Link.Write);

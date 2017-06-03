@@ -10,7 +10,7 @@ namespace Tavis.OpenApi.Model
         public Dictionary<string, Schema> Schemas { get; set; } = new Dictionary<string, Schema>();
         public Dictionary<string, Response> Responses { get; set; } = new Dictionary<string, Response>();
         public Dictionary<string, Parameter> Parameters { get; set; } = new Dictionary<string, Parameter>();
-        public Dictionary<string, AnyNode> Examples { get; set; } = new Dictionary<string, AnyNode>();
+        public Dictionary<string, Example> Examples { get; set; } = new Dictionary<string, Example>();
         public Dictionary<string, RequestBody> RequestBodies { get; set; } = new Dictionary<string, RequestBody>();
         public Dictionary<string, Header> Headers { get; set; } = new Dictionary<string, Header>();
         public Dictionary<string, SecurityScheme> SecuritySchemes { get; set; } = new Dictionary<string, SecurityScheme>();
@@ -40,7 +40,7 @@ namespace Tavis.OpenApi.Model
             writer.WriteMap("schemas", Schemas, Schema.Write);
             writer.WriteMap("responses", Responses, Response.Write);
             writer.WriteMap("parameters", Parameters, Parameter.Write);
-            writer.WriteMap("examples", Examples, AnyNode.Write);
+            writer.WriteMap("examples", Examples, Example.Write);
             writer.WriteMap("requestBodies", RequestBodies, RequestBody.Write);
             writer.WriteMap("headers", Headers, Header.Write);
             writer.WriteMap("securitySchemes", SecuritySchemes, SecurityScheme.Write);

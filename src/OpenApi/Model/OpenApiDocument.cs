@@ -38,7 +38,7 @@ namespace Tavis.OpenApi.Model
             writer.WriteStartMap();
 
             writer.WritePropertyName("openapi");
-            writer.WriteValue("3.0.0-RC0");
+            writer.WriteValue("3.0.0");
 
             writer.WriteObject("info", Info, Info.Write);
             writer.WriteList("servers", Servers, Server.Write);
@@ -46,7 +46,10 @@ namespace Tavis.OpenApi.Model
             Paths.Write(writer);
             writer.WriteList("tags", Tags, Tag.Write);
             writer.WriteObject("components", Components, Components.Write);
-            writer.WriteObject("externalDocs", ExternalDocs, ExternalDocs.Write);
+            if (ExternalDocs.Url != null)
+            {
+                writer.WriteObject("externalDocs", ExternalDocs, ExternalDocs.Write);
+            }
             writer.WriteList("security", SecurityRequirements, SecurityRequirement.Write);
 
             writer.WriteEndMap();

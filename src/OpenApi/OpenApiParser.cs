@@ -71,7 +71,6 @@ namespace Tavis.OpenApi
                     return OpenApiV2.LoadReference(pointer, rootNode);
 
                 case "3.0.0":
-                case "3.0.0-RC0":
                     return OpenApiV3.LoadReference(pointer, rootNode);
 
                 default:

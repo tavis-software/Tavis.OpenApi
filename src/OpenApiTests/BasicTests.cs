@@ -59,7 +59,7 @@ namespace OpenApiTests
 
             Assert.Equal(2, parser.ParseErrors.Count);
             Assert.NotNull(parser.ParseErrors.Where(s=> s.ToString() == "`openapi` property does not match the required format major.minor.patch").FirstOrDefault());
-            Assert.NotNull(parser.ParseErrors.Where(s => s.ToString() == "title is a required property").FirstOrDefault());
+            Assert.NotNull(parser.ParseErrors.Where(s => s.ToString() == "title is a required property of #/info").FirstOrDefault());
 
         }
 

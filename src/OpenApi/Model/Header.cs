@@ -20,7 +20,7 @@ namespace Tavis.OpenApi.Model
         public Schema Schema { get; set; }
         public AnyNode Example { get; set; }
         public List<AnyNode> Examples { get; set; }
-        public Content Content { get; set; }
+        public Dictionary<string, MediaType> Content { get; set; }
 
         public Dictionary<string, string> Extensions { get; set; }
 
@@ -37,7 +37,7 @@ namespace Tavis.OpenApi.Model
             writer.WriteObject("schema", Schema, Schema.Write);
             writer.WriteList("examples", Examples, AnyNode.Write);
             writer.WriteObject("example", Example, AnyNode.Write);
-            writer.WriteObject("content", Content, Content.Write);
+            writer.WriteMap("content", Content, MediaType.Write);
 
             writer.WriteEndMap();
         }

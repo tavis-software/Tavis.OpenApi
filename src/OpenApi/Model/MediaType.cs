@@ -10,7 +10,7 @@ namespace Tavis.OpenApi.Model
     public class MediaType
     {
         public Schema Schema { get; set; }
-        public List<AnyNode> Examples { get; set; }
+        public Dictionary<string,Example> Examples { get; set; }
         public AnyNode Example { get; set; }
 
         public Dictionary<string, string> Extensions { get; set; }
@@ -21,7 +21,7 @@ namespace Tavis.OpenApi.Model
 
             writer.WriteObject("schema",Schema,Schema.Write);
             writer.WriteObject("example", Example, AnyNode.Write);
-            writer.WriteList("examples",Examples, AnyNode.Write);
+            writer.WriteMap("examples",Examples, Model.Example.Write);
 
             writer.WriteEndMap();
         }

@@ -19,7 +19,7 @@ namespace Tavis.OpenApi.Model
         public Dictionary<string, Callback> Callbacks { get; set; } = new Dictionary<string, Callback>();
         public bool Deprecated { get; set; }
         public List<SecurityRequirement> Security { get; set; } = new List<SecurityRequirement>();
-        public Server Server { get; set; }
+        public List<Server> Servers { get; set; } = new List<Server>();
         public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
 
 
@@ -38,7 +38,7 @@ namespace Tavis.OpenApi.Model
             writer.WriteMap<Callback>("callbacks", Callbacks, Callback.Write);
             writer.WriteBoolProperty("deprecated", Deprecated);
             writer.WriteList("security", Security, SecurityRequirement.Write);
-            writer.WriteObject("server",Server, Server.Write);
+            writer.WriteList("servers", Servers, Server.Write);
 
             writer.WriteEndMap();
         }

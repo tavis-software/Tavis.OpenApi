@@ -8,6 +8,7 @@ namespace Tavis.OpenApi.Model
     public class Schema : IReference
 
     {
+        public string Title { get; set; }
         public string Type { get; set; }
         public string Format { get; set; }
         public string Description { get; set; }
@@ -32,6 +33,7 @@ namespace Tavis.OpenApi.Model
         {
             writer.WriteStartMap();
 
+            writer.WriteStringProperty("title", Title);
             writer.WriteStringProperty("type", Type);
             writer.WriteStringProperty("format", Format);
             writer.WriteStringProperty("description", Description);
@@ -43,13 +45,15 @@ namespace Tavis.OpenApi.Model
             }
             if (Properties != null)
             {
+                writer.WritePropertyName("properties");
+                writer.WriteStartMap();
                 foreach (var prop in Properties)
                 {
                     writer.WritePropertyName(prop.Key);
                     prop.Value.Write(writer);
                 }
+                writer.WriteEndMap();
             }
-
 
             writer.WriteEndMap();
         }

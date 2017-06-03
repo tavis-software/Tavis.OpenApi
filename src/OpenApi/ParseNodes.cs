@@ -120,7 +120,7 @@ namespace Tavis.OpenApi
 
         public void Write(IParseNodeWriter writer)
         {
-
+            writer.WriteValue(node.ToString());
         }
 
         public static void Write(IParseNodeWriter writer, AnyNode node)

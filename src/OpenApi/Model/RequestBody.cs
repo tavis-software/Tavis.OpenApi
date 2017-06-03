@@ -11,7 +11,7 @@ namespace Tavis.OpenApi.Model
     {
         public string Description { get; set; }
         public Boolean Required { get; set; }
-        public Content Content { get; set; }
+        public Dictionary<string, MediaType> Content { get; set; }
         public Dictionary<string,string> Extensions { get; set; }
 
         public void Write(IParseNodeWriter writer)
@@ -20,7 +20,7 @@ namespace Tavis.OpenApi.Model
 
             writer.WriteStringProperty("description", Description);
             writer.WriteBoolProperty("required", Required);
-            writer.WriteObject("content", Content, Content.Write);
+            writer.WriteMap("content", Content, MediaType.Write);
 
             writer.WriteEndMap();
         }
