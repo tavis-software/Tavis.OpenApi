@@ -12,7 +12,14 @@ namespace Tavis.OpenApi
 
         public static void AddConsumes(this ParsingContext context, List<string> mediaTypes )
         {
+            var consumes = context.GetTempStorage<List<string>>("consumes");
+            if (consumes == null)
+            {
+                consumes = new List<string>();
+            }
+            consumes.AddRange(mediaTypes);
 
+            context.SetTempStorage("consumes", consumes);
         }
         public static void AddProduces(this ParsingContext context, List<string> mediaTypes)
         {
@@ -21,13 +28,13 @@ namespace Tavis.OpenApi
 
         #region OpenApiObject
         public static FixedFieldMap<OpenApiDocument> OpenApiFixedFields = new FixedFieldMap<OpenApiDocument> {
-            { "swagger", (o,n) => { o.Version = n.GetScalarValue(); } },
+       // We are importing into a V3 DOM     { "swagger", (o,n) => { o.Version = n.GetScalarValue(); } },
             { "info", (o,n) => o.Info = LoadInfo(n) },
-            { "consumes", (o,n) => n.Context.AddConsumes( n.CreateList<String>((s) => s.GetScalarValue()))},
-            { "produces", (o,n) => n.Context.AddProduces( n.CreateList<String>((s) => s.GetScalarValue()))},
-            { "host", (o,n) => MakeUrlFromHost(o.Servers,n.GetScalarValue()) },
-            { "basePath", (o,n) => MakeUrlFromBasePath(o.Servers,n.GetScalarValue()) },
-            { "schemes", (o,n) => MakeUrlFromSchemes(o.Servers,n.CreateList<String>((s) => { return null; }))},
+            { "consumes", (o,n) => n.Context.SetTempStorage("globalconsumes", n.CreateSimpleList<String>((s) => s.GetScalarValue()))},
+            { "produces", (o,n) => n.Context.SetTempStorage("globalproduces", n.CreateSimpleList<String>((s) => s.GetScalarValue()))},
+            { "host", (o,n) => n.Context.SetTempStorage("host", n.GetScalarValue()) },
+            { "basePath", (o,n) => n.Context.SetTempStorage("basePath",n.GetScalarValue()) },
+            { "schemes", (o,n) => n.Context.SetTempStorage("schemes", n.CreateSimpleList<String>((s) => { return s.GetScalarValue(); })) },
             //{ "servers", (o,n) => o.Servers = n.CreateList(LoadServer) },
             { "paths", (o,n) => o.Paths = LoadPaths(n) },
             { "definition", (o,n) => o.Components.Schemas = n.CreateMap(LoadSchema)  },
@@ -39,32 +46,19 @@ namespace Tavis.OpenApi
             { "security", (o,n) => o.SecurityRequirements = n.CreateList(LoadSecurityRequirement)}
             };
 
-        private static void MakeUrlFromSchemes(List<Server> servers, List<string> list)
-        {
-            // add schemes.
-        }
 
-        private static void MakeUrlFromBasePath(List<Server> servers, string basePath)
-        {
-            if (servers.Count() == 0)
-            {
-                servers.Add(new Server());
-            }
-            foreach (var server in servers)
-            {
-                server.Url += basePath;
-            }
-        }
 
-        private static void MakeUrlFromHost(List<Server> servers, string host)
+        private static void MakeServers(List<Server> servers, ParsingContext context)
         {
-            if (servers.Count() == 0 )
+            string host = context.GetTempStorage<string>("host");
+            string basePath = context.GetTempStorage<string>("basePath");
+            List<string> schemes = context.GetTempStorage<List<string>>("schemes");
+
+            foreach (var scheme in schemes)
             {
-                servers.Add(new Server());
-            }
-            foreach (var server in servers)
-            {
-                server.Url = host;
+                var server = new Server();
+                server.Url = scheme + "://" + (host ?? "example.org/")+ (basePath ?? "/");
+                servers.Add(server);
             }
         }
 
@@ -94,6 +88,9 @@ namespace Tavis.OpenApi
             {
                 rootMap.Context.ParseErrors.Add(new OpenApiError("", "`paths` is a required property"));
             }
+
+            // Post Process OpenApi Object
+            MakeServers(openApidoc.Servers, rootMap.Context);
 
             return openApidoc;
         }
@@ -252,6 +249,8 @@ namespace Tavis.OpenApi
             { "externalDocs", (o,n) => { o.ExternalDocs = LoadExternalDocs(n); } },
             { "operationId", (o,n) => { o.OperationId = n.GetScalarValue(); } },
             { "parameters", (o,n) => { o.Parameters = n.CreateList(LoadParameter); } },
+            { "consumes", (o,n) => n.Context.SetTempStorage("operationconsumes", n.CreateSimpleList<String>((s) => s.GetScalarValue()))},
+            { "produces", (o,n) => n.Context.SetTempStorage("operationproduces", n.CreateSimpleList<String>((s) => s.GetScalarValue()))},
             { "responses", (o,n) => { o.Responses = n.CreateMap(LoadResponse); } },
             { "deprecated", (o,n) => { o.Deprecated = bool.Parse(n.GetScalarValue()); } },
             { "security", (o,n) => { o.Security = n.CreateList(LoadSecurityRequirement); } },
@@ -269,6 +268,7 @@ namespace Tavis.OpenApi
             Operation operation = new Operation();
 
             ParseMap(mapNode, operation, OperationFixedFields, OperationPatternFields);
+
 
             return operation;
         }
@@ -307,7 +307,7 @@ namespace Tavis.OpenApi
         private static FixedFieldMap<Parameter> ParameterFixedFields = new FixedFieldMap<Parameter>
         {
             { "name",           (o,n) => { o.Name = n.GetScalarValue(); } },
-            { "in",             (o,n) => { o.In = (InEnum)Enum.Parse(typeof(InEnum), n.GetScalarValue()); } },
+            { "in",             (o,n) => { ProcessIn(o,n); } },
             { "description",    (o,n) => { o.Description = n.GetScalarValue(); } },
             { "required",       (o,n) => { o.Required = bool.Parse(n.GetScalarValue()); } },
             { "deprecated",     (o,n) => { o.Deprecated = bool.Parse(n.GetScalarValue()); } },
@@ -317,6 +317,25 @@ namespace Tavis.OpenApi
             { "schema", (o,n) => { o.Schema = LoadSchema(n); } },
 
         };
+
+        private static void ProcessIn(Parameter o, ParseNode n)
+        {
+
+            string value = n.GetScalarValue();
+            switch(value)
+            {
+                case "body":
+                    n.Context.SetTempStorage("requestBody", n);
+                    break;
+                case "form":
+                    n.Context.SetTempStorage("requestBodyForm", n);
+                    break;
+                default:
+                    o.In = (InEnum)Enum.Parse(typeof(InEnum), value);
+                    break;
+            }
+            
+        }
 
         private static PatternFieldMap<Parameter> ParameterPatternFields = new PatternFieldMap<Parameter>
         {
@@ -338,6 +357,8 @@ namespace Tavis.OpenApi
 
             ParseMap(mapNode, parameter, ParameterFixedFields, ParameterPatternFields);
 
+            // 
+
             return parameter;
         }
         #endregion
@@ -349,7 +370,7 @@ namespace Tavis.OpenApi
             { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
             { "headers", (o,n) => { o.Headers = n.CreateMap(LoadHeader); } },
             { "examples",       (o,n) => { /*o.Examples = ((ListNode)n).Select(s=> new AnyNode(s)).ToList();*/ } },
-            { "schema", (o,n) => { /*o.Content.Schema = LoadSchema(n); */} },
+            { "schema", (o,n) => { n.Context.SetTempStorage("operationschema", LoadSchema(n)); } },
 
         };
 
@@ -368,7 +389,26 @@ namespace Tavis.OpenApi
                 property.ParseField(response, ResponseFixedFields, ResponsePatternFields);
             }
 
+            ProcessProduces(response, node.Context);
+
             return response;
+        }
+
+        private static void ProcessProduces(Response response, ParsingContext context)
+        {
+
+            var produces = (context.GetTempStorage<List<string>>("globalproduces") ?? new List<string>())
+                .Union(context.GetTempStorage<List<string>>("operationproduces") ?? new List<string>());
+
+            response.Content = new Dictionary<string, MediaType>();
+            foreach (var mt in produces)
+            {
+                response.Content.Add(mt, new MediaType()
+                {
+                    Schema = context.GetTempStorage<Schema>("operationschema")
+                });
+            }
+
         }
 
         #endregion
@@ -564,12 +604,12 @@ namespace Tavis.OpenApi
         public static IReference LoadReference(string pointer, RootNode rootNode)
         {
             var parts = pointer.Split('/').Reverse().Take(2).ToArray();
-            var refType = parts[1];
+            var refType = "definitions";
             IReference referencedObject = null;
 
-            if ("definitions|parameters|securityDefinitions".Contains(refType))
+            if ("definitions".Contains(refType))
             {
-                var refPointer = new JsonPointer(pointer);
+                var refPointer = new JsonPointer("/definitions/" + pointer);
                 ParseNode node = rootNode.Find(refPointer);
                 if (node == null) return null;
                 node.DomainType = refType;

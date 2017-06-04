@@ -12,6 +12,8 @@ namespace Tavis.OpenApi
         public string Version { get; set; }
         public List<OpenApiError> ParseErrors { get; set; } = new List<OpenApiError>();
 
+        private Dictionary<string, object> tempStorage = new Dictionary<string, object>();
+
         private Dictionary<string, IReference> referenceStore = new Dictionary<string, IReference>();
 
         private Func<string, IReference> referenceLoader;
@@ -56,7 +58,19 @@ namespace Tavis.OpenApi
             return returnValue;
         }
 
-        
+        public void SetTempStorage(string key, object value)
+        {
+            this.tempStorage[key] = value;
+        }
+        public T GetTempStorage<T>(string key)  where T:class
+        {
+            object value;
+            if (this.tempStorage.TryGetValue(key,out value))
+            {
+                return (T)value;
+            }
+            return null;
+        }
     }
 
 

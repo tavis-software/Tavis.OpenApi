@@ -14,7 +14,7 @@ namespace Tavis.OpenApi.Model
             writer.WriteStartMap();
 
             writer.WriteStringProperty("name", Name);
-            writer.WriteStringProperty("url", Url.OriginalString);
+            writer.WriteStringProperty("url", Url?.OriginalString);
 
             writer.WriteEndMap();
         }
