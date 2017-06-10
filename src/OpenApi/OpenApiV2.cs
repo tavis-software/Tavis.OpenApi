@@ -10,21 +10,6 @@ namespace Tavis.OpenApi
     public static class OpenApiV2
     {
 
-        public static void AddConsumes(this ParsingContext context, List<string> mediaTypes )
-        {
-            var consumes = context.GetTempStorage<List<string>>("consumes");
-            if (consumes == null)
-            {
-                consumes = new List<string>();
-            }
-            consumes.AddRange(mediaTypes);
-
-            context.SetTempStorage("consumes", consumes);
-        }
-        public static void AddProduces(this ParsingContext context, List<string> mediaTypes)
-        {
-
-        }
 
         #region OpenApiObject
         public static FixedFieldMap<OpenApiDocument> OpenApiFixedFields = new FixedFieldMap<OpenApiDocument> {
@@ -37,7 +22,7 @@ namespace Tavis.OpenApi
             { "schemes", (o,n) => n.Context.SetTempStorage("schemes", n.CreateSimpleList<String>((s) => { return s.GetScalarValue(); })) },
             //{ "servers", (o,n) => o.Servers = n.CreateList(LoadServer) },
             { "paths", (o,n) => o.Paths = LoadPaths(n) },
-            { "definition", (o,n) => o.Components.Schemas = n.CreateMap(LoadSchema)  },
+            { "definitions", (o,n) => o.Components.Schemas = n.CreateMap(LoadSchema)  },
             { "parameters", (o,n) => o.Components.Parameters = n.CreateMap(LoadParameter) },
             { "responses", (o,n) => o.Components.Responses = n.CreateMap(LoadResponse) },
             { "securityDefinitions", (o,n) => o.Components.SecuritySchemes = n.CreateMap(LoadSecurityScheme) },
@@ -314,9 +299,21 @@ namespace Tavis.OpenApi
             { "allowEmptyValue", (o,n) => { o.AllowEmptyValue = bool.Parse(n.GetScalarValue()); } },
             { "examples",       (o,n) => { o.Examples = ((ListNode)n).Select(s=> new AnyNode(s)).ToList(); } },
             { "example",        (o,n) => { o.Example = new AnyNode(n); } },
-            { "schema", (o,n) => { o.Schema = LoadSchema(n); } },
+            { "type", (o,n) => { GetOrCreateSchema(n.Context).Type = n.GetScalarValue(); } },
+            { "format", (o,n) => { GetOrCreateSchema(n.Context).Format = n.GetScalarValue(); } },
 
         };
+
+        private static Schema GetOrCreateSchema(ParsingContext context)
+        {
+            var schema = context.GetTempStorage<Schema>("schema");
+            if (schema == null)
+            {
+                schema = new Schema();
+                context.SetTempStorage("schema", schema);
+            }
+            return schema;
+        }
 
         private static void ProcessIn(Parameter o, ParseNode n)
         {
@@ -357,7 +354,11 @@ namespace Tavis.OpenApi
 
             ParseMap(mapNode, parameter, ParameterFixedFields, ParameterPatternFields);
 
-            // 
+            var schema = node.Context.GetTempStorage<Schema>("schema");
+            if (schema != null)
+            {
+                parameter.Schema = schema;  
+            }
 
             return parameter;
         }
@@ -604,7 +605,16 @@ namespace Tavis.OpenApi
         public static IReference LoadReference(string pointer, RootNode rootNode)
         {
             var parts = pointer.Split('/').Reverse().Take(2).ToArray();
-            var refType = "definitions";
+
+            string refType;
+            if ("tags".Contains(parts.Last()))
+            {
+                refType = parts.Last();
+            } else
+            {
+                refType = "definitions";
+            }
+
             IReference referencedObject = null;
 
             if ("definitions".Contains(refType))

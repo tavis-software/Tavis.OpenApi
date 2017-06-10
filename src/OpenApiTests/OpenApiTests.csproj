@@ -70,6 +70,7 @@
     <EmbeddedResource Include="Samples\CallbackSample.yaml" />
     <Compile Include="SchemaTests.cs" />
     <EmbeddedResource Include="Samples\CallbackSampleWithRef.yaml" />
+    <None Include="V2Tests\V2Samples\petstore.yaml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Samples\Simplest.yaml" />

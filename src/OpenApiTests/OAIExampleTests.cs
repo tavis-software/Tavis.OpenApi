@@ -12,7 +12,6 @@ namespace OpenApiTests
 {
     public class OAIExampleTests
     {
-        public const string ExamplesFolder = "C:\\Users\\Darrel\\Documents\\Source\\GitHub\\OAI\\OpenAPI-Specification\\";
         HttpClient client;
         public OAIExampleTests()
         {
