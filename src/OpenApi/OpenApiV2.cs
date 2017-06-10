@@ -13,7 +13,7 @@ namespace Tavis.OpenApi
 
         #region OpenApiObject
         public static FixedFieldMap<OpenApiDocument> OpenApiFixedFields = new FixedFieldMap<OpenApiDocument> {
-       // We are importing into a V3 DOM     { "swagger", (o,n) => { o.Version = n.GetScalarValue(); } },
+            { "swagger", (o,n) => { /* Ignore it */} },
             { "info", (o,n) => o.Info = LoadInfo(n) },
             { "consumes", (o,n) => n.Context.SetTempStorage("globalconsumes", n.CreateSimpleList<String>((s) => s.GetScalarValue()))},
             { "produces", (o,n) => n.Context.SetTempStorage("globalproduces", n.CreateSimpleList<String>((s) => s.GetScalarValue()))},
@@ -357,7 +357,8 @@ namespace Tavis.OpenApi
             var schema = node.Context.GetTempStorage<Schema>("schema");
             if (schema != null)
             {
-                parameter.Schema = schema;  
+                parameter.Schema = schema;
+                node.Context.SetTempStorage("schema", null);
             }
 
             return parameter;
@@ -422,7 +423,9 @@ namespace Tavis.OpenApi
             { "deprecated", (o,n) => { o.Deprecated = bool.Parse(n.GetScalarValue()); } },
             { "allowReserved", (o,n) => { o.AllowReserved = bool.Parse(n.GetScalarValue()); } },
             { "style", (o,n) => { o.Style = n.GetScalarValue(); } },
-            { "schema", (o,n) => { o.Schema = LoadSchema(n); } }
+            { "type", (o,n) => { GetOrCreateSchema(n.Context).Type = n.GetScalarValue(); } },
+            { "format", (o,n) => { GetOrCreateSchema(n.Context).Format = n.GetScalarValue(); } },
+
         };
 
         private static PatternFieldMap<Header> HeaderPatternFields = new PatternFieldMap<Header>
@@ -438,6 +441,13 @@ namespace Tavis.OpenApi
             foreach (var property in mapNode)
             {
                 property.ParseField(header, HeaderFixedFields, HeaderPatternFields);
+            }
+
+            var schema = node.Context.GetTempStorage<Schema>("schema");
+            if (schema != null)
+            {
+                header.Schema = schema;
+                node.Context.SetTempStorage("schema", null);
             }
 
             return header;
@@ -619,7 +629,7 @@ namespace Tavis.OpenApi
 
             if ("definitions".Contains(refType))
             {
-                var refPointer = new JsonPointer("/definitions/" + pointer);
+                var refPointer = new JsonPointer(pointer.StartsWith("#") ? pointer: "/definitions/" + parts[0]);
                 ParseNode node = rootNode.Find(refPointer);
                 if (node == null) return null;
                 node.DomainType = refType;

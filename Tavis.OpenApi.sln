@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.26228.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenApi", "src\OpenApi\OpenApi.csproj", "{A8E50143-69B2-472A-9D45-3F9A05D13202}"
 EndProject
@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenApiWorkbench", "src\OpenApiWorkbench\OpenApiWorkbench.csproj", "{6A5E91E5-0441-46EE-AEB9-8334981B7F08}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenApiService", "src\OpenApiService\OpenApiService.csproj", "{802FD617-812C-4098-A750-D48CA3ECA0F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +37,10 @@ Global
 		{6A5E91E5-0441-46EE-AEB9-8334981B7F08}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A5E91E5-0441-46EE-AEB9-8334981B7F08}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A5E91E5-0441-46EE-AEB9-8334981B7F08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{802FD617-812C-4098-A750-D48CA3ECA0F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{802FD617-812C-4098-A750-D48CA3ECA0F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{802FD617-812C-4098-A750-D48CA3ECA0F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{802FD617-812C-4098-A750-D48CA3ECA0F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
