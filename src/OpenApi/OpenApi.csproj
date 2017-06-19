@@ -62,6 +62,7 @@
     <Compile Include="Model\Parameter.cs" />
     <Compile Include="Model\PathItem.cs" />
     <Compile Include="Model\VariableExpression.cs" />
+    <Compile Include="OpenAPIDiff.cs" />
     <Compile Include="OpenApiError.cs" />
     <Compile Include="OpenApiParser.cs" />
     <Compile Include="OpenApiV2.cs" />

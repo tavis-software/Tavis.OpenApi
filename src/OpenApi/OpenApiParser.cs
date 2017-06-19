@@ -20,6 +20,16 @@ namespace Tavis.OpenApi
             }
         }
 
+        public OpenApiDocument Parse(string document)
+        {
+            var ms = new MemoryStream();
+            var writer = new StreamWriter(ms);
+            writer.Write(document);
+            writer.Flush();
+            ms.Position = 0;
+            return Parse(ms);
+        }
+
         public OpenApiDocument Parse(Stream stream)
         {
             this.context = new ParsingContext(LoadReference);

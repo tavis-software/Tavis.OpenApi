@@ -20,6 +20,8 @@ namespace Tavis.OpenApi.Model
                     throw new DomainParseException("`openapi` property does not match the required format major.minor.patch");
                 }
             } } // Swagger
+
+
         public Info Info { get; set; } = new Info();
         public List<Server> Servers { get; set; } = new List<Server>();
         public List<SecurityRequirement> SecurityRequirements { get; set; }
@@ -43,9 +45,18 @@ namespace Tavis.OpenApi.Model
             writer.WriteObject("info", Info, Info.Write);
             writer.WriteList("servers", Servers, Server.Write);
             writer.WritePropertyName("paths");
-            Paths.Write(writer);
+            if (Paths.PathItems.Count() > 0)
+            {
+                Paths.Write(writer);
+            } else
+            {
+                writer.WriteValue("{}");
+            }
             writer.WriteList("tags", Tags, Tag.Write);
-            writer.WriteObject("components", Components, Components.Write);
+            if (!Components.IsEmpty())
+            {
+                writer.WriteObject("components", Components, Components.Write);
+            }
             if (ExternalDocs.Url != null)
             {
                 writer.WriteObject("externalDocs", ExternalDocs, ExternalDocs.Write);
@@ -54,6 +65,18 @@ namespace Tavis.OpenApi.Model
 
             writer.WriteEndMap();
         }
+
+        internal void Diff(List<OpenApiDifference> diffs, OpenApiDocument source)
+        {
+            // need some kind of context object for tracking where the diffs are found
+
+            if (this.Version != source.Version)
+            {
+
+            }
+        }
+
+
     }
 
 

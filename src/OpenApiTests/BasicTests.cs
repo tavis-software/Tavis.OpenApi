@@ -75,7 +75,27 @@ namespace OpenApiTests
 
         }
 
+        [Fact]
+        public void InlineExample()
+        {
 
+            var parser = new OpenApiParser();
+            var openApiDoc = parser.Parse(@"
+                    openapi: 3.0.0
+                    info:
+                        title: A simple inline example
+                        version: 1.0.0
+                    paths:
+                      /api/home:
+                        get:
+                          responses:
+                            200:
+                              description: A home document
+                    ");
+
+            Assert.Equal("3.0.0", openApiDoc.Version);
+
+        }
 
 
     }

@@ -39,11 +39,14 @@ namespace Tavis.OpenApi
             string basePath = context.GetTempStorage<string>("basePath");
             List<string> schemes = context.GetTempStorage<List<string>>("schemes");
 
-            foreach (var scheme in schemes)
+            if (schemes != null)
             {
-                var server = new Server();
-                server.Url = scheme + "://" + (host ?? "example.org/")+ (basePath ?? "/");
-                servers.Add(server);
+                foreach (var scheme in schemes)
+                {
+                    var server = new Server();
+                    server.Url = scheme + "://" + (host ?? "example.org/") + (basePath ?? "/");
+                    servers.Add(server);
+                }
             }
         }
 
