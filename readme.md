@@ -2,6 +2,26 @@
 
 This library is a parser for the [OpenAPI Specification](https://openapis.org/).  The model is based around OpenAPI 3.0 specification.
 
+## Simple Example
+
+```csharp
+            var parser = new OpenApiParser();
+            var openApiDoc = parser.Parse(@"
+                    openapi: 3.0.0
+                    info:
+                        title: A simple inline example
+                        version: 1.0.0
+                    paths:
+                      /api/home:
+                        get:
+                          responses:
+                            200:
+                              description: A home document
+                    ");
+
+            Assert.Equal("3.0.0", openApiDoc.Version);
+```
+
 ## Goals
 
 - Import and export OpenAPI specification in both YAML and JSON formats.
