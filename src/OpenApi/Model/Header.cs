@@ -28,12 +28,12 @@ namespace Tavis.OpenApi.Model
         {
             writer.WriteStartMap();
             writer.WriteStringProperty("description", Description);
-            writer.WriteBoolProperty("required", Required);
-            writer.WriteBoolProperty("deprecated", Deprecated);
-            writer.WriteBoolProperty("allowEmptyValue", AllowEmptyValue);
+            writer.WriteBoolProperty("required", Required,false);
+            writer.WriteBoolProperty("deprecated", Deprecated,false);
+            writer.WriteBoolProperty("allowEmptyValue", AllowEmptyValue,false);
             writer.WriteStringProperty("style", Style);
-            writer.WriteBoolProperty("explode", Explode);
-            writer.WriteBoolProperty("allowReserved", AllowReserved);
+            writer.WriteBoolProperty("explode", Explode,false);
+            writer.WriteBoolProperty("allowReserved", AllowReserved,false);
             writer.WriteObject("schema", Schema, Schema.Write);
             writer.WriteList("examples", Examples, AnyNode.Write);
             writer.WriteObject("example", Example, AnyNode.Write);

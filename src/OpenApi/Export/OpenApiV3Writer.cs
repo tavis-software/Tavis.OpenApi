@@ -87,22 +87,31 @@ namespace Tavis.OpenApi
                 writer.WriteValue(value);
             }
         }
-        public static void WriteBoolProperty(this IParseNodeWriter writer, string name, bool value)
+        public static void WriteBoolProperty(this IParseNodeWriter writer, string name, bool value, bool? defaultValue = null)
         {
-            writer.WritePropertyName(name);
-            writer.WriteValue(value);
+            if (defaultValue == null || value != defaultValue)
+            {
+                writer.WritePropertyName(name);
+                writer.WriteValue(value);
+            }
         }
 
-        public static void WriteNumberProperty(this IParseNodeWriter writer, string name, decimal value)
+        public static void WriteNumberProperty(this IParseNodeWriter writer, string name, decimal value, decimal? defaultValue = null)
         {
-            writer.WritePropertyName(name);
-            writer.WriteValue(value);
+            if (defaultValue == null || value != defaultValue)
+            {
+                writer.WritePropertyName(name);
+                writer.WriteValue(value);
+            }
         }
 
-        public static void WriteNumberProperty(this IParseNodeWriter writer, string name, int value)
+        public static void WriteNumberProperty(this IParseNodeWriter writer, string name, int value, int? defaultValue = null)
         {
-            writer.WritePropertyName(name);
-            writer.WriteValue(value);
+            if (defaultValue == null || value != defaultValue)
+            {
+                writer.WritePropertyName(name);
+                writer.WriteValue(value);
+            }
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Tavis.OpenApi.Model
         public InEnum In { get; set; }
         public string Description { get; set; }
         public bool Required { get; set; } = false;
-        public bool Deprecated { get; set; }
+        public bool Deprecated { get; set; } = false;
         public bool AllowEmptyValue { get; set; } = false;
         public string Style { get; set; }
         public bool Explode { get; set; }
@@ -38,12 +38,12 @@ namespace Tavis.OpenApi.Model
             writer.WriteStringProperty("name", Name);
             writer.WriteStringProperty("in", In.ToString());
             writer.WriteStringProperty("description", Description);
-            writer.WriteBoolProperty("required", Required);
-            writer.WriteBoolProperty("deprecated", Deprecated);
-            writer.WriteBoolProperty("allowEmptyValue", AllowEmptyValue);
+            writer.WriteBoolProperty("required", Required, false);
+            writer.WriteBoolProperty("deprecated", Deprecated, false);
+            writer.WriteBoolProperty("allowEmptyValue", AllowEmptyValue, false);
             writer.WriteStringProperty("style", Style);
-            writer.WriteBoolProperty("explode", Explode);
-            writer.WriteBoolProperty("allowReserved", AllowReserved);
+            writer.WriteBoolProperty("explode", Explode,false);
+            writer.WriteBoolProperty("allowReserved", AllowReserved, false);
             writer.WriteObject("schema", Schema, Schema.Write);
             writer.WriteList("examples", Examples, AnyNode.Write);
             writer.WriteObject("example", Example, AnyNode.Write);

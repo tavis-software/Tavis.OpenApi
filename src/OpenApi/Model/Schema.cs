@@ -38,6 +38,17 @@ namespace Tavis.OpenApi.Model
             writer.WriteStringProperty("format", Format);
             writer.WriteStringProperty("description", Description);
 
+            if (Required != null && Required.Length > 0)
+            {
+                writer.WritePropertyName("required");
+                writer.WriteStartList();
+                foreach (var name in Required)
+                {
+                    writer.WriteValue(name);
+                }
+                writer.WriteEndList();
+            }
+
             if (Items != null)
             {
                 writer.WritePropertyName("items");

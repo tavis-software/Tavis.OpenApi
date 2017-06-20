@@ -17,7 +17,9 @@ namespace Tavis.OpenApi.Model
         public RequestBody RequestBody { get; set; }
         public Dictionary<string, Response> Responses { get; set; } = new Dictionary<string, Response>();
         public Dictionary<string, Callback> Callbacks { get; set; } = new Dictionary<string, Callback>();
-        public bool Deprecated { get; set; }
+
+        const bool DeprecatedDefault = false;
+        public bool Deprecated { get; set; } = DeprecatedDefault;
         public List<SecurityRequirement> Security { get; set; } = new List<SecurityRequirement>();
         public List<Server> Servers { get; set; } = new List<Server>();
         public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
@@ -36,7 +38,7 @@ namespace Tavis.OpenApi.Model
             writer.WriteObject("requestBody",RequestBody, Model.RequestBody.Write);
             writer.WriteMap<Response>("responses", Responses, Response.Write);
             writer.WriteMap<Callback>("callbacks", Callbacks, Callback.Write);
-            writer.WriteBoolProperty("deprecated", Deprecated);
+            writer.WriteBoolProperty("deprecated", Deprecated, DeprecatedDefault);
             writer.WriteList("security", Security, SecurityRequirement.Write);
             writer.WriteList("servers", Servers, Server.Write);
 
