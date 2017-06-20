@@ -26,7 +26,7 @@ namespace Tavis.OpenApi.Model
         public void Write(IParseNodeWriter writer)
         {
             writer.WriteStartMap();
-            writer.WriteList("tags", Tags, Tag.Write);
+            writer.WriteList("tags", Tags, Tag.WriteRef);
             writer.WriteStringProperty("summary", Summary);
             writer.WriteStringProperty("description", Description);
             writer.WriteObject("externalDocs", ExternalDocs, ExternalDocs.Write);

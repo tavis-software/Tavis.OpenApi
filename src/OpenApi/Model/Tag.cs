@@ -33,10 +33,18 @@ namespace Tavis.OpenApi.Model
             writer.WriteStringProperty("description", Description);
             writer.WriteEndMap();
         }
+        public void WriteRef(IParseNodeWriter writer)
+        {
+            writer.WriteValue(Name);
+        }
 
         public static void Write(IParseNodeWriter writer, Tag tag)
         {
             tag.Write(writer);
+        }
+        public static void WriteRef(IParseNodeWriter writer, Tag tag)
+        {
+            tag.WriteRef(writer);
         }
     }
 }
