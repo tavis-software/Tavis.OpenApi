@@ -52,7 +52,7 @@ namespace Tavis.OpenApi
         public static PatternFieldMap<OpenApiDocument> OpenApiPatternFields = new PatternFieldMap<OpenApiDocument>
         {
             // We have no semantics to verify X- nodes, therefore treat them as just values.
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, ((ValueNode)n).GetScalarValue()) }
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) }
         };
 
         public static OpenApiDocument LoadOpenApi(RootNode rootNode)
@@ -245,7 +245,7 @@ namespace Tavis.OpenApi
 
         private static PatternFieldMap<Operation> OperationPatternFields = new PatternFieldMap<Operation>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) },
         };
 
         internal static Operation LoadOperation(ParseNode node)
@@ -344,7 +344,7 @@ namespace Tavis.OpenApi
 
         private static PatternFieldMap<Parameter> ParameterPatternFields = new PatternFieldMap<Parameter>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) },
         };
 
 
@@ -561,7 +561,7 @@ namespace Tavis.OpenApi
 
         private static PatternFieldMap<Schema> SchemaPatternFields = new PatternFieldMap<Schema>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) }
         };
 
 
@@ -602,12 +602,12 @@ namespace Tavis.OpenApi
             { "flow", (o,n) => { o.Flow = n.GetScalarValue();  } },
             { "authorizationUrl", (o,n) => { o.AuthorizationUrl = new Uri(n.GetScalarValue(), UriKind.RelativeOrAbsolute);  } },
             { "tokenUrl", (o,n) => { o.TokenUrl = new Uri(n.GetScalarValue(), UriKind.RelativeOrAbsolute);  } },
-            { "scopes", (o,n) => { o.Scopes= n.CreateMap<string>(v => v.GetScalarValue()  ); } },
+            { "scopes", (o,n) => { o.Scopes= n.CreateSimpleMap<string>(v => v.GetScalarValue()  ); } },
         };
 
         private static PatternFieldMap<SecurityScheme> SecuritySchemePatternFields = new PatternFieldMap<SecurityScheme>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) }
         };
 
         public static SecurityScheme LoadSecurityScheme(ParseNode node)
@@ -636,8 +636,13 @@ namespace Tavis.OpenApi
             foreach (var property in mapNode)
             {
                 var scheme = SecurityScheme.LoadByReference(new ValueNode(mapNode.Context, property.Name));
-
-                obj.Schemes.Add(scheme, property.Value.CreateSimpleList<string>(n2 => n2.GetScalarValue()));
+                if (scheme != null)
+                {
+                    obj.Schemes.Add(scheme, property.Value.CreateSimpleList<string>(n2 => n2.GetScalarValue()));
+                } else
+                {
+                    node.Context.ParseErrors.Add(new OpenApiError(node.Context.GetLocation(), $"Scheme {property.Name} is not found"));
+                }
             }
             return obj;
         }
@@ -651,7 +656,7 @@ namespace Tavis.OpenApi
             var parts = pointer.Split('/').Reverse().Take(2).ToArray();
 
             string refType;
-            if ("tags".Contains(parts.Last()))
+            if ("securityDefinitions|parameters|tags".Contains(parts.Last()))
             {
                 refType = parts.Last();
             } else
@@ -661,7 +666,7 @@ namespace Tavis.OpenApi
 
             IReference referencedObject = null;
 
-            if ("definitions".Contains(refType))
+            if ("securityDefinitions|parameters|definitions".Contains(refType))
             {
                 var refPointer = new JsonPointer(pointer.StartsWith("#") ? pointer: "/definitions/" + parts[0]);
                 ParseNode node = rootNode.Find(refPointer);

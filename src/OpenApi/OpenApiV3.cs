@@ -26,7 +26,7 @@ namespace Tavis.OpenApi
         public static PatternFieldMap<OpenApiDocument> OpenApiPatternFields = new PatternFieldMap<OpenApiDocument>
         {
             // We have no semantics to verify X- nodes, therefore treat them as just values.
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, ((ValueNode)n).GetScalarValue()) }
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) }
         };
 
         public static OpenApiDocument LoadOpenApi(RootNode rootNode)
@@ -299,7 +299,7 @@ namespace Tavis.OpenApi
 
         private static PatternFieldMap<Operation> OperationPatternFields = new PatternFieldMap<Operation>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) },
         };
 
         internal static Operation LoadOperation(ParseNode node)
@@ -362,7 +362,7 @@ namespace Tavis.OpenApi
 
         private static PatternFieldMap<Parameter> ParameterPatternFields = new PatternFieldMap<Parameter>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) },
         };
 
 
@@ -661,7 +661,7 @@ namespace Tavis.OpenApi
 
         private static PatternFieldMap<Schema> SchemaPatternFields = new PatternFieldMap<Schema>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) }
         };
 
 
@@ -707,7 +707,7 @@ namespace Tavis.OpenApi
 
         private static PatternFieldMap<SecurityScheme> SecuritySchemePatternFields = new PatternFieldMap<SecurityScheme>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) }
         };
 
         public static SecurityScheme LoadSecurityScheme(ParseNode node)

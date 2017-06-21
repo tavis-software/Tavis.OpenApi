@@ -22,7 +22,7 @@ namespace Tavis.OpenApi.Model
         public bool Deprecated { get; set; } = DeprecatedDefault;
         public List<SecurityRequirement> Security { get; set; } = new List<SecurityRequirement>();
         public List<Server> Servers { get; set; } = new List<Server>();
-        public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, AnyNode> Extensions { get; set; } = new Dictionary<string, AnyNode>();
 
 
         public void Write(IParseNodeWriter writer)

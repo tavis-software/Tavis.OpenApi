@@ -29,7 +29,7 @@ namespace Tavis.OpenApi.Model
         public Components Components { get; set; } = new Components();
         public List<Tag> Tags { get; set; } = new List<Tag>();
         public ExternalDocs ExternalDocs { get; set; } = new ExternalDocs();
-        public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, AnyNode> Extensions { get; set; } = new Dictionary<string, AnyNode>();
 
         private static Regex versionRegex = new Regex(@"\d+\.\d+\.\d+");
 

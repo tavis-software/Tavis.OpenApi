@@ -12,10 +12,16 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <TextBox x:Name="txtInput" Margin="10" TextWrapping="Wrap" Text="TextBox" AcceptsReturn="True" FontFamily="Consolas" />
-        <Button Content="Validate" HorizontalAlignment="Left" Height="20" Margin="10" VerticalAlignment="Top" Width="131" Click="Button_Click" Grid.Column="1"/>
-        <StackPanel Grid.Column="1" Margin="0,10">
-            <TextBlock x:Name="txtErrors" Margin="10,57,10,10" TextWrapping="Wrap" Text="TextBlock"  Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" />
-            <TextBox x:Name="txtOutput" VerticalScrollBarVisibility="Visible" Margin="10,10,9.667,10" VerticalAlignment="Stretch" TextWrapping="Wrap" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" FontFamily="Consolas" IsReadOnlyCaretVisible="True" Height="454" />
-        </StackPanel>
+        <DockPanel Grid.Column="1" Margin="0,10" >
+            <Button Content="Validate" HorizontalAlignment="Left" Height="20" Margin="10" VerticalAlignment="Top" Width="131" Click="Button_Click" Grid.Column="1" DockPanel.Dock="Top"/>
+            <TextBox x:Name="txtErrors"  Margin="10,10,10,10" TextWrapping="Wrap" Text="TextBlock"  Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" DockPanel.Dock="Top" MaxHeight="100" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnlyCaretVisible="True" IsManipulationEnabled="True" />
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                <Label>Parsing: </Label>
+                <TextBlock x:Name="txtParseTime" Width="100" VerticalAlignment="Center"/>
+                <Label>Rendering:</Label>
+                <TextBlock x:Name="txtRenderTime" VerticalAlignment="Center"/>
+            </StackPanel>
+            <TextBox x:Name="txtOutput" VerticalScrollBarVisibility="Auto" Margin="10,10,10,10" VerticalAlignment="Stretch" TextWrapping="Wrap" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" FontFamily="Consolas" IsReadOnlyCaretVisible="True" VerticalContentAlignment="Stretch" IsManipulationEnabled="True" HorizontalScrollBarVisibility="Auto" DockPanel.Dock="Top" />
+        </DockPanel>
     </Grid>
 </Window>

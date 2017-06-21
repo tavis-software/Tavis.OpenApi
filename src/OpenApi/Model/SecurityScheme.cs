@@ -18,7 +18,7 @@ namespace Tavis.OpenApi.Model
         public Uri TokenUrl { get; set; }
         public Dictionary<string,string> Scopes { get; set; }
 
-        public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, AnyNode> Extensions { get; set; } = new Dictionary<string, AnyNode>();
 
         public string Pointer
         {

@@ -23,7 +23,7 @@ namespace Tavis.OpenApi.Model
         public AnyNode Example { get; set; }
         public List<string> Enum { get; set; } = new List<string>();
 
-        public Dictionary<string, string> Extensions { get; set; }
+        public Dictionary<string, AnyNode> Extensions { get; set; } = new Dictionary<string, AnyNode>();
 
         public string Pointer
         {
@@ -64,7 +64,13 @@ namespace Tavis.OpenApi.Model
                 foreach (var prop in Properties)
                 {
                     writer.WritePropertyName(prop.Key);
-                    prop.Value.Write(writer);
+                    if (prop.Value != null)
+                    {
+                        prop.Value.Write(writer);
+                    } else
+                    {
+                        writer.WriteValue("null");
+                    }
                 }
                 writer.WriteEndMap();
             }

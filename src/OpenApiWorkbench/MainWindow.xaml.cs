@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -34,13 +35,15 @@ namespace OpenApiWorkbench
         {
             txtErrors.Text = "";
             OpenApiParser openApiParser = new OpenApiParser();
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(this.txtInput.Text);
-            writer.Flush();
-            stream.Position = 0;
+            MemoryStream stream = CreateStream(this.txtInput.Text);
+
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var doc = openApiParser.Parse(stream);
-            
+            stopwatch.Stop();
+            this.txtParseTime.Text = $"{stopwatch.ElapsedMilliseconds} ms";
+
             if (openApiParser.ParseErrors.Count == 0)
             {
                 txtErrors.Text = "OK";
@@ -55,12 +58,34 @@ namespace OpenApiWorkbench
                 }
                 txtErrors.Text = errorReport.ToString();
             }
+
+            stopwatch.Reset();
+            stopwatch.Start();
+            txtOutput.Text = WriteContents(doc);
+            stopwatch.Stop();
+
+            this.txtRenderTime.Text = $"{stopwatch.ElapsedMilliseconds} ms";
+
+        }
+
+        private string WriteContents(Tavis.OpenApi.Model.OpenApiDocument doc)
+        {
             var outputwriter = new OpenApiV3Writer(doc);
             var outputstream = new MemoryStream();
             outputwriter.Writer(outputstream);
             outputstream.Position = 0;
-            txtOutput.Text = new StreamReader(outputstream).ReadToEnd();
 
+            return new StreamReader(outputstream).ReadToEnd();
+        }
+
+        private MemoryStream CreateStream(string text)
+        {
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(text);
+            writer.Flush();
+            stream.Position = 0;
+            return stream;
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Tavis.OpenApi.Model
         public List<AnyNode> Examples { get; set; } = new List<AnyNode>();
         public AnyNode Example { get; set; }
         public Dictionary<string, MediaType> Content { get; set; }
-        public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, AnyNode> Extensions { get; set; } = new Dictionary<string, AnyNode>();
 
         public void Write(IParseNodeWriter writer)
         {
