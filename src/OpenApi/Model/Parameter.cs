@@ -51,9 +51,22 @@ namespace Tavis.OpenApi.Model
             writer.WriteEndMap();
         }
 
+        public void WriteRef(IParseNodeWriter writer)
+        {
+            writer.WriteStartMap();
+            writer.WriteStringProperty("$ref", this.Pointer);
+            writer.WriteEndMap();
+        }
         public static void Write(IParseNodeWriter writer, Parameter parameter)
         {
+            if (parameter.IsReference())
+            {
+                parameter.WriteRef(writer);
+            }
+            else
+            {
                 parameter.Write(writer);
+            }
         }
     }
     }

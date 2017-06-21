@@ -19,6 +19,7 @@ namespace Tavis.OpenApi.Model
         {
             writer.WriteStartMap();
 
+
             writer.WriteObject("schema",Schema,Schema.Write);
             writer.WriteObject("example", Example, AnyNode.Write);
             writer.WriteMap("examples",Examples, Model.Example.Write);

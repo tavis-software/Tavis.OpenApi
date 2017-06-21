@@ -20,7 +20,6 @@ namespace Tavis.OpenApi
             { "host", (o,n) => n.Context.SetTempStorage("host", n.GetScalarValue()) },
             { "basePath", (o,n) => n.Context.SetTempStorage("basePath",n.GetScalarValue()) },
             { "schemes", (o,n) => n.Context.SetTempStorage("schemes", n.CreateSimpleList<String>((s) => { return s.GetScalarValue(); })) },
-            //{ "servers", (o,n) => o.Servers = n.CreateList(LoadServer) },
             { "paths", (o,n) => o.Paths = LoadPaths(n) },
             { "definitions", (o,n) => o.Components.Schemas = n.CreateMap(LoadSchema)  },
             { "parameters", (o,n) => o.Components.Parameters = n.CreateMap(LoadParameter) },
@@ -303,8 +302,14 @@ namespace Tavis.OpenApi
             { "examples",       (o,n) => { o.Examples = ((ListNode)n).Select(s=> new AnyNode(s)).ToList(); } },
             { "example",        (o,n) => { o.Example = new AnyNode(n); } },
             { "type", (o,n) => { GetOrCreateSchema(n.Context).Type = n.GetScalarValue(); } },
+            { "items", (o,n) => { GetOrCreateSchema(n.Context).Items = LoadSchema(n); } },
+            { "collectionFormat", (o,n) => { /* Convert to style */ } },
             { "format", (o,n) => { GetOrCreateSchema(n.Context).Format = n.GetScalarValue(); } },
-
+            { "minimum", (o,n) => { GetOrCreateSchema(n.Context).Minimum = n.GetScalarValue(); } },
+            { "maximum", (o,n) => { GetOrCreateSchema(n.Context).Maximum = n.GetScalarValue(); } },
+            { "default", (o,n) => { GetOrCreateSchema(n.Context).Default = n.GetScalarValue(); } },
+            { "enum", (o,n) => { GetOrCreateSchema(n.Context).Enum = n.CreateSimpleList<String>(l=>l.GetScalarValue()); } },
+            { "schema", (o,n) => { n.Context.SetTempStorage("bodyschema",LoadSchema(n)); } },
         };
 
         private static Schema GetOrCreateSchema(ParsingContext context)
@@ -325,10 +330,10 @@ namespace Tavis.OpenApi
             switch(value)
             {
                 case "body":
-                    n.Context.SetTempStorage("requestBody", n);
+                    n.Context.SetTempStorage("bodyType", "body");
                     break;
                 case "form":
-                    n.Context.SetTempStorage("requestBodyForm", n);
+                    n.Context.SetTempStorage("bodyType", "form");
                     break;
                 default:
                     o.In = (InEnum)Enum.Parse(typeof(InEnum), value);
@@ -362,6 +367,31 @@ namespace Tavis.OpenApi
             {
                 parameter.Schema = schema;
                 node.Context.SetTempStorage("schema", null);
+            }
+
+            var bodyType = node.Context.GetTempStorage<string>("bodyType");
+            switch(bodyType)
+            {
+                case "body":
+                    var consumes = node.Context.GetTempStorage<List<string>>("operationproduces")
+                          ?? node.Context.GetTempStorage<List<string>>("globalproduces")
+                          ?? new List<string>() { "application/json" };
+
+
+                    parameter.Content = new Dictionary<string, MediaType>();
+                    foreach (var consume in consumes)
+                    {
+                        parameter.Content.Add(consume, new MediaType()
+                        {
+                            Schema = node.Context.GetTempStorage<Schema>("bodyschema")
+                        });
+                    }
+                    parameter.Schema = null;
+                    break;
+                case "form":
+
+                    break;
+
             }
 
             return parameter;
@@ -402,8 +432,9 @@ namespace Tavis.OpenApi
         private static void ProcessProduces(Response response, ParsingContext context)
         {
 
-            var produces = (context.GetTempStorage<List<string>>("globalproduces") ?? new List<string>())
-                .Union(context.GetTempStorage<List<string>>("operationproduces") ?? new List<string>());
+            var produces = context.GetTempStorage<List<string>>("operationproduces") 
+                  ?? context.GetTempStorage<List<string>>("globalproduces") 
+                  ?? new List<string>() { "application/json" };
 
             response.Content = new Dictionary<string, MediaType>();
             foreach (var mt in produces)

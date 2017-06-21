@@ -3,7 +3,7 @@
   <Class Name="Tavis.OpenApi.Model.OpenApiDocument" Collapsed="true">
     <Position X="0.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>IAAAACIIAAAAAIEBAAAAAAAAAAAAAEAAABgAAEEAAAA=</HashCode>
+      <HashCode>IAAAACIIAAAAAIEBAAAAAAAAAAAAAEAAABgAAEkAAAA=</HashCode>
       <FileName>Model\OpenApiDocument.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -42,7 +42,7 @@
   <Class Name="Tavis.OpenApi.Model.Tag" Collapsed="true">
     <Position X="3.25" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAgAAAAAAAAAAQAAAABAAAAAAAAAIEAAAA=</HashCode>
+      <HashCode>AAAAAIAAAAAgAAAAAAAAAAQAAAABAAAAAAAAAIEAAAA=</HashCode>
       <FileName>Model\Tag.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -71,12 +71,9 @@
   <Class Name="Tavis.OpenApi.Model.PathItem" Collapsed="true">
     <Position X="5.5" Y="1.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AACAAAACAAAgAAAAAAAAAAAAAAAAAAAAAIgAAgEAAAA=</HashCode>
+      <HashCode>AACAAAACAAAgAAAAAAAAAAAAAAAAAAAAAJgAAAEAAAA=</HashCode>
       <FileName>Model\PathItem.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Server" />
-    </ShowAsAssociation>
     <ShowAsCollectionAssociation>
       <Property Name="Operations" />
       <Property Name="Parameters" />
@@ -85,12 +82,11 @@
   <Class Name="Tavis.OpenApi.Model.Operation" Collapsed="true">
     <Position X="7.75" Y="1.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ACCgAAAIAABgAAAAAAAAAAABAAAAAEAAAIgEAgEAQAA=</HashCode>
+      <HashCode>ECCgAAAIAABgAAAAAAAAAAABAAAAAEAAAJgEAAEAQAA=</HashCode>
       <FileName>Model\Operation.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="RequestBody" />
-      <Property Name="Server" />
     </ShowAsAssociation>
     <ShowAsCollectionAssociation>
       <Property Name="Parameters" />
@@ -111,9 +107,6 @@
       <HashCode>AAAAAAAAAgEgAAAAAAAAAAAAAAAAAAAAAAgAAAEAAAA=</HashCode>
       <FileName>Model\RequestBody.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Content" />
-    </ShowAsAssociation>
   </Class>
   <Class Name="Tavis.OpenApi.Model.Response" Collapsed="true">
     <Position X="10.25" Y="2.75" Width="1.5" />
@@ -121,28 +114,15 @@
       <HashCode>AAAAAAAAAgAgAAAAAAAAAAAACAAAAAAACAgAAAEAAAA=</HashCode>
       <FileName>Model\Response.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Content" />
-    </ShowAsAssociation>
     <ShowAsCollectionAssociation>
       <Property Name="Headers" />
       <Property Name="Links" />
     </ShowAsCollectionAssociation>
   </Class>
-  <Class Name="Tavis.OpenApi.Model.Content" Collapsed="true">
-    <Position X="14" Y="1.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgQAAEAAAA=</HashCode>
-      <FileName>Model\Content.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsCollectionAssociation>
-      <Property Name="ContentTypes" />
-    </ShowAsCollectionAssociation>
-  </Class>
   <Class Name="Tavis.OpenApi.Model.Header" Collapsed="true">
     <Position X="12.75" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAggAAAAAEgAAAAAAAAAAQEAAAAAAAABAgAAAEAAAA=</HashCode>
+      <HashCode>AAAggAAQAgEgAAAAAAIAAAgEAAAAAAAABAgAQAEAAAA=</HashCode>
       <FileName>Model\Header.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -167,7 +147,7 @@
   <Class Name="Tavis.OpenApi.Model.Schema" Collapsed="true">
     <Position X="19" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAIAAAEgCAAQAAYAAAAAAAgAAAAAAQgAQAECAAA=</HashCode>
+      <HashCode>AAAAAAIAAAEgCEAQAAYAAAAAAAgAAAAAAQgAQAECAAA=</HashCode>
       <FileName>Model\Schema.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -175,9 +155,10 @@
   <Class Name="Tavis.OpenApi.Model.Example" Collapsed="true">
     <Position X="19" Y="3" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhAAAEAAAA=</HashCode>
+      <HashCode>AACAAAIAAAAgAAAAAAAAAAAAAAAAAAAAAAggAAEAAAA=</HashCode>
       <FileName>Model\Example.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

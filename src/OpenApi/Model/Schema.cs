@@ -12,6 +12,9 @@ namespace Tavis.OpenApi.Model
         public string Type { get; set; }
         public string Format { get; set; }
         public string Description { get; set; }
+        public string Minimum { get; set; }
+        public string Maximum { get; set; }
+        public string Default { get; set; }
         public List<Schema> AllOf { get; set; }
         public string[] Required { get; set; }
         public Schema Items { get; set; }
@@ -68,10 +71,22 @@ namespace Tavis.OpenApi.Model
 
             writer.WriteEndMap();
         }
-
+        public void WriteRef(IParseNodeWriter writer)
+        {
+            writer.WriteStartMap();
+            writer.WriteStringProperty("$ref", this.Pointer);
+            writer.WriteEndMap();
+        }
         public static void Write(IParseNodeWriter writer, Schema schema)
         {
-            schema.Write(writer);
+            if (schema.IsReference())
+            {
+                schema.WriteRef(writer);
+            }
+            else
+            {
+                schema.Write(writer);
+            }
         }
 
     }
