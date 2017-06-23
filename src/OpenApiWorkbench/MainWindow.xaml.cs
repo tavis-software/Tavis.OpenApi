@@ -33,39 +33,45 @@ namespace OpenApiWorkbench
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            txtErrors.Text = "";
-            OpenApiParser openApiParser = new OpenApiParser();
-            MemoryStream stream = CreateStream(this.txtInput.Text);
-
-
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            var doc = openApiParser.Parse(stream);
-            stopwatch.Stop();
-            this.txtParseTime.Text = $"{stopwatch.ElapsedMilliseconds} ms";
-
-            if (openApiParser.ParseErrors.Count == 0)
+            try
             {
-                txtErrors.Text = "OK";
+                txtErrors.Text = "";
+                OpenApiParser openApiParser = new OpenApiParser();
+                MemoryStream stream = CreateStream(this.txtInput.Text);
 
-            }
-            else
-            {
-                var errorReport = new StringBuilder();
-                foreach (var error in openApiParser.ParseErrors)
+
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+                var doc = openApiParser.Parse(stream);
+                stopwatch.Stop();
+                this.txtParseTime.Text = $"{stopwatch.ElapsedMilliseconds} ms";
+
+                if (openApiParser.ParseErrors.Count == 0)
                 {
-                    errorReport.AppendLine(error.ToString());
+                    txtErrors.Text = "OK";
+
                 }
-                txtErrors.Text = errorReport.ToString();
+                else
+                {
+                    var errorReport = new StringBuilder();
+                    foreach (var error in openApiParser.ParseErrors)
+                    {
+                        errorReport.AppendLine(error.ToString());
+                    }
+                    txtErrors.Text = errorReport.ToString();
+                }
+
+                stopwatch.Reset();
+                stopwatch.Start();
+                txtOutput.Text = WriteContents(doc);
+                stopwatch.Stop();
+
+                this.txtRenderTime.Text = $"{stopwatch.ElapsedMilliseconds} ms";
             }
-
-            stopwatch.Reset();
-            stopwatch.Start();
-            txtOutput.Text = WriteContents(doc);
-            stopwatch.Stop();
-
-            this.txtRenderTime.Text = $"{stopwatch.ElapsedMilliseconds} ms";
-
+            catch (Exception ex)
+            {
+                txtErrors.Text = "Failed to parse input: " + ex.Message;
+            }
         }
 
         private string WriteContents(Tavis.OpenApi.Model.OpenApiDocument doc)
