@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 namespace Tavis.OpenApi.Model
 {
 
-    public class Info
+    public class Info : IModel
     {
         public string Title { get; set; }
         public string Description { get; set; }
@@ -31,24 +31,20 @@ namespace Tavis.OpenApi.Model
 
         private static Regex versionRegex = new Regex(@"\d+\.\d+\.\d+");
 
-        public void Write(IParseNodeWriter writer)
+        void IModel.Write(IParseNodeWriter writer)
         {
             writer.WriteStartMap();
 
             writer.WriteStringProperty("title", Title);
             writer.WriteStringProperty("description", Description);
             writer.WriteStringProperty("termsOfService", TermsOfService);
-            writer.WriteObject("contact", Contact, Contact.Write);
-            writer.WriteObject("license", License, License.Write);
+            writer.WriteObject("contact", Contact, ModelHelper.Write);
+            writer.WriteObject("license", License, ModelHelper.Write);
             writer.WriteStringProperty("version", Version);
 
             writer.WriteEndMap();
         }
-
-        public static void Write(IParseNodeWriter writer, Info info)
-        {
-            info.Write(writer);
-        }
+        
     }
 
 }

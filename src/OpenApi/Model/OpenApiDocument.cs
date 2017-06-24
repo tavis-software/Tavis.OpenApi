@@ -7,7 +7,7 @@ using System.Collections;
 
 namespace Tavis.OpenApi.Model
 {
-    public class OpenApiDocument
+    public class OpenApiDocument : IModel
     {
         string version;
         public string Version { get { return version; }
@@ -35,33 +35,33 @@ namespace Tavis.OpenApi.Model
 
 
 
-        public void Write(IParseNodeWriter writer)
+        void IModel.Write(IParseNodeWriter writer)
         {
             writer.WriteStartMap();
 
             writer.WritePropertyName("openapi");
             writer.WriteValue("3.0.0");
 
-            writer.WriteObject("info", Info, Info.Write);
-            writer.WriteList("servers", Servers, Server.Write);
+            writer.WriteObject("info", Info, ModelHelper.Write);
+            writer.WriteList("servers", Servers, ModelHelper.Write);
             writer.WritePropertyName("paths");
             if (Paths.PathItems.Count() > 0)
             {
-                Paths.Write(writer);
+                ModelHelper.Write(writer, Paths);
             } else
             {
                 writer.WriteValue("{}");
             }
-            writer.WriteList("tags", Tags, Tag.Write);
+            writer.WriteList("tags", Tags, ModelHelper.Write);
             if (!Components.IsEmpty())
             {
-                writer.WriteObject("components", Components, Components.Write);
+                writer.WriteObject("components", Components, ModelHelper.Write);
             }
             if (ExternalDocs.Url != null)
             {
-                writer.WriteObject("externalDocs", ExternalDocs, ExternalDocs.Write);
+                writer.WriteObject("externalDocs", ExternalDocs, ModelHelper.Write);
             }
-            writer.WriteList("security", SecurityRequirements, SecurityRequirement.Write);
+            writer.WriteList("security", SecurityRequirements, ModelHelper.Write);
 
             writer.WriteEndMap();
         }
@@ -75,8 +75,6 @@ namespace Tavis.OpenApi.Model
 
             }
         }
-
-
     }
 
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Tavis.OpenApi.Model
 {
-    public class MediaType
+    public class MediaType : IModel
     {
         public Schema Schema { get; set; }
         public Dictionary<string,Example> Examples { get; set; }
@@ -15,23 +15,17 @@ namespace Tavis.OpenApi.Model
 
         public Dictionary<string, string> Extensions { get; set; }
 
-        public void Write(IParseNodeWriter writer)
+        void IModel.Write(IParseNodeWriter writer)
         {
             writer.WriteStartMap();
 
-
-            writer.WriteObject("schema",Schema,Schema.Write);
+            writer.WriteObject("schema",Schema,ModelHelper.Write);
             writer.WriteObject("example", Example, AnyNode.Write);
-            writer.WriteMap("examples",Examples, Model.Example.Write);
+            writer.WriteMap("examples",Examples, ModelHelper.Write);
 
             writer.WriteEndMap();
         }
-
-        public static void Write(IParseNodeWriter writer, MediaType mediaType)
-        {
-            mediaType.Write(writer);
-        }
-
+        
 
     }
 }

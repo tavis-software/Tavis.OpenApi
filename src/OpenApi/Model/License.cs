@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace Tavis.OpenApi.Model
 {
-    public class License
+    public class License : IModel
     {
         public string Name { get; set; }
         public Uri Url { get; set; }
         public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
         
-        public void Write(IParseNodeWriter writer)
+        void IModel.Write(IParseNodeWriter writer)
         {
             writer.WriteStartMap();
 
@@ -19,9 +19,6 @@ namespace Tavis.OpenApi.Model
             writer.WriteEndMap();
         }
 
-        public static void Write(IParseNodeWriter writer, License license)
-        {
-            license.Write(writer);
-        }
+        
     }
 }

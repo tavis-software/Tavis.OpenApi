@@ -22,7 +22,7 @@ namespace Tavis.OpenApi
         {
             var writer = new YamlParseNodeWriter(stream);
             writer.WriteStartDocument();
-            this.document.Write(writer);
+            ModelHelper.Write(writer,this.document);
             writer.WriteEndDocument();
             writer.Flush();
         }

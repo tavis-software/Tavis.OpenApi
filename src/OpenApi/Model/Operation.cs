@@ -6,7 +6,7 @@ using System.Linq;
 namespace Tavis.OpenApi.Model
 {
 
-    public class Operation
+    public class Operation : IModel
     {
         public List<Tag> Tags { get; set; } = new List<Tag>();
         public string Summary { get; set; }
@@ -25,22 +25,22 @@ namespace Tavis.OpenApi.Model
         public Dictionary<string, AnyNode> Extensions { get; set; } = new Dictionary<string, AnyNode>();
 
 
-        public void Write(IParseNodeWriter writer)
+        void IModel.Write(IParseNodeWriter writer)
         {
             writer.WriteStartMap();
             writer.WriteList("tags", Tags, Tag.WriteRef);
             writer.WriteStringProperty("summary", Summary);
             writer.WriteStringProperty("description", Description);
-            writer.WriteObject("externalDocs", ExternalDocs, ExternalDocs.Write);
+            writer.WriteObject("externalDocs", ExternalDocs, ModelHelper.Write);
 
             writer.WriteStringProperty("operationId", OperationId);
-            writer.WriteList<Parameter>("parameters", Parameters, Parameter.Write);
-            writer.WriteObject("requestBody",RequestBody, Model.RequestBody.Write);
-            writer.WriteMap<Response>("responses", Responses, Response.Write);
-            writer.WriteMap<Callback>("callbacks", Callbacks, Callback.Write);
+            writer.WriteList<Parameter>("parameters", Parameters, ModelHelper.Write);
+            writer.WriteObject("requestBody",RequestBody, ModelHelper.Write);
+            writer.WriteMap<Response>("responses", Responses, ModelHelper.Write);
+            writer.WriteMap<Callback>("callbacks", Callbacks, ModelHelper.Write);
             writer.WriteBoolProperty("deprecated", Deprecated, DeprecatedDefault);
-            writer.WriteList("security", Security, SecurityRequirement.Write);
-            writer.WriteList("servers", Servers, Server.Write);
+            writer.WriteList("security", Security, ModelHelper.Write);
+            writer.WriteList("servers", Servers, ModelHelper.Write);
 
             writer.WriteEndMap();
         }

@@ -4,7 +4,7 @@ using SharpYaml.Serialization;
 
 namespace Tavis.OpenApi.Model
 {
-    public class Contact
+    public class Contact : IModel
     {
         public string Name { get; set; }
         public Uri Url { get; set; }
@@ -12,7 +12,7 @@ namespace Tavis.OpenApi.Model
         public Dictionary<string,string> Extensions { get; set; } = new Dictionary<string, string>();
 
         
-        public void Write(IParseNodeWriter writer)
+        void IModel.Write(IParseNodeWriter writer)
         {
 
             writer.WriteStartMap();
@@ -22,11 +22,6 @@ namespace Tavis.OpenApi.Model
             writer.WriteStringProperty("email", Email);
 
             writer.WriteEndMap();
-        }
-
-        public static void Write(IParseNodeWriter writer, Contact contact)
-        {
-            contact.Write(writer);
         }
 
     }

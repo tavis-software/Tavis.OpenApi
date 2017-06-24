@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Tavis.OpenApi.Model
 {
-    public class ServerVariable
+    public class ServerVariable : IModel
     {
         public string Description { get; set; }
         public string Default { get; set; }
@@ -15,7 +15,7 @@ namespace Tavis.OpenApi.Model
 
         public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
 
-        public void Write(IParseNodeWriter writer)
+        void IModel.Write(IParseNodeWriter writer)
         {
             writer.WriteStartMap();
 
@@ -35,11 +35,7 @@ namespace Tavis.OpenApi.Model
             writer.WriteEndMap();
 
         }
-
-        public static void Write(IParseNodeWriter writer, ServerVariable variable)
-        {
-            variable.Write(writer);
-        }
+        
 
     }
 }

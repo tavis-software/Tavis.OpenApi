@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Tavis.OpenApi.Model
 {
 
-    public class Header
+    public class Header : IModel
     {
 
         public string Description { get; set; }
@@ -24,7 +24,7 @@ namespace Tavis.OpenApi.Model
 
         public Dictionary<string, string> Extensions { get; set; }
 
-        public void Write(IParseNodeWriter writer)
+        void IModel.Write(IParseNodeWriter writer)
         {
             writer.WriteStartMap();
             writer.WriteStringProperty("description", Description);
@@ -34,18 +34,13 @@ namespace Tavis.OpenApi.Model
             writer.WriteStringProperty("style", Style);
             writer.WriteBoolProperty("explode", Explode,false);
             writer.WriteBoolProperty("allowReserved", AllowReserved,false);
-            writer.WriteObject("schema", Schema, Schema.Write);
+            writer.WriteObject("schema", Schema, ModelHelper.Write);
             writer.WriteList("examples", Examples, AnyNode.Write);
             writer.WriteObject("example", Example, AnyNode.Write);
-            writer.WriteMap("content", Content, MediaType.Write);
+            writer.WriteMap("content", Content, ModelHelper.Write);
 
             writer.WriteEndMap();
         }
-
-        public static void Write(IParseNodeWriter writer, Header header)
-        {
-            header.Write(writer);
-        }
-
+        
     }
 }

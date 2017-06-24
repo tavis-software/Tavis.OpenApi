@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Tavis.OpenApi.Model
 {
-    public class Link : IReference
+    public class Link : IModel, IReference
     {
         public string Href { get; set; }
         public string OperationId { get; set; }
@@ -19,7 +19,7 @@ namespace Tavis.OpenApi.Model
         public string Pointer { get; set; }
 
 
-        public void Write(IParseNodeWriter writer)
+        void IModel.Write(IParseNodeWriter writer)
         {
             writer.WriteStartMap();
             writer.WriteStringProperty("href", Href);
@@ -28,10 +28,6 @@ namespace Tavis.OpenApi.Model
 
             writer.WriteEndMap();
         }
-
-        public static void Write(IParseNodeWriter writer, Link link)
-        {
-            link.Write(writer);
-        }
+        
     }
 }

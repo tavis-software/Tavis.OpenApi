@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Tavis.OpenApi.Model
 {
-    public class Paths
+    public class Paths : IModel
     {
         public IDictionary<string, PathItem> PathItems { get; set; } = new Dictionary<string, PathItem>();
         public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
@@ -17,7 +17,7 @@ namespace Tavis.OpenApi.Model
             //TODO:
         }
 
-        public void Write(IParseNodeWriter writer)
+        void IModel.Write(IParseNodeWriter writer)
         {
             writer.WriteStartMap();
             foreach (var pathItem in PathItems)

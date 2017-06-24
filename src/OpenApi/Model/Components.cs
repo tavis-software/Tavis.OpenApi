@@ -5,7 +5,7 @@ using SharpYaml.Serialization;
 namespace Tavis.OpenApi.Model
 {
 
-    public class Components
+    public class Components : IModel
     {
         public Dictionary<string, Schema> Schemas { get; set; } = new Dictionary<string, Schema>();
         public Dictionary<string, Response> Responses { get; set; } = new Dictionary<string, Response>();
@@ -33,26 +33,23 @@ namespace Tavis.OpenApi.Model
 
         }
 
-        public void Write(IParseNodeWriter writer)
+        void IModel.Write(IParseNodeWriter writer)
         {
             writer.WriteStartMap();
 
-            writer.WriteMap("schemas", Schemas, Schema.WriteFull);
-            writer.WriteMap("responses", Responses, Response.WriteFull);
-            writer.WriteMap("parameters", Parameters, Parameter.WriteFull);
-            writer.WriteMap("examples", Examples, Example.Write);
-            writer.WriteMap("requestBodies", RequestBodies, RequestBody.Write);
-            writer.WriteMap("headers", Headers, Header.Write);
-            writer.WriteMap("securitySchemes", SecuritySchemes, SecurityScheme.Write);
-            writer.WriteMap("links", Links, Link.Write);
-            writer.WriteMap("callbacks", Callbacks, Callback.Write);
+            writer.WriteMap("schemas", Schemas, ModelHelper.WriteFull);
+            writer.WriteMap("responses", Responses, ModelHelper.WriteFull);
+            writer.WriteMap("parameters", Parameters, ModelHelper.WriteFull);
+            writer.WriteMap("examples", Examples, ModelHelper.WriteFull);
+            writer.WriteMap("requestBodies", RequestBodies, ModelHelper.WriteFull);
+            writer.WriteMap("headers", Headers, ModelHelper.WriteFull);
+            writer.WriteMap("securitySchemes", SecuritySchemes, ModelHelper.WriteFull);
+            writer.WriteMap("links", Links, ModelHelper.WriteFull);
+            writer.WriteMap("callbacks", Callbacks, ModelHelper.WriteFull);
 
             writer.WriteEndMap();
         }
 
-        public static void Write(IParseNodeWriter writer, Components components)
-        {
-            components.Write(writer);
-        }
+
     }
 }

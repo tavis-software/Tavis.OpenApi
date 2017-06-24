@@ -7,29 +7,24 @@ using System.Threading.Tasks;
 
 namespace Tavis.OpenApi.Model
 {
-    public class RequestBody
+    public class RequestBody : IModel
     {
         public string Description { get; set; }
         public Boolean Required { get; set; }
         public Dictionary<string, MediaType> Content { get; set; }
         public Dictionary<string,string> Extensions { get; set; }
 
-        public void Write(IParseNodeWriter writer)
+        void IModel.Write(IParseNodeWriter writer)
         {
             writer.WriteStartMap();
 
             writer.WriteStringProperty("description", Description);
             writer.WriteBoolProperty("required", Required);
-            writer.WriteMap("content", Content, MediaType.Write);
+            writer.WriteMap("content", Content, ModelHelper.Write);
 
             writer.WriteEndMap();
         }
-
-        public static void Write(IParseNodeWriter writer, RequestBody requestBody)
-        {
-            requestBody.Write(writer);
-        }
-
+        
 
     }
 }

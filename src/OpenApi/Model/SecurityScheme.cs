@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Tavis.OpenApi.Model
 {
-    public class SecurityScheme : IReference
+    public class SecurityScheme : IModel, IReference
     {
         public string Type { get; set; }
         public string Description { get; set; }
@@ -34,7 +34,7 @@ namespace Tavis.OpenApi.Model
             return schemeObject;
         }
 
-        public void Write(IParseNodeWriter writer)
+        void IModel.Write(IParseNodeWriter writer)
         {
             writer.WriteStartMap();
             writer.WriteStringProperty("type",this.Type);
@@ -54,11 +54,7 @@ namespace Tavis.OpenApi.Model
             writer.WriteEndMap();
 
         }
-
-        public static void Write(IParseNodeWriter writer, SecurityScheme scheme)
-        {
-            scheme.Write(writer);
-        }
+        
 
     }
 }

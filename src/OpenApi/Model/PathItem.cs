@@ -6,7 +6,7 @@ namespace Tavis.OpenApi.Model
 
 {
 
-    public class PathItem
+    public class PathItem : IModel
     {
 
         public string Summary { get; set; }
@@ -29,17 +29,17 @@ namespace Tavis.OpenApi.Model
                 writer.WriteStartList();
                 foreach (var parameter in this.Parameters)
                 {
-                    Parameter.Write(writer,parameter);
+                    ModelHelper.Write(writer,parameter);
                 }
                 writer.WriteEndList();
 
             }
-            writer.WriteList("servers", Servers, Server.Write);
+            writer.WriteList("servers", Servers, ModelHelper.Write);
 
             foreach (var operationPair in Operations)
             {
                 writer.WritePropertyName(operationPair.Key);
-                operationPair.Value.Write(writer);
+                ModelHelper.Write(writer, operationPair.Value);
             }
             writer.WriteEndMap();
         }

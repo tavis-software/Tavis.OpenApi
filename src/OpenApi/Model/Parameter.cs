@@ -14,7 +14,7 @@ namespace Tavis.OpenApi.Model
         header
     }
 
-    public class Parameter : IReference
+    public class Parameter : IModel, IReference
     {
         public string Pointer { get; set; }
         public string Name { get; set; }
@@ -32,7 +32,7 @@ namespace Tavis.OpenApi.Model
         public Dictionary<string, MediaType> Content { get; set; }
         public Dictionary<string, AnyNode> Extensions { get; set; } = new Dictionary<string, AnyNode>();
 
-        public void Write(IParseNodeWriter writer)
+        void IModel.Write(IParseNodeWriter writer)
         {
             writer.WriteStartMap();
             writer.WriteStringProperty("name", Name);
@@ -44,33 +44,12 @@ namespace Tavis.OpenApi.Model
             writer.WriteStringProperty("style", Style);
             writer.WriteBoolProperty("explode", Explode,false);
             writer.WriteBoolProperty("allowReserved", AllowReserved, false);
-            writer.WriteObject("schema", Schema, Schema.Write);
+            writer.WriteObject("schema", Schema, ModelHelper.Write);
             writer.WriteList("examples", Examples, AnyNode.Write);
             writer.WriteObject("example", Example, AnyNode.Write);
-            writer.WriteMap("content", Content, MediaType.Write);
+            writer.WriteMap("content", Content, ModelHelper.Write);
             writer.WriteEndMap();
         }
-
-        public void WriteRef(IParseNodeWriter writer)
-        {
-            writer.WriteStartMap();
-            writer.WriteStringProperty("$ref", this.Pointer);
-            writer.WriteEndMap();
-        }
-        public static void WriteFull(IParseNodeWriter writer, Parameter parameter)
-        {
-            parameter.Write(writer);
-        }
-            public static void Write(IParseNodeWriter writer, Parameter parameter)
-        {
-            if (parameter.IsReference())
-            {
-                parameter.WriteRef(writer);
-            }
-            else
-            {
-                parameter.Write(writer);
-            }
-        }
+        
     }
     }

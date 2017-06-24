@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Tavis.OpenApi.Model
 {
 
-    public class Response : IReference
+    public class Response : IModel, IReference
     {
 
         public string Description { get; set; }
@@ -19,35 +19,19 @@ namespace Tavis.OpenApi.Model
             get; set;
         }
 
-        void Write(IParseNodeWriter writer)
+        void IModel.Write(IParseNodeWriter writer)
         {
             writer.WriteStartMap();
 
             writer.WriteStringProperty("description", Description);
-            writer.WriteMap("content", Content, MediaType.Write);
+            writer.WriteMap("content", Content, ModelHelper.Write);
 
-            writer.WriteMap("headers", Headers, Header.Write);
-            writer.WriteMap("links", Links, Link.Write);
+            writer.WriteMap("headers", Headers, ModelHelper.Write);
+            writer.WriteMap("links", Links, ModelHelper.Write);
 
             //Links
             writer.WriteEndMap();
         }
 
-
-        public static void WriteFull(IParseNodeWriter writer, Response response)
-        {
-            response.Write(writer);
-        }
-        public static void Write(IParseNodeWriter writer, Response response)
-        {
-            if (response.IsReference())
-            {
-                response.WriteRef(writer);
-            }
-            else
-            {
-                response.Write(writer);
-            }
-        }
     }
 }

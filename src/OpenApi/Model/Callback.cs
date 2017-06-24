@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Tavis.OpenApi.Model
 {
 
-    public class Callback : IReference
+    public class Callback : IModel, IReference
     {
         public Dictionary<string, PathItem> PathItems { get; set; } = new Dictionary<string, PathItem>();
 
@@ -17,16 +17,12 @@ namespace Tavis.OpenApi.Model
         public Dictionary<string, string> Extensions { get; set; }
 
 
-        public void Write(IParseNodeWriter writer)
+        void IModel.Write(IParseNodeWriter writer)
         {
             writer.WriteStartMap();
             writer.WriteEndMap();
         }
-
-        public static void Write(IParseNodeWriter writer, Callback callback)
-        {
-            callback.Write(writer);
-        }
+        
 
 
     }

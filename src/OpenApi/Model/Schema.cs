@@ -5,7 +5,7 @@ using System.Linq;
 namespace Tavis.OpenApi.Model
 {
  
-    public class Schema : IReference
+    public class Schema : IModel, IReference
 
     {
         public string Title { get; set; }
@@ -32,7 +32,7 @@ namespace Tavis.OpenApi.Model
         }
 
 
-        private void Write(IParseNodeWriter writer)
+        void IModel.Write(IParseNodeWriter writer)
         {
             writer.WriteStartMap();
 
@@ -55,7 +55,7 @@ namespace Tavis.OpenApi.Model
             if (Items != null)
             {
                 writer.WritePropertyName("items");
-                Items.Write(writer);
+                ModelHelper.Write(writer, Items);
             }
             if (Properties != null)
             {
@@ -66,7 +66,7 @@ namespace Tavis.OpenApi.Model
                     writer.WritePropertyName(prop.Key);
                     if (prop.Value != null)
                     {
-                        prop.Value.Write(writer);
+                        ModelHelper.Write(writer, prop.Value);
                     } else
                     {
                         writer.WriteValue("null");
@@ -77,22 +77,6 @@ namespace Tavis.OpenApi.Model
 
             writer.WriteEndMap();
         }
-
-        public static void WriteFull(IParseNodeWriter writer, Schema schema)
-        {
-            schema.Write(writer);
-        }
-        public static void Write(IParseNodeWriter writer, Schema schema)
-        {
-            if (schema.IsReference())
-            {
-                schema.WriteRef(writer);
-            }
-            else
-            {
-                schema.Write(writer);
-            }
-        }
-
+        
     }
 }
