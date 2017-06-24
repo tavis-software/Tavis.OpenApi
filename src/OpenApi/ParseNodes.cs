@@ -85,7 +85,10 @@ namespace Tavis.OpenApi
         {
             throw new Exception();
         }
-
+        public virtual Dictionary<string, T> CreateMapWithReference<T>(string refpointer, Func<MapNode, T> map) where T : class, IReference
+        {
+            throw new Exception();
+        }
         public virtual Dictionary<string, T> CreateSimpleMap<T>(Func<ValueNode, T> map)
         {
             throw new Exception();
@@ -346,6 +349,18 @@ namespace Tavis.OpenApi
             var yamlMap = this.node;
             if (yamlMap == null) throw new DomainParseException($"Expected map at line {yamlMap.Start.Line} while parsing {typeof(T).Name}");
             var nodes = yamlMap.Select(n => new { key = n.Key.GetScalarValue(), value = map(new MapNode(this.Context,(YamlMappingNode)n.Value)) });
+            return nodes.ToDictionary(k => k.key, v => v.value);
+        }
+
+        public override Dictionary<string, T> CreateMapWithReference<T>(string refpointerbase, Func<MapNode, T> map) 
+        {
+
+            var yamlMap = this.node;
+            if (yamlMap == null) throw new DomainParseException($"Expected map at line {yamlMap.Start.Line} while parsing {typeof(T).Name}");
+            var nodes = yamlMap.Select(n => new { key = n.Key.GetScalarValue(),
+                value = this.GetReferencedObject<T>(refpointerbase + n.Key.GetScalarValue()) 
+                ?? map(new MapNode(this.Context, (YamlMappingNode)n.Value))
+            });
             return nodes.ToDictionary(k => k.key, v => v.value);
         }
 

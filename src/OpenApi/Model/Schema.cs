@@ -32,7 +32,7 @@ namespace Tavis.OpenApi.Model
         }
 
 
-        public void Write(IParseNodeWriter writer)
+        private void Write(IParseNodeWriter writer)
         {
             writer.WriteStartMap();
 
@@ -77,11 +77,10 @@ namespace Tavis.OpenApi.Model
 
             writer.WriteEndMap();
         }
-        public void WriteRef(IParseNodeWriter writer)
+
+        public static void WriteFull(IParseNodeWriter writer, Schema schema)
         {
-            writer.WriteStartMap();
-            writer.WriteStringProperty("$ref", this.Pointer);
-            writer.WriteEndMap();
+            schema.Write(writer);
         }
         public static void Write(IParseNodeWriter writer, Schema schema)
         {

@@ -21,8 +21,8 @@ namespace Tavis.OpenApi
             { "basePath", (o,n) => n.Context.SetTempStorage("basePath",n.GetScalarValue()) },
             { "schemes", (o,n) => n.Context.SetTempStorage("schemes", n.CreateSimpleList<String>((s) => { return s.GetScalarValue(); })) },
             { "paths", (o,n) => o.Paths = LoadPaths(n) },
-            { "definitions", (o,n) => o.Components.Schemas = n.CreateMap(LoadSchema)  },
-            { "parameters", (o,n) => o.Components.Parameters = n.CreateMap(LoadParameter) },
+            { "definitions", (o,n) =>  o.Components.Schemas = n.CreateMapWithReference("#/definitions/",LoadSchema)  },
+            { "parameters", (o,n) =>  o.Components.Parameters = n.CreateMapWithReference("#/parameters/",LoadParameter) },
             { "responses", (o,n) => o.Components.Responses = n.CreateMap(LoadResponse) },
             { "securityDefinitions", (o,n) => o.Components.SecuritySchemes = n.CreateMap(LoadSecurityScheme) },
             { "tags", (o,n) => o.Tags = n.CreateList(LoadTag)},
@@ -676,13 +676,13 @@ namespace Tavis.OpenApi
                 switch (refType)
                 {
                     case "definitions":
-                        referencedObject = OpenApiV3.LoadSchema(node);
+                        referencedObject = OpenApiV2.LoadSchema(node);
                         break;
                     case "parameters":
-                        referencedObject = OpenApiV3.LoadParameter(node);
+                        referencedObject = OpenApiV2.LoadParameter(node);
                         break;
                     case "securityDefinitions":
-                        referencedObject = OpenApiV3.LoadSecurityScheme(node);
+                        referencedObject = OpenApiV2.LoadSecurityScheme(node);
                         break;
                 }
             }
@@ -694,7 +694,7 @@ namespace Tavis.OpenApi
                 {
                     foreach (var item in list)
                     {
-                        var tag = OpenApiV3.LoadTag(item);
+                        var tag = OpenApiV2.LoadTag(item);
 
                         if (tag.Name == parts[0])
                         {

@@ -37,9 +37,9 @@ namespace Tavis.OpenApi.Model
         {
             writer.WriteStartMap();
 
-            writer.WriteMap("schemas", Schemas, Schema.Write);
-            writer.WriteMap("responses", Responses, Response.Write);
-            writer.WriteMap("parameters", Parameters, Parameter.Write);
+            writer.WriteMap("schemas", Schemas, Schema.WriteFull);
+            writer.WriteMap("responses", Responses, Response.WriteFull);
+            writer.WriteMap("parameters", Parameters, Parameter.WriteFull);
             writer.WriteMap("examples", Examples, Example.Write);
             writer.WriteMap("requestBodies", RequestBodies, RequestBody.Write);
             writer.WriteMap("headers", Headers, Header.Write);

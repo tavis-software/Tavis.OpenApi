@@ -12,5 +12,13 @@
         {
             return !string.IsNullOrWhiteSpace(reference.Pointer);
         }
+
+        public static void WriteRef(this IReference reference, IParseNodeWriter writer)
+        {
+            writer.WriteStartMap();
+            writer.WriteStringProperty("$ref", reference.Pointer);
+            writer.WriteEndMap();
+        }
+
     }
 }

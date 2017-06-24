@@ -29,7 +29,7 @@ namespace Tavis.OpenApi.Model
                 writer.WriteStartList();
                 foreach (var parameter in this.Parameters)
                 {
-                    parameter.Write(writer);
+                    Parameter.Write(writer,parameter);
                 }
                 writer.WriteEndList();
 

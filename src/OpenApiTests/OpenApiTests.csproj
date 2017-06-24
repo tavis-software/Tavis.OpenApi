@@ -73,6 +73,7 @@
     <EmbeddedResource Include="Samples\CallbackSampleWithRef.yaml" />
     <EmbeddedResource Include="V2Tests\V2Samples\host.2.yaml" />
     <EmbeddedResource Include="V2Tests\V2Samples\host.3.yaml" />
+    <EmbeddedResource Include="V2Tests\V2Samples\parameterref2.yaml" />
     <None Include="V2Tests\V2Samples\petstore.yaml" />
     <EmbeddedResource Include="V2Tests\V2Samples\simplest.2.yaml" />
     <EmbeddedResource Include="V2Tests\V2Samples\simplest.3.yaml" />
