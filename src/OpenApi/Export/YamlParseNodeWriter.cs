@@ -9,7 +9,7 @@ namespace Tavis.OpenApi.Export
 {
     public class YamlParseNodeWriter : IParseNodeWriter
     {
-        enum State
+        public enum State
         {
             InDocument,
             InList,
@@ -20,6 +20,19 @@ namespace Tavis.OpenApi.Export
         Stack<State> state = new Stack<State>();
         StreamWriter writer;
         
+        public struct DebugInfo
+        {
+            public Stack<State> StackState { get; set; }
+            public string Indent { get; set; }
+        }
+        public DebugInfo GetDebugInfo()
+        {
+            return new DebugInfo
+            {
+                StackState = this.state,
+                Indent = Indent
+            };
+        }
         public YamlParseNodeWriter(Stream stream)
         {
             this.writer = new StreamWriter(stream);
@@ -41,23 +54,6 @@ namespace Tavis.OpenApi.Export
         }
 
 
-        public void WriteEndDocument()
-        {
-            state.Pop();
-        }
-
-        public void WriteEndList()
-        {
-            state.Pop();
-            DecreaseIndent();
-        }
-
-        public void WriteEndMap()
-        {
-            state.Pop();
-            DecreaseIndent();
-        }
-
         private bool InList()
         {
             return state.Peek() == State.InList;
@@ -66,7 +62,10 @@ namespace Tavis.OpenApi.Export
         {
             return state.Peek() == State.InProperty;
         }
-
+        private bool InDocument()
+        {
+            return state.Peek() == State.InDocument;
+        }
         public void WritePropertyName(string name)
         {
             writer.Write(Indent + name + ": ");
@@ -78,13 +77,26 @@ namespace Tavis.OpenApi.Export
             state.Push(State.InDocument);
         }
 
+        public void WriteEndDocument()
+        {
+            state.Pop();
+        }
+
         public void WriteStartList()
         {
             if (InList()) writer.Write(Indent + "- ");
-            IncreaseIndent();
             state.Push(State.InList);
             writer.WriteLine();
 
+        }
+
+        public void WriteEndList()
+        {
+            state.Pop();
+            if (InProperty())
+            {
+                state.Pop();
+            }
         }
 
         public void WriteStartMap()
@@ -93,9 +105,27 @@ namespace Tavis.OpenApi.Export
             {
                 writer.Write(Indent + "- ");
             }
-            writer.WriteLine();
-            IncreaseIndent();
+
+            if (state.Count > 1)
+            {
+                writer.WriteLine();
+                IncreaseIndent();
+            }
             state.Push(State.InMap);
+        }
+
+        public void WriteEndMap()
+        {
+
+            state.Pop();
+            if (!InDocument())
+            {
+                DecreaseIndent();
+            }
+            if (InProperty())
+            {
+                state.Pop();
+            }
         }
 
         public void WriteValue(string value)
@@ -124,6 +154,14 @@ namespace Tavis.OpenApi.Export
             if (InList()) writer.Write(Indent + "- ");
             writer.WriteLine(value.ToString().ToLower());  //TODO deal with culture issues
             if (InProperty()) state.Pop();
+        }
+
+        public void WriteNull()
+        {
+//            if (InList()) writer.Write(Indent + "- ");
+            writer.WriteLine("{}");  //TODO deal with culture issues
+ //           if (InProperty()) state.Pop();
+
         }
     }
 }

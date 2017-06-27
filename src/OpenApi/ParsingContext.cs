@@ -44,7 +44,13 @@ namespace Tavis.OpenApi
 
             if (returnValue == null)
             {
+                if(previousPointers.Contains(pointer))
+                {
+                    return null; // Return reference object?
+                }
+                previousPointers.Push(pointer);
                 returnValue = this.referenceLoader(pointer);
+                previousPointers.Pop();
                 if (returnValue != null)
                 {
                     returnValue.Pointer = pointer;
@@ -57,6 +63,7 @@ namespace Tavis.OpenApi
 
             return returnValue;
         }
+        private Stack<string> previousPointers = new Stack<string>();
 
         public void SetTempStorage(string key, object value)
         {

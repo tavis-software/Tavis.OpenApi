@@ -19,6 +19,11 @@ namespace Tavis.OpenApi.Model
         }
         public static void Write(IParseNodeWriter writer, IModel model)
         {
+            if (model == null)
+            {
+                writer.WriteNull();
+                return;
+            }
             var referencable = model as IReference;
             if (referencable != null && referencable.IsReference())
             {

@@ -61,6 +61,7 @@ namespace Tavis.OpenApi
             writer.WriteLine(Indent + "}");
             state.Pop();
             DecreaseIndent();
+
         }
 
         public void WritePropertyName(string name) {
@@ -88,6 +89,11 @@ namespace Tavis.OpenApi
 
         public void WriteValue(bool value) {
             writer.WriteLine(value.ToString().ToLower());  //TODO deal with culture issues
+        }
+
+        public void WriteNull()
+        {
+            writer.WriteLine("null");
         }
     }
 }
