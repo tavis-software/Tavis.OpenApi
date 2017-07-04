@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OpenApiWorkbench"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="800">
+        Title="OpenAPI Workbench" Height="600" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
