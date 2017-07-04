@@ -131,7 +131,19 @@ namespace Tavis.OpenApi.Export
         public void WriteValue(string value)
         {
             if (InList()) writer.Write(Indent + "- ");
-            writer.WriteLine( value );
+            if (value.Contains("#"))
+            {
+                writer.Write("\"");
+                writer.Write(value);
+                writer.WriteLine("\"");
+            } else if (value.Contains("\n") || value.Contains("\r"))
+            {
+                writer.WriteLine(" |");
+                writer.WriteLine(value);
+            } else
+            {
+                writer.WriteLine(value);
+            }
             if (InProperty()) state.Pop();
         }
 
