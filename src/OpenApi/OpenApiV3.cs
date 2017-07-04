@@ -667,6 +667,7 @@ namespace Tavis.OpenApi
 
         public static Schema LoadSchema(ParseNode node)
         {
+
             MapNode mapNode = node.CheckMapNode("schema");
 
             var refpointer = mapNode.GetReferencePointer();
@@ -744,70 +745,58 @@ namespace Tavis.OpenApi
 
         #endregion
 
-        public static IReference LoadReference(string pointer, RootNode rootNode)
+        public static IReference LoadReference(OpenApiReference pointer, RootNode rootNode)
         {
-            var parts = pointer.Split('/').Reverse().Take(2).ToArray();
-            var refType = parts[1];
             IReference referencedObject = null;
 
-            if ("schemas|parameters|callbacks|securitySchemes|links|examples".Contains(refType))
+            var node = rootNode.Find(pointer.GetLocalPointer());
+            if (node == null && pointer.ReferenceType != ReferenceType.Tags) return null;
+
+            switch (pointer.ReferenceType)
             {
-                var refPointer = new JsonPointer(pointer);
-                ParseNode node = rootNode.Find(refPointer);
-                if (node == null) return null;
-                node.DomainType = refType;
+                case ReferenceType.Schema:
+                    referencedObject = OpenApiV3.LoadSchema(node);
+                    break;
+                case ReferenceType.Parameter:
 
-                switch (refType)
-                {
-                    case "schemas":
-                        referencedObject = OpenApiV3.LoadSchema(node);
-                        break;
-                    case "parameters":
-                        referencedObject = OpenApiV3.LoadParameter(node);
-                        break;
-                    case "callbacks":
-                        referencedObject = OpenApiV3.LoadCallback(node);
-                        break;
-                    case "securitySchemes":
-                        referencedObject = OpenApiV3.LoadSecurityScheme(node);
-                        break;
-                    case "links":
-                        referencedObject = OpenApiV3.LoadLink(node);
-                        break;
-                    case "examples":
-                        referencedObject = OpenApiV3.LoadExample(node);
-                        break;
-
-                }
-            }
-            else if ("tags".Contains(refType))
-            {
-
-                ListNode list = (ListNode)rootNode.Find(new JsonPointer("/tags"));
-                if (list != null)
-                {
-                    foreach (var item in list)
+                    referencedObject = OpenApiV3.LoadParameter(node);
+                    break;
+                case ReferenceType.Callback:
+                    referencedObject = OpenApiV3.LoadCallback(node);
+                    break;
+                case ReferenceType.SecurityScheme:
+                    referencedObject = OpenApiV3.LoadSecurityScheme(node);
+                    break;
+                case ReferenceType.Link:
+                    referencedObject = OpenApiV3.LoadLink(node);
+                    break;
+                case ReferenceType.Example:
+                    referencedObject = OpenApiV3.LoadExample(node);
+                    break;
+                case ReferenceType.Tags:
+                    ListNode list = (ListNode)node;
+                    if (list != null)
                     {
-                        var tag = OpenApiV3.LoadTag(item);
-
-                        if (tag.Name == parts[0])
+                        foreach (var item in list)
                         {
-                            return tag;
+                            var tag = OpenApiV3.LoadTag(item);
+
+                            if (tag.Name == pointer.TypeName)
+                            {
+                                return tag;
+                            }
                         }
                     }
-                }
-                else
-                {
-                    return new Tag() { Name = parts[0] };
-                }
-            }
-            else
-            {
-                throw new DomainParseException($"Unknown $ref {refType} at {pointer}");
+                    else
+                    {
+                        return new Tag() { Name = pointer.TypeName };
+                    }
+
+                    break;
+                default:
+                    throw new DomainParseException($"Unknown type of $ref {pointer.ReferenceType} at {pointer.ToString()}");
 
             }
-
-
             return referencedObject;
         }
 

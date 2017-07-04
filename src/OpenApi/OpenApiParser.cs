@@ -11,6 +11,7 @@ namespace Tavis.OpenApi
         ParsingContext context;
         RootNode rootNode;
         string inputVersion;
+        IReferenceService referenceService;
 
         public List<OpenApiError> ParseErrors
         {
@@ -32,12 +33,14 @@ namespace Tavis.OpenApi
 
         public OpenApiDocument Parse(Stream stream)
         {
-            this.context = new ParsingContext(LoadReference);
+
+            this.context = new ParsingContext();
             try
             {
                 this.rootNode = new RootNode(this.context, stream);
 
-            } catch(SharpYaml.SyntaxErrorException ex)
+            }
+            catch (SharpYaml.SyntaxErrorException ex)
             {
                 ParseErrors.Add(new OpenApiError("", ex.Message));
                 return new OpenApiDocument();
@@ -48,10 +51,19 @@ namespace Tavis.OpenApi
             switch (inputVersion)
             {
                 case "2.0":
+                    this.context.SetReferenceService(new ReferenceService(this.rootNode)
+                    {
+                        loadReference = OpenApiV2.LoadReference,
+                        parseReference = p => OpenApiV2.ParseReference(p)
+                    });
                     return OpenApiV2.LoadOpenApi(this.rootNode);
                 default:
+                    this.context.SetReferenceService(new ReferenceService(this.rootNode)
+                    {
+                        loadReference = OpenApiV3.LoadReference,
+                        parseReference = p => new OpenApiReference(p)
+                    });
                     return OpenApiV3.LoadOpenApi(this.rootNode);
-
             }
 
         }
@@ -72,24 +84,34 @@ namespace Tavis.OpenApi
             return null;
         }
 
-        private IReference LoadReference(string pointer)
-        {
-            var rootNode = this.rootNode;
-            switch (this.inputVersion)
-            {
-                case "2.0":
-                    return OpenApiV2.LoadReference(pointer, rootNode);
-
-                case "3.0.0":
-                    return OpenApiV3.LoadReference(pointer, rootNode);
-
-                default:
-                    return null;
-            }
-        }
     }
 
+    public class ReferenceService : IReferenceService
+    {
+        internal Func<OpenApiReference, RootNode, IReference> loadReference { get; set; }
+        internal Func<string, OpenApiReference> parseReference { get; set; }
 
+        private RootNode rootNode;
+
+        public ReferenceService(RootNode rootNode)
+        {
+            this.rootNode = rootNode;
+        }
+        public IReference LoadReference(OpenApiReference reference)
+        {
+            var referenceObject = this.loadReference(reference,this.rootNode);
+            if (referenceObject == null)
+            {
+                throw new DomainParseException($"Cannot locate $ref {reference.ToString()}");
+            }
+            return referenceObject;
+        }
+
+        public OpenApiReference ParseReference(string pointer)
+        {
+            return this.parseReference(pointer);
+        }
+    }
 }
 
 

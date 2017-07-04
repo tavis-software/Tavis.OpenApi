@@ -6,6 +6,11 @@ using Tavis.OpenApi.Model;
 namespace Tavis.OpenApi
 {
 
+    public interface IReferenceService
+    {
+        IReference LoadReference(OpenApiReference reference);
+        OpenApiReference ParseReference(string pointer);
+    }
 
     public class ParsingContext
     {
@@ -16,12 +21,13 @@ namespace Tavis.OpenApi
 
         private Dictionary<string, IReference> referenceStore = new Dictionary<string, IReference>();
 
-        private Func<string, IReference> referenceLoader;
+        private IReferenceService referenceService;
 
         private Stack<string> currentLocation = new Stack<string>();
-        public ParsingContext(Func<string,IReference> referenceLoader)
+
+        public void SetReferenceService(IReferenceService referenceService)
         {
-            this.referenceLoader = referenceLoader;
+            this.referenceService = referenceService;
         }
 
         internal void StartObject(string objectName)
@@ -39,30 +45,38 @@ namespace Tavis.OpenApi
 
         public IReference GetReferencedObject(string pointer)
         {
+            var reference = this.referenceService.ParseReference(pointer);
+            return GetReferencedObject(reference);
+        }
+
+        public IReference GetReferencedObject(OpenApiReference reference)
+        {
             IReference returnValue = null;
-            referenceStore.TryGetValue(pointer, out returnValue);
+            referenceStore.TryGetValue(reference.ToString(), out returnValue);
 
             if (returnValue == null)
             {
-                if(previousPointers.Contains(pointer))
+                if (previousPointers.Contains(reference.ToString()))
                 {
                     return null; // Return reference object?
                 }
-                previousPointers.Push(pointer);
-                returnValue = this.referenceLoader(pointer);
+                previousPointers.Push(reference.ToString());
+                returnValue = this.referenceService.LoadReference(reference);
                 previousPointers.Pop();
                 if (returnValue != null)
                 {
-                    returnValue.Pointer = pointer;
-                    referenceStore.Add(pointer, returnValue);
-                } else
+                    returnValue.Pointer = reference.ToString();
+                    referenceStore.Add(reference.ToString(), returnValue);
+                }
+                else
                 {
-                    ParseErrors.Add(new OpenApiError(this.GetLocation(), $"Cannot resolve $ref {pointer}"));
+                    ParseErrors.Add(new OpenApiError(this.GetLocation(), $"Cannot resolve $ref {reference.ToString()}"));
                 }
             }
 
             return returnValue;
         }
+
         private Stack<string> previousPointers = new Stack<string>();
 
         public void SetTempStorage(string key, object value)

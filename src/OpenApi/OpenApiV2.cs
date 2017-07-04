@@ -649,74 +649,108 @@ namespace Tavis.OpenApi
 
         #endregion
 
-
-
-        public static IReference LoadReference(string pointer, RootNode rootNode)
+        public static OpenApiReference ParseReference(string pointer)
         {
-            var parts = pointer.Split('/').Reverse().Take(2).ToArray();
+            var pointerbits = pointer.Split('#');
 
-            string refType;
-            if ("securityDefinitions|parameters|tags".Contains(parts.Last()))
+            if (pointerbits.Length == 1)
             {
-                refType = parts.Last();
-            } else
-            {
-                refType = "definitions";
-            }
-
-            IReference referencedObject = null;
-
-            if ("securityDefinitions|parameters|definitions".Contains(refType))
-            {
-                var refPointer = new JsonPointer(pointer.StartsWith("#") ? pointer: "/definitions/" + parts[0]);
-                ParseNode node = rootNode.Find(refPointer);
-                if (node == null) return null;
-                node.DomainType = refType;
-
-                switch (refType)
+                return new OpenApiReference()
                 {
-                    case "definitions":
-                        referencedObject = OpenApiV2.LoadSchema(node);
-                        break;
-                    case "parameters":
-                        referencedObject = OpenApiV2.LoadParameter(node);
-                        break;
-                    case "securityDefinitions":
-                        referencedObject = OpenApiV2.LoadSecurityScheme(node);
-                        break;
-                }
-            }
-            else if ("tags".Contains(refType))
-            {
-
-                ListNode list = (ListNode)rootNode.Find(new JsonPointer("/tags"));
-                if (list != null)
-                {
-                    foreach (var item in list)
-                    {
-                        var tag = OpenApiV2.LoadTag(item);
-
-                        if (tag.Name == parts[0])
-                        {
-                            return tag;
-                        }
-                    }
-                }
-                else
-                {
-                    return new Tag() { Name = parts[0] };
-                }
+                    ReferenceType = ReferenceType.Schema,
+                    TypeName = pointerbits[0]
+                }; 
             }
             else
             {
-                throw new DomainParseException($"Unknown $ref {refType} at {pointer}");
-
+                var pointerParts = pointerbits[1].Split('/');
+                return new OpenApiReference()
+                {
+                    ExternalFilePath = pointerbits[0],
+                    ReferenceType = ParseReferenceTypeName(pointerParts[1]),
+                    TypeName = pointerParts[2]
+                };
             }
 
+        }
+
+        public static JsonPointer GetPointer(OpenApiReference reference)
+        {
+            return new JsonPointer("#/" + GetReferenceTypeName(reference.ReferenceType) + "/" + reference.TypeName); 
+        }
+
+        private static ReferenceType ParseReferenceTypeName(string referenceTypeName)
+        {
+            switch (referenceTypeName)
+            {
+                case "definitions": return ReferenceType.Schema;
+                case "parameters": return ReferenceType.Parameter;
+                case "responses": return ReferenceType.Response;
+                case "headers": return ReferenceType.Header;
+                case "tags": return ReferenceType.Tags;
+                case "securityDefinitions": return ReferenceType.SecurityScheme;
+                default: throw new ArgumentException();
+            }
+        }
+
+        private static string GetReferenceTypeName(ReferenceType referenceType)
+        {
+            switch (referenceType)
+            {
+                case ReferenceType.Schema: return "definitions";
+                case ReferenceType.Parameter: return "parameters";
+                case ReferenceType.Response: return "responses";
+                case ReferenceType.Header: return "headers";
+                case ReferenceType.Tags: return "tags";
+                case ReferenceType.SecurityScheme: return "securityDefinitions";
+                default: throw new ArgumentException();
+            }
+        }
+
+
+        public static IReference LoadReference(OpenApiReference reference, RootNode rootNode)
+        {
+            IReference referencedObject = null;
+            ParseNode node = rootNode.Find(GetPointer(reference));
+
+            if (node == null &&  reference.ReferenceType != ReferenceType.Tags ) return null;
+            switch (reference.ReferenceType)
+            {
+                case ReferenceType.Schema:
+                    referencedObject = OpenApiV2.LoadSchema(node);
+                    break;
+                case ReferenceType.Parameter:
+                    referencedObject = OpenApiV2.LoadParameter(node);
+                    break;
+                case ReferenceType.SecurityScheme:
+                    referencedObject = OpenApiV2.LoadSecurityScheme(node);
+                    break;
+                case ReferenceType.Tags:
+                    ListNode list = (ListNode)node;
+                    if (list != null)
+                    {
+                        foreach (var item in list)
+                        {
+                            var tag = OpenApiV2.LoadTag(item);
+
+                            if (tag.Name == reference.TypeName)
+                            {
+                                return tag;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return new Tag() { Name = reference.TypeName };
+                    }
+                    break;
+
+                default:
+                    throw new DomainParseException($"Unknown $ref {reference.ReferenceType} at {reference.ToString()}");
+            }
 
             return referencedObject;
         }
-
 
         private static void ParseMap<T>(MapNode mapNode, T domainObject, FixedFieldMap<T> fixedFieldMap, PatternFieldMap<T> patternFieldMap, List<string> requiredFields  = null)
         {

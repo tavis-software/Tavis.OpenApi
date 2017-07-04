@@ -45,25 +45,25 @@ paths:
                 schema:
                     type: array
                     items:
-                      "$ref": '#/components/definitions/pet'
+                      "$ref": '#/components/schemas/pet'
             application/xml:
                 schema:
                     type: array
                     items:
-                      "$ref": '#/components/definitions/pet'
+                      "$ref": '#/components/schemas/pet'
 
         '4XX':
           description: unexpected client error
           content:
             text/html:
                 schema:
-                    "$ref": '#/components/definitions/errorModel'
+                    "$ref": '#/components/schemas/errorModel'
         '5XX':
           description: unexpected server error
           content:
             text/html:
                 schema:
-                    "$ref": '#/components/definitions/errorModel'
+                    "$ref": '#/components/schemas/errorModel'
     post:
       description: Creates a new pet in the store.  Duplicates are allowed
       operationId: addPet
@@ -71,26 +71,26 @@ paths:
           description: Pet to add to the store
           required: true
           schema:
-            "$ref": '#/components/definitions/newPet'
+            "$ref": '#/components/schemas/newPet'
       responses:
         '200':
           description: pet response
           content:
             application/json:
                 schema:
-                    "$ref": '#/components/definitions/pet'
+                    "$ref": '#/components/schemas/pet'
         '4XX':
           description: unexpected client error
           content:
             text/html:
                 schema:
-                    "$ref": '#/components/definitions/errorModel'
+                    "$ref": '#/components/schemas/errorModel'
         '5XX':
           description: unexpected server error
           content:
             text/html:
                 schema:
-                    "$ref": '#/components/definitions/errorModel'
+                    "$ref": '#/components/schemas/errorModel'
   /pets/{id}:
     get:
       description: Returns a user based on a single ID, if the user does not have access to the pet
@@ -109,22 +109,22 @@ paths:
           content:
             application/json:
                 schema:
-                    "$ref": '#/components/definitions/pet'
+                    "$ref": '#/components/schemas/pet'
             application/xml:
                 schema:
-                    "$ref": '#/components/definitions/pet'
+                    "$ref": '#/components/schemas/pet'
         '4XX':
           description: unexpected client error
           content:
             text/html:
                 schema:
-                    "$ref": '#/components/definitions/errorModel'
+                    "$ref": '#/components/schemas/errorModel'
         '5XX':
           description: unexpected server error
           content:
             text/html:
                 schema:
-                    "$ref": '#/components/definitions/errorModel'
+                    "$ref": '#/components/schemas/errorModel'
     delete:
       description: deletes a single pet based on the ID supplied
       operationId: deletePet
@@ -144,15 +144,15 @@ paths:
           content:
             text/html:
                 schema:
-                    "$ref": '#/components/definitions/errorModel'
+                    "$ref": '#/components/schemas/errorModel'
         '5XX':
           description: unexpected server error
           content:
             text/html:
                 schema:
-                    "$ref": '#/components/definitions/errorModel'
+                    "$ref": '#/components/schemas/errorModel'
 components:
-    definitions:
+    schemas:
         pet:
             type: object
             required:

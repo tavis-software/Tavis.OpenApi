@@ -22,7 +22,7 @@ namespace OpenApiTests
 
             var yamlNode = LoadNode("../../../../fixtures/v3.0/json/general/basicInfoObject.json");
 
-            var ctx = new ParsingContext(s => null);
+            var ctx = new ParsingContext();
             var node = new MapNode(ctx, (YamlMappingNode)yamlNode);
             var info = OpenApiV3.LoadInfo(node);
 
@@ -39,7 +39,7 @@ namespace OpenApiTests
 
             var yamlNode = LoadNode("../../../../fixtures/v3.0/json/general/minimalInfoObject.json");
 
-            var ctx = new ParsingContext(s => null);
+            var ctx = new ParsingContext();
             var node = new MapNode(ctx, (YamlMappingNode)yamlNode);
             var info = OpenApiV3.LoadInfo(node);
 
@@ -55,7 +55,7 @@ namespace OpenApiTests
 
             var yamlNode = LoadNode("../../../../fixtures/v3.0/json/general/negative/negativeInfoObject.json");
 
-            var ctx = new ParsingContext(s => null);
+            var ctx = new ParsingContext();
             var node = new MapNode(ctx, (YamlMappingNode)yamlNode);
             var info = OpenApiV3.LoadInfo(node);
 

@@ -65,6 +65,7 @@
     <Compile Include="OpenAPIDiff.cs" />
     <Compile Include="OpenApiError.cs" />
     <Compile Include="OpenApiParser.cs" />
+    <Compile Include="OpenApiReference.cs" />
     <Compile Include="OpenApiV2.cs" />
     <Compile Include="OpenApiV3.cs" />
     <Compile Include="Export\OpenApiV3Writer.cs" />

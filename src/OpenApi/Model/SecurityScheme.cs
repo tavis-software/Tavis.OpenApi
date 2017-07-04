@@ -29,7 +29,11 @@ namespace Tavis.OpenApi.Model
         {
             var schemeName = node.GetScalarValue();
             var context = node.Context;
-            var schemeObject = (SecurityScheme)context.GetReferencedObject($"#/components/securitySchemes/{schemeName}");
+            var schemeObject = (SecurityScheme)context.GetReferencedObject(new OpenApiReference()
+            {
+                ReferenceType = ReferenceType.SecurityScheme,
+                TypeName = schemeName
+            });
 
             return schemeObject;
         }
