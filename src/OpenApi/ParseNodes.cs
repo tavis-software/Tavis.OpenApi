@@ -111,6 +111,8 @@ namespace Tavis.OpenApi
             }
             return value;
         }
+
+   
     }
 
     public class AnyNode : ParseNode
@@ -129,6 +131,15 @@ namespace Tavis.OpenApi
         public static void Write(IParseNodeWriter writer, AnyNode node)
         {
             node.Write(writer);
+        }
+
+        public ValueNode GetValueNode()
+        {
+            return node as ValueNode; 
+        }
+        public MapNode GetMapNode()
+        {
+            return node as MapNode;
         }
     }
 

@@ -14,7 +14,10 @@ namespace Tavis.OpenApi.Model
         public string Description { get; set; }
         public string Minimum { get; set; }
         public string Maximum { get; set; }
+        public string MinLength { get; set; }
+        public string MaxLength { get; set; }
         public string Default { get; set; }
+        public bool ReadOnly { get; set; }
         public List<Schema> AllOf { get; set; }
         public string[] Required { get; set; }
         public Schema Items { get; set; }

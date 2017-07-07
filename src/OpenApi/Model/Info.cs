@@ -27,7 +27,7 @@ namespace Tavis.OpenApi.Model
         public Contact Contact { get; set; }
         public License License { get; set; }
         public string Version { get; set; }
-        public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, AnyNode> Extensions { get; set; } = new Dictionary<string, AnyNode>();
 
         private static Regex versionRegex = new Regex(@"\d+\.\d+\.\d+");
 

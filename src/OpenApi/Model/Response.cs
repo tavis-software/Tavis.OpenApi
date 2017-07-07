@@ -12,7 +12,7 @@ namespace Tavis.OpenApi.Model
         public Dictionary<string, MediaType> Content { get; set; }
         public Dictionary<string, Header> Headers { get; set; }
         public Dictionary<string, Link> Links { get; set; }
-        public Dictionary<string, string> Extensions { get; set; }
+        public Dictionary<string, AnyNode> Extensions { get; set; }
 
         public string Pointer
         {

@@ -22,7 +22,7 @@ namespace Tavis.OpenApi.Model
         public List<AnyNode> Examples { get; set; }
         public Dictionary<string, MediaType> Content { get; set; }
 
-        public Dictionary<string, string> Extensions { get; set; }
+        public Dictionary<string, AnyNode> Extensions { get; set; }
 
         void IModel.Write(IParseNodeWriter writer)
         {

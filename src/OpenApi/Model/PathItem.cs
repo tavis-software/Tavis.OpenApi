@@ -16,7 +16,7 @@ namespace Tavis.OpenApi.Model
 
         public List<Server> Servers { get; set; } = new List<Server>();
         public List<Parameter> Parameters { get; set; } = new List<Parameter>();
-        public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, AnyNode> Extensions { get; set; } = new Dictionary<string, AnyNode>();
 
         public void Write(IParseNodeWriter writer)
         {

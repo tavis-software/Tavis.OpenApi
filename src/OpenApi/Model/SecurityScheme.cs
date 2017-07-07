@@ -49,7 +49,7 @@ namespace Tavis.OpenApi.Model
                     break;
                 case "oauth2":
                 //writer.WriteStringProperty("scheme", this.Scheme);
-                case "apikey":
+                case "apiKey":
                     writer.WriteStringProperty("in", this.In);
                     writer.WriteStringProperty("name", this.Name);
 

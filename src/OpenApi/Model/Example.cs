@@ -13,7 +13,7 @@ namespace Tavis.OpenApi.Model
         public string Description { get; set; }
 
         public AnyNode Value { get; set; }
-        public Dictionary<string, string> Extensions { get; set; }
+        public Dictionary<string, AnyNode> Extensions { get; set; }
 
         public string Pointer
         {

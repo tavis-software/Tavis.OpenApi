@@ -69,7 +69,7 @@ namespace Tavis.OpenApi
 
         public static PatternFieldMap<Info> InfoPatternFields = new PatternFieldMap<Info>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) }
         };
 
 
@@ -98,7 +98,7 @@ namespace Tavis.OpenApi
 
         public static PatternFieldMap<Contact> ContactPatternFields = new PatternFieldMap<Contact>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) }
         };
 
         public static Contact LoadContact(ParseNode node)
@@ -122,7 +122,7 @@ namespace Tavis.OpenApi
 
         public static PatternFieldMap<License> LicensePatternFields = new PatternFieldMap<License>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) }
         };
 
         internal static License LoadLicense(ParseNode node)
@@ -231,7 +231,7 @@ namespace Tavis.OpenApi
         public static PatternFieldMap<Paths> PathsPatternFields = new PatternFieldMap<Paths>
         {
             { (s)=> s.StartsWith("/"), (o,k,n)=> o.PathItems.Add(k, LoadPathItem(n)    ) },
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) }
         };
 
         public static Paths LoadPaths(ParseNode node)
@@ -260,7 +260,7 @@ namespace Tavis.OpenApi
 
         private static PatternFieldMap<PathItem> PathItemPatternFields = new PatternFieldMap<PathItem>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) },
             { (s)=> "get,put,post,delete,patch,options,head,patch,trace".Contains(s),
                 (o,k,n)=> o.Operations.Add(k, LoadOperation(n)    ) }
         };
@@ -463,7 +463,7 @@ namespace Tavis.OpenApi
 
         private static PatternFieldMap<Response> ResponsePatternFields = new PatternFieldMap<Response>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) },
         };
 
         public static Response LoadResponse(ParseNode node)
@@ -559,7 +559,7 @@ namespace Tavis.OpenApi
 
         private static PatternFieldMap<Header> HeaderPatternFields = new PatternFieldMap<Header>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) },
         };
 
 
@@ -587,7 +587,7 @@ namespace Tavis.OpenApi
 
         private static PatternFieldMap<Example> ExamplePatternFields = new PatternFieldMap<Example>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) }
         };
 
         public static Example LoadExample(ParseNode node)

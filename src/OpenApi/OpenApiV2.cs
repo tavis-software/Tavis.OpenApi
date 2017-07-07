@@ -98,7 +98,7 @@ namespace Tavis.OpenApi
 
         public static PatternFieldMap<Info> InfoPatternFields = new PatternFieldMap<Info>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k,  new AnyNode(n)) }
         };
 
 
@@ -129,7 +129,7 @@ namespace Tavis.OpenApi
 
         public static PatternFieldMap<Contact> ContactPatternFields = new PatternFieldMap<Contact>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k,  new AnyNode(n)) }
         };
 
         public static Contact LoadContact(ParseNode node)
@@ -153,7 +153,7 @@ namespace Tavis.OpenApi
 
         public static PatternFieldMap<License> LicensePatternFields = new PatternFieldMap<License>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k,  new AnyNode(n)) }
         };
 
         internal static License LoadLicense(ParseNode node)
@@ -179,7 +179,7 @@ namespace Tavis.OpenApi
         public static PatternFieldMap<Paths> PathsPatternFields = new PatternFieldMap<Paths>
         {
             { (s)=> s.StartsWith("/"), (o,k,n)=> o.PathItems.Add(k, OpenApiV2.LoadPathItem(n)    ) },
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) }
         };
 
         public static Paths LoadPaths(ParseNode node)
@@ -207,7 +207,7 @@ namespace Tavis.OpenApi
 
         private static PatternFieldMap<PathItem> PathItemPatternFields = new PatternFieldMap<PathItem>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k,  new AnyNode(n)) },
             { (s)=> "get,put,post,delete,patch,options,head,patch,trace".Contains(s),
                 (o,k,n)=> o.Operations.Add(k, OpenApiV2.LoadOperation(n)    ) }
         };
@@ -307,6 +307,9 @@ namespace Tavis.OpenApi
             { "format", (o,n) => { GetOrCreateSchema(n.Context).Format = n.GetScalarValue(); } },
             { "minimum", (o,n) => { GetOrCreateSchema(n.Context).Minimum = n.GetScalarValue(); } },
             { "maximum", (o,n) => { GetOrCreateSchema(n.Context).Maximum = n.GetScalarValue(); } },
+            { "maxLength", (o,n) => { GetOrCreateSchema(n.Context).MaxLength = n.GetScalarValue(); } },
+            { "minLength", (o,n) => { GetOrCreateSchema(n.Context).MinLength = n.GetScalarValue(); } },
+            { "readOnly", (o,n) => { GetOrCreateSchema(n.Context).ReadOnly = bool.Parse(n.GetScalarValue()); } },
             { "default", (o,n) => { GetOrCreateSchema(n.Context).Default = n.GetScalarValue(); } },
             { "enum", (o,n) => { GetOrCreateSchema(n.Context).Enum = n.CreateSimpleList<String>(l=>l.GetScalarValue()); } },
             { "schema", (o,n) => { n.Context.SetTempStorage("bodyschema",LoadSchema(n)); } },
@@ -411,7 +414,7 @@ namespace Tavis.OpenApi
 
         private static PatternFieldMap<Response> ResponsePatternFields = new PatternFieldMap<Response>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k,  new AnyNode(n)) },
         };
 
         public static Response LoadResponse(ParseNode node)
@@ -464,7 +467,7 @@ namespace Tavis.OpenApi
 
         private static PatternFieldMap<Header> HeaderPatternFields = new PatternFieldMap<Header>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) },
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k,  new AnyNode(n)) },
         };
 
 
@@ -496,7 +499,7 @@ namespace Tavis.OpenApi
 
         private static PatternFieldMap<Example> ExamplePatternFields = new PatternFieldMap<Example>
         {
-            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, n.GetScalarValue()) }
+            { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k,  new AnyNode(n)) }
         };
 
         public static Example LoadExample(ParseNode node)
@@ -554,6 +557,12 @@ namespace Tavis.OpenApi
                 { "allOf", (o,n) => { o.AllOf = n.CreateList(LoadSchema); } },
                 { "examples", (o,n) => { o.Examples = ((ListNode)n).Select(s=> new AnyNode(s)).ToList(); } },
                 { "example", (o,n) => { o.Example = new AnyNode(n); } },
+                { "minimum", (o,n) => { o.Minimum = n.GetScalarValue(); } },
+                { "maximum", (o,n) => { o.Maximum = n.GetScalarValue(); } },
+                { "maxLength", (o,n) => { o.MaxLength = n.GetScalarValue(); } },
+                { "minLength", (o,n) => { o.MinLength = n.GetScalarValue(); } },
+                { "readOnly", (o,n) => { o.ReadOnly = bool.Parse(n.GetScalarValue()); } },
+                { "default", (o,n) => { o.Default = n.GetScalarValue(); } },
                 { "enum", (o,n) => { o.Enum =  n.CreateSimpleList<string>((s)=> s.GetScalarValue()); } },
 
 

@@ -6,7 +6,7 @@ namespace Tavis.OpenApi.Model
     public class Paths : IModel
     {
         public IDictionary<string, PathItem> PathItems { get; set; } = new Dictionary<string, PathItem>();
-        public Dictionary<string, string> Extensions { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, AnyNode> Extensions { get; set; } = new Dictionary<string, AnyNode>();
         
         public PathItem GetPath(string key)
         {
