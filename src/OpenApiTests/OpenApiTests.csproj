@@ -33,8 +33,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SharpYaml, Version=1.5.4.13160, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SharpYaml.1.5.4\lib\SharpYaml.dll</HintPath>
+    <Reference Include="SharpYaml, Version=1.6.1.0, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpYaml.1.6.1\lib\net45\SharpYaml.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

@@ -82,8 +82,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="SharpYaml, Version=1.5.4.13160, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SharpYaml.1.5.4\lib\SharpYaml.dll</HintPath>
+    <Reference Include="SharpYaml">
+      <HintPath>..\..\packages\SharpYaml.1.6.1\lib\portable-net40+sl5+win8+wp8+wpa81\SharpYaml.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
