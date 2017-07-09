@@ -15,19 +15,19 @@ namespace Tavis.OpenApi
         public static FixedFieldMap<OpenApiDocument> OpenApiFixedFields = new FixedFieldMap<OpenApiDocument> {
             { "swagger", (o,n) => { /* Ignore it */} },
             { "info", (o,n) => o.Info = LoadInfo(n) },
-            { "consumes", (o,n) => n.Context.SetTempStorage("globalconsumes", n.CreateSimpleList<String>((s) => s.GetScalarValue()))},
-            { "produces", (o,n) => n.Context.SetTempStorage("globalproduces", n.CreateSimpleList<String>((s) => s.GetScalarValue()))},
             { "host", (o,n) => n.Context.SetTempStorage("host", n.GetScalarValue()) },
             { "basePath", (o,n) => n.Context.SetTempStorage("basePath",n.GetScalarValue()) },
             { "schemes", (o,n) => n.Context.SetTempStorage("schemes", n.CreateSimpleList<String>((s) => { return s.GetScalarValue(); })) },
+            { "consumes", (o,n) => n.Context.SetTempStorage("globalconsumes", n.CreateSimpleList<String>((s) => s.GetScalarValue()))},
+            { "produces", (o,n) => n.Context.SetTempStorage("globalproduces", n.CreateSimpleList<String>((s) => s.GetScalarValue()))},
             { "paths", (o,n) => o.Paths = LoadPaths(n) },
             { "definitions", (o,n) =>  o.Components.Schemas = n.CreateMapWithReference("#/definitions/",LoadSchema)  },
             { "parameters", (o,n) =>  o.Components.Parameters = n.CreateMapWithReference("#/parameters/",LoadParameter) },
             { "responses", (o,n) => o.Components.Responses = n.CreateMap(LoadResponse) },
             { "securityDefinitions", (o,n) => o.Components.SecuritySchemes = n.CreateMap(LoadSecurityScheme) },
+            { "security", (o,n) => o.SecurityRequirements = n.CreateList(LoadSecurityRequirement)},
             { "tags", (o,n) => o.Tags = n.CreateList(LoadTag)},
-            { "externalDocs", (o,n) => o.ExternalDocs = LoadExternalDocs(n) },
-            { "security", (o,n) => o.SecurityRequirements = n.CreateList(LoadSecurityRequirement)}
+            { "externalDocs", (o,n) => o.ExternalDocs = LoadExternalDocs(n) }
             };
 
 
@@ -89,11 +89,11 @@ namespace Tavis.OpenApi
         public static FixedFieldMap<Info> InfoFixedFields = new FixedFieldMap<Info>
         {
             { "title",      (o,n) => { o.Title = n.GetScalarValue(); } },
-            { "version",    (o,n) => { o.Version = n.GetScalarValue(); } },
             { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
             { "termsOfService", (o,n) => { o.TermsOfService = n.GetScalarValue(); } },
             { "contact",    (o,n) => { o.Contact = LoadContact(n); } },
-            { "license",    (o,n) => { o.License = LoadLicense(n); } }
+            { "license",    (o,n) => { o.License = LoadLicense(n); } },
+            { "version",    (o,n) => { o.Version = n.GetScalarValue(); } }
         };
 
         public static PatternFieldMap<Info> InfoPatternFields = new PatternFieldMap<Info>
@@ -123,8 +123,8 @@ namespace Tavis.OpenApi
 
         public static FixedFieldMap<Contact> ContactFixedFields = new FixedFieldMap<Contact> {
             { "name", (o,n) => { o.Name = n.GetScalarValue(); } },
-            { "email", (o,n) => { o.Email = n.GetScalarValue(); } },
             { "url", (o,n) => { o.Url = new Uri(n.GetScalarValue()); } },
+            { "email", (o,n) => { o.Email = n.GetScalarValue(); } },
         };
 
         public static PatternFieldMap<Contact> ContactPatternFields = new PatternFieldMap<Contact>
@@ -148,7 +148,7 @@ namespace Tavis.OpenApi
 
         public static FixedFieldMap<License> LicenseFixedFields = new FixedFieldMap<License> {
             { "name", (o,n) => { o.Name = n.GetScalarValue(); } },
-            { "url", (o,n) => { o.Url = new Uri(n.GetScalarValue()); } },
+            { "url", (o,n) => { o.Url = new Uri(n.GetScalarValue(), UriKind.RelativeOrAbsolute); } },
         };
 
         public static PatternFieldMap<License> LicensePatternFields = new PatternFieldMap<License>
@@ -169,7 +169,6 @@ namespace Tavis.OpenApi
 
         #endregion
 
- 
         #region PathsObject
 
         public static FixedFieldMap<Paths> PathsFixedFields = new FixedFieldMap<Paths>
@@ -198,9 +197,7 @@ namespace Tavis.OpenApi
 
         private static FixedFieldMap<PathItem> PathItemFixedFields = new FixedFieldMap<PathItem>
         {
-            // $ref
-            { "summary", (o,n) => { o.Summary = n.GetScalarValue(); } },
-            { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
+            { "$ref", (o,n) => { /* Not supported yet */} },
             { "parameters", (o,n) => { o.Parameters = n.CreateList(OpenApiV2.LoadParameter); } },
 
         };
@@ -208,7 +205,7 @@ namespace Tavis.OpenApi
         private static PatternFieldMap<PathItem> PathItemPatternFields = new PatternFieldMap<PathItem>
         {
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k,  new AnyNode(n)) },
-            { (s)=> "get,put,post,delete,patch,options,head,patch,trace".Contains(s),
+            { (s)=> "get,put,post,delete,patch,options,head,patch".Contains(s),
                 (o,k,n)=> o.Operations.Add(k, OpenApiV2.LoadOperation(n)    ) }
         };
 
@@ -549,6 +546,7 @@ namespace Tavis.OpenApi
         private static FixedFieldMap<Schema> SchemaFixedFields = new FixedFieldMap<Schema>
         {
                 { "type", (o,n) => { o.Type = n.GetScalarValue(); } },
+                { "title", (o,n) => { o.Title = n.GetScalarValue(); } },
                 { "format", (o,n) => { o.Description = n.GetScalarValue(); } },
                 { "description", (o,n) => { o.Type = n.GetScalarValue(); } },
                 { "required", (o,n) => { o.Required = n.CreateSimpleList<string>(n2 => n2.GetScalarValue()).ToArray(); } },
