@@ -13,9 +13,22 @@ namespace Tavis.OpenApi.Model
 
         void IModel.Write(IParseNodeWriter writer)
         {
-                writer.WriteStartList();
 
+            writer.WriteStartMap();
+
+            foreach (var scheme in Schemes)
+            {
+                
+                writer.WritePropertyName(scheme.Key.Pointer.TypeName);
+                writer.WriteStartList();
+                foreach (var scope in scheme.Value)
+                {
+                    writer.WriteValue(scope);
+                }
                 writer.WriteEndList();
+            }
+            
+            writer.WriteEndMap();
         }
 
         

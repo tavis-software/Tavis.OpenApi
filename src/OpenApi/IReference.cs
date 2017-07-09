@@ -3,20 +3,20 @@
 
     public interface IReference
     {
-        string Pointer { get; set; }
+        OpenApiReference Pointer { get; set; }
     }
 
     public static class IReferenceExtensions
     {
         public static bool IsReference(this IReference reference)
         {
-            return !string.IsNullOrWhiteSpace(reference.Pointer);
+            return reference.Pointer != null;
         }
 
         public static void WriteRef(this IReference reference, IParseNodeWriter writer)
         {
             writer.WriteStartMap();
-            writer.WriteStringProperty("$ref", reference.Pointer);
+            writer.WriteStringProperty("$ref", reference.Pointer.ToString());
             writer.WriteEndMap();
         }
 

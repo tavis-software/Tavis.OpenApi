@@ -12,7 +12,7 @@ namespace Tavis.OpenApi.Model
     {
         public Dictionary<string, PathItem> PathItems { get; set; } = new Dictionary<string, PathItem>();
 
-        public string Pointer { get; set; }
+        public OpenApiReference Pointer { get; set; }
 
         public Dictionary<string, string> Extensions { get; set; }
 

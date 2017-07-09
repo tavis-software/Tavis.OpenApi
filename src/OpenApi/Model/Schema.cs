@@ -28,7 +28,7 @@ namespace Tavis.OpenApi.Model
 
         public Dictionary<string, AnyNode> Extensions { get; set; } = new Dictionary<string, AnyNode>();
 
-        public string Pointer
+        public OpenApiReference Pointer
         {
             get;
             set;
@@ -78,6 +78,16 @@ namespace Tavis.OpenApi.Model
                 writer.WriteEndMap();
             }
 
+            if (Enum.Count > 0 )
+            {
+                writer.WritePropertyName("enum");
+                writer.WriteStartList();
+                foreach (var item in Enum)
+                {
+                    writer.WriteValue(item);
+                }
+                writer.WriteEndList();
+            }
             writer.WriteEndMap();
         }
         

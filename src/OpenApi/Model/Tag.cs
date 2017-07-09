@@ -8,7 +8,7 @@ namespace Tavis.OpenApi.Model
         public string Name { get; set; }
         public string Description { get; set; }
 
-        string IReference.Pointer
+        OpenApiReference IReference.Pointer
         {
             get; set;
         }

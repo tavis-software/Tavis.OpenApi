@@ -65,7 +65,7 @@ namespace Tavis.OpenApi
                 previousPointers.Pop();
                 if (returnValue != null)
                 {
-                    returnValue.Pointer = reference.ToString();
+                    returnValue.Pointer = reference;
                     referenceStore.Add(reference.ToString(), returnValue);
                 }
                 else

@@ -15,7 +15,7 @@ namespace Tavis.OpenApi.Model
         public AnyNode Value { get; set; }
         public Dictionary<string, AnyNode> Extensions { get; set; }
 
-        public string Pointer
+        public OpenApiReference Pointer
         {
             get; set;
         }

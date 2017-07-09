@@ -59,25 +59,16 @@ namespace Tavis.OpenApi
         {
             var openApidoc = new OpenApiDocument();
 
-            var rootMap = rootNode.GetMap();
+            var openApiNode = rootNode.GetMap();
 
-            bool haspaths = false;
-            foreach (var node in rootMap)
-            {
-                node.ParseField(openApidoc, OpenApiV2.OpenApiFixedFields, OpenApiV2.OpenApiPatternFields);
-                if (node.Name == "paths")
-                {
-                    haspaths = true;
-                }
-            }
+            var required = new List<string>() { "info", "swagger", "paths" };
 
-            if (!haspaths)
-            {
-                rootMap.Context.ParseErrors.Add(new OpenApiError("", "`paths` is a required property"));
-            }
+            ParseMap(openApiNode, openApidoc, OpenApiFixedFields, OpenApiPatternFields, required);
+
+            ReportMissing(openApiNode, required);
 
             // Post Process OpenApi Object
-            MakeServers(openApidoc.Servers, rootMap.Context);
+            MakeServers(openApidoc.Servers, openApiNode.Context);
 
             return openApidoc;
         }

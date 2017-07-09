@@ -16,7 +16,7 @@ namespace Tavis.OpenApi.Model
         public string Description { get; set; }
         public Dictionary<string, string> Extensions { get; set; }
 
-        public string Pointer { get; set; }
+        public OpenApiReference Pointer { get; set; }
 
 
         void IModel.Write(IParseNodeWriter writer)

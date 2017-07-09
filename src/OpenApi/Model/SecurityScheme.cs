@@ -6,6 +6,7 @@ namespace Tavis.OpenApi.Model
 {
     public class SecurityScheme : IModel, IReference
     {
+        public string Key { get; set; }
         public string Type { get; set; }
         public string Description { get; set; }
         public string Name { get; set; }
@@ -20,7 +21,7 @@ namespace Tavis.OpenApi.Model
 
         public Dictionary<string, AnyNode> Extensions { get; set; } = new Dictionary<string, AnyNode>();
 
-        public string Pointer
+        public OpenApiReference Pointer
         {
             get; set;
         }

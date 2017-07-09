@@ -16,7 +16,7 @@ namespace Tavis.OpenApi.Model
 
     public class Parameter : IModel, IReference
     {
-        public string Pointer { get; set; }
+        public OpenApiReference Pointer { get; set; }
         public string Name { get; set; }
         public InEnum In { get; set; }
         public string Description { get; set; }
