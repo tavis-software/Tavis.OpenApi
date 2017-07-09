@@ -12,37 +12,36 @@ namespace OpenApiWebApp.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public ActionResult Index(HomeViewModel model)
         {
-            return View();
+            if (!String.IsNullOrWhiteSpace(model.Input))
+            {
+                var openApiParser = new OpenApiParser();
+                OpenApiDocument doc = null;
+                try
+                {
+                    doc = openApiParser.Parse(model.Input);
+                    model.Errors = String.Join("\r\n", openApiParser.ParseErrors);
+                }
+                catch (Exception ex)
+                {
+                    model.Errors = ex.Message;
+                    model.Output = string.Empty;
+                }
+                if (doc != null)
+                {
+                    var outputwriter = new OpenApiV3Writer(doc);
+                    var outputstream = new MemoryStream();
+                    outputwriter.Writer(outputstream);
+                    outputstream.Position = 0;
+
+                    model.Output = new StreamReader(outputstream).ReadToEnd();
+                }
+
+            }
+            return View("Index", model);
         }
 
-        [HttpPost]
-        public ActionResult Update(HomeViewModel model)
-        {
-            var openApiParser = new OpenApiParser();
-            OpenApiDocument doc = null;
-            try
-            {
-                doc = openApiParser.Parse(model.Input);
-                model.Errors = String.Join("\r\n", openApiParser.ParseErrors);
-            } catch (Exception ex)
-            {
-                model.Errors = ex.Message;
-                model.Output = string.Empty;
-            }
-            if (doc != null)
-            {
-                var outputwriter = new OpenApiV3Writer(doc);
-                var outputstream = new MemoryStream();
-                outputwriter.Writer(outputstream);
-                outputstream.Position = 0;
-
-                model.Output = new StreamReader(outputstream).ReadToEnd();
-            }
-            return View("Index",model);
-
-        }
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
