@@ -430,10 +430,16 @@ namespace Tavis.OpenApi
             response.Content = new Dictionary<string, MediaType>();
             foreach (var mt in produces)
             {
-                response.Content.Add(mt, new MediaType()
+                var schema = context.GetTempStorage<Schema>("operationschema");
+                MediaType mediaType = null;
+                if (schema != null)
                 {
-                    Schema = context.GetTempStorage<Schema>("operationschema")
-                });
+                    mediaType = new MediaType()
+                    {
+                        Schema = schema
+                    };
+                }
+                response.Content.Add(mt, mediaType);
             }
 
         }

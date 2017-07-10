@@ -424,6 +424,8 @@ namespace Tavis.OpenApi
         {
             var mapNode = node.CheckMapNode("contentType");
 
+            if (mapNode.Count() == 0) return null;
+
             var contentType = new MediaType();
 
             ParseMap(mapNode, contentType, MediaTypeFixedFields, MediaTypePatternFields);

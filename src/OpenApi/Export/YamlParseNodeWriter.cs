@@ -172,8 +172,8 @@ namespace Tavis.OpenApi.Export
         {
 //            if (InList()) writer.Write(Indent + "- ");
             writer.WriteLine("{}");  //TODO deal with culture issues
- //           if (InProperty()) state.Pop();
-
+                                     //           if (InProperty()) state.Pop();
+            IncreaseIndent();  //Starting offset the missing map start?
         }
     }
 }

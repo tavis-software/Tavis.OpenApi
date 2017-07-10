@@ -20,12 +20,18 @@ namespace Tavis.OpenApi.Model
             {
                 
                 writer.WritePropertyName(scheme.Key.Pointer.TypeName);
-                writer.WriteStartList();
-                foreach (var scope in scheme.Value)
+                if (scheme.Value.Count > 0)
                 {
-                    writer.WriteValue(scope);
+                    writer.WriteStartList();
+                    foreach (var scope in scheme.Value)
+                    {
+                        writer.WriteValue(scope);
+                    }
+                    writer.WriteEndList();
+                } else
+                {
+                    writer.WriteValue("[]");
                 }
-                writer.WriteEndList();
             }
             
             writer.WriteEndMap();

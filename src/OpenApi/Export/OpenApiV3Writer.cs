@@ -71,7 +71,7 @@ namespace Tavis.OpenApi
                         parser(writer, item.Value);
                     } else
                     {
-                        writer.WriteValue(null);
+                        writer.WriteNull();
                     }
                     writer.WriteEndMap();
                 }
