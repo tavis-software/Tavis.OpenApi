@@ -18,9 +18,33 @@ namespace Tavis.OpenApi.Model
     {
         public OpenApiReference Pointer { get; set; }
         public string Name { get; set; }
-        public InEnum In { get; set; }
+        public InEnum In
+        {
+            get { return @in; }
+            set
+            {
+                @in = value;
+                if (@in == InEnum.path)
+                {
+                    Required = true;
+                }
+            }
+        }
+        private InEnum @in;
         public string Description { get; set; }
-        public bool Required { get; set; } = false;
+        public bool Required
+        {
+            get { return required; }
+            set
+            {
+                if (In == InEnum.path && value == false)
+                {
+                    throw new ArgumentException("Required cannot be set to false when in is path");
+                }
+                required = value;
+            }
+        }
+        private bool required = false;
         public bool Deprecated { get; set; } = false;
         public bool AllowEmptyValue { get; set; } = false;
         public string Style { get; set; }

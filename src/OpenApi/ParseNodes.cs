@@ -267,7 +267,7 @@ namespace Tavis.OpenApi
             var yamlSequence = nodeList as YamlSequenceNode;
             if (yamlSequence == null) throw new DomainParseException($"Expected list at line {nodeList.Start.Line} while parsing {typeof(T).Name}");
 
-            return yamlSequence.Select(n => map(new MapNode(this.context,(YamlMappingNode)n))).ToList();
+            return yamlSequence.Select(n => map(new MapNode(this.context,(YamlMappingNode)n))).Where(i => i != null).ToList();
         }
 
         public override List<T> CreateSimpleList<T>(Func<ValueNode, T> map)

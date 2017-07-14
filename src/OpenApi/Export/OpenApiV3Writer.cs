@@ -105,6 +105,23 @@ namespace Tavis.OpenApi
             }
         }
 
+        public static void WriteNumberProperty(this IParseNodeWriter writer, string name, int? value)
+        {
+            if (value != null)
+            {
+                writer.WritePropertyName(name);
+                writer.WriteValue((int)value);
+            }
+        }
+
+        public static void WriteNumberProperty(this IParseNodeWriter writer, string name, decimal? value)
+        {
+            if (value != null)
+            {
+                writer.WritePropertyName(name);
+                writer.WriteValue((decimal)value);
+            }
+        }
         public static void WriteNumberProperty(this IParseNodeWriter writer, string name, int value, int? defaultValue = null)
         {
             if (defaultValue == null || value != defaultValue)

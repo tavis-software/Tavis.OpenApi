@@ -12,19 +12,37 @@ namespace Tavis.OpenApi.Model
         public string Type { get; set; }
         public string Format { get; set; }
         public string Description { get; set; }
-        public string Minimum { get; set; }
-        public string Maximum { get; set; }
-        public string MinLength { get; set; }
-        public string MaxLength { get; set; }
+        public decimal? Maximum { get; set; }
+        public bool ExclusiveMaximum { get; set; } = false;
+        public decimal? Minimum { get; set; }
+        public bool ExclusiveMinimum { get; set; } = false;
+        public int? MaxLength { get; set; }
+        public int? MinLength { get; set; }
+        public string Pattern { get; set; }
+        public decimal MultipleOf { get; set; }
         public string Default { get; set; }
         public bool ReadOnly { get; set; }
+        public bool WriteOnly { get; set; }
         public List<Schema> AllOf { get; set; }
+        public List<Schema> OneOf { get; set; }
+        public List<Schema> AnyOf { get; set; }
+        public Schema Not { get; set; }
         public string[] Required { get; set; }
         public Schema Items { get; set; }
+        public int? MaxItems { get; set; }
+        public int? MinItems { get; set; }
+        public bool UniqueItems { get; set; }
         public Dictionary<string,Schema> Properties { get; set; }
-        public List<AnyNode> Examples { get; set; }
+        public int? MaxProperties { get; set; }
+        public int? MinProperties { get; set; }
+        public bool AdditionalPropertiesAllowed { get; set; }
+        public Schema AdditionalProperties { get; set; }
+
         public AnyNode Example { get; set; }
         public List<string> Enum { get; set; } = new List<string>();
+        public bool Nullable { get; set; }
+        public ExternalDocs ExternalDocs { get; set; }
+        public bool Deprecated { get; set; }
 
         public Dictionary<string, AnyNode> Extensions { get; set; } = new Dictionary<string, AnyNode>();
 
@@ -44,6 +62,11 @@ namespace Tavis.OpenApi.Model
             writer.WriteStringProperty("format", Format);
             writer.WriteStringProperty("description", Description);
 
+            writer.WriteNumberProperty("maxLength", MaxLength);
+            writer.WriteNumberProperty("minLength", MinLength);
+            writer.WriteStringProperty("pattern", Pattern);
+            writer.WriteStringProperty("default", Default);
+
             if (Required != null && Required.Length > 0)
             {
                 writer.WritePropertyName("required");
@@ -55,11 +78,19 @@ namespace Tavis.OpenApi.Model
                 writer.WriteEndList();
             }
 
+            writer.WriteNumberProperty("maximum", Maximum);
+            writer.WriteBoolProperty("exclusiveMaximum", ExclusiveMaximum, false);
+            writer.WriteNumberProperty("minimum", Minimum);
+            writer.WriteBoolProperty("exclusiveMinimum", ExclusiveMinimum, false);
+
             if (Items != null)
             {
                 writer.WritePropertyName("items");
                 ModelHelper.Write(writer, Items);
             }
+            writer.WriteNumberProperty("maxItems", MaxItems);
+            writer.WriteNumberProperty("minItems", MinItems);
+
             if (Properties != null)
             {
                 writer.WritePropertyName("properties");
@@ -77,6 +108,10 @@ namespace Tavis.OpenApi.Model
                 }
                 writer.WriteEndMap();
             }
+            writer.WriteNumberProperty("maxProperties", MaxProperties);
+            writer.WriteNumberProperty("minProperties", MinProperties);
+
+
 
             if (Enum.Count > 0 )
             {

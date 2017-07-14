@@ -244,8 +244,60 @@ namespace Tavis.OpenApi
 
             ParseMap(mapNode, operation, OperationFixedFields, OperationPatternFields);
 
+            // Build request body based on information determined while parsing Operation
+            var bodyParameter = node.Context.GetTempStorage<Parameter>("bodyParameter");
+            if (bodyParameter != null)
+            {
+                operation.RequestBody = CreateRequestBody(node.Context, bodyParameter);
+            }
+            else
+            {
+                var formParameters = node.Context.GetTempStorage<List<Parameter>>("formParameters");
+                if (formParameters != null)
+                {
+                    operation.RequestBody = CreateFormBody(formParameters);
+                }
+            }
 
             return operation;
+        }
+
+        private static RequestBody CreateFormBody(List<Parameter> formParameters)
+        {
+                var mediaType = new MediaType()
+                {
+                    Schema = new Schema()
+                    {
+                        Properties = formParameters.ToDictionary(k => k.Name, v => v.Schema)
+                    }
+                };
+
+                var formBody = new RequestBody()
+                {
+                    Content = new Dictionary<string, MediaType>() {
+                            { "application/x-www-form-urlencoded", mediaType } }
+                };
+
+                return formBody;
+        }
+
+        private static RequestBody CreateRequestBody(ParsingContext context, Parameter bodyParameter)
+        {
+            var consumes = context.GetTempStorage<List<string>>("operationproduces")
+                      ?? context.GetTempStorage<List<string>>("globalproduces")
+                      ?? new List<string>() { "application/json" };
+
+            var requestBody = new RequestBody()
+            {
+                Description = bodyParameter.Description,
+                Required = bodyParameter.Required,
+                Content = consumes.ToDictionary(k => k, v => new MediaType()
+                {
+                    Schema = bodyParameter.Schema  // Should we clone this?
+                })
+            };
+
+            return requestBody;
         }
 
         #endregion
@@ -289,29 +341,37 @@ namespace Tavis.OpenApi
             { "allowEmptyValue", (o,n) => { o.AllowEmptyValue = bool.Parse(n.GetScalarValue()); } },
             { "examples",       (o,n) => { o.Examples = ((ListNode)n).Select(s=> new AnyNode(s)).ToList(); } },
             { "example",        (o,n) => { o.Example = new AnyNode(n); } },
-            { "type", (o,n) => { GetOrCreateSchema(n.Context).Type = n.GetScalarValue(); } },
-            { "items", (o,n) => { GetOrCreateSchema(n.Context).Items = LoadSchema(n); } },
+            { "type", (o,n) => { GetOrCreateSchema(o).Type = n.GetScalarValue(); } },
+            { "items", (o,n) => { GetOrCreateSchema(o).Items = LoadSchema(n); } },
             { "collectionFormat", (o,n) => { /* Convert to style */ } },
-            { "format", (o,n) => { GetOrCreateSchema(n.Context).Format = n.GetScalarValue(); } },
-            { "minimum", (o,n) => { GetOrCreateSchema(n.Context).Minimum = n.GetScalarValue(); } },
-            { "maximum", (o,n) => { GetOrCreateSchema(n.Context).Maximum = n.GetScalarValue(); } },
-            { "maxLength", (o,n) => { GetOrCreateSchema(n.Context).MaxLength = n.GetScalarValue(); } },
-            { "minLength", (o,n) => { GetOrCreateSchema(n.Context).MinLength = n.GetScalarValue(); } },
-            { "readOnly", (o,n) => { GetOrCreateSchema(n.Context).ReadOnly = bool.Parse(n.GetScalarValue()); } },
-            { "default", (o,n) => { GetOrCreateSchema(n.Context).Default = n.GetScalarValue(); } },
-            { "enum", (o,n) => { GetOrCreateSchema(n.Context).Enum = n.CreateSimpleList<String>(l=>l.GetScalarValue()); } },
-            { "schema", (o,n) => { n.Context.SetTempStorage("bodyschema",LoadSchema(n)); } },
+            { "format", (o,n) => { GetOrCreateSchema(o).Format = n.GetScalarValue(); } },
+            { "minimum", (o,n) => { GetOrCreateSchema(o).Minimum = decimal.Parse(n.GetScalarValue()); } },
+            { "maximum", (o,n) => { GetOrCreateSchema(o).Maximum = decimal.Parse(n.GetScalarValue()); } },
+            { "maxLength", (o,n) => { GetOrCreateSchema(o).MaxLength = int.Parse(n.GetScalarValue()); } },
+            { "minLength", (o,n) => { GetOrCreateSchema(o).MinLength = int.Parse(n.GetScalarValue()); } },
+            { "readOnly", (o,n) => { GetOrCreateSchema(o).ReadOnly = bool.Parse(n.GetScalarValue()); } },
+            { "default", (o,n) => { GetOrCreateSchema(o).Default = n.GetScalarValue(); } },
+            { "pattern", (o,n) => { GetOrCreateSchema(o).Pattern = n.GetScalarValue(); } },
+            { "enum", (o,n) => { GetOrCreateSchema(o).Enum = n.CreateSimpleList<String>(l=>l.GetScalarValue()); } },
+            { "schema", (o,n) => { o.Schema = LoadSchema(n); } },
         };
 
-        private static Schema GetOrCreateSchema(ParsingContext context)
+        private static Schema GetOrCreateSchema(Parameter p)
         {
-            var schema = context.GetTempStorage<Schema>("schema");
-            if (schema == null)
+            if (p.Schema == null)
             {
-                schema = new Schema();
-                context.SetTempStorage("schema", schema);
+                p.Schema = new Schema();
             }
-            return schema;
+            return p.Schema;
+        }
+
+        private static Schema GetOrCreateSchema(Header p)
+        {
+            if (p.Schema == null)
+            {
+                p.Schema = new Schema();
+            }
+            return p.Schema;
         }
 
         private static void ProcessIn(Parameter o, ParseNode n)
@@ -321,10 +381,16 @@ namespace Tavis.OpenApi
             switch(value)
             {
                 case "body":
-                    n.Context.SetTempStorage("bodyType", "body");
+                    n.Context.SetTempStorage("bodyParameter",o);
                     break;
                 case "form":
-                    n.Context.SetTempStorage("bodyType", "form");
+                    var formParameters = n.Context.GetTempStorage<List<Parameter>>("formParameters");
+                    if (formParameters == null)
+                    {
+                        formParameters = new List<Parameter>();
+                        n.Context.SetTempStorage("formParameters", formParameters);
+                    }
+                    formParameters.Add(o);
                     break;
                 default:
                     o.In = (InEnum)Enum.Parse(typeof(InEnum), value);
@@ -360,29 +426,9 @@ namespace Tavis.OpenApi
                 node.Context.SetTempStorage("schema", null);
             }
 
-            var bodyType = node.Context.GetTempStorage<string>("bodyType");
-            switch(bodyType)
+            if (parameter.In == 0)
             {
-                case "body":
-                    var consumes = node.Context.GetTempStorage<List<string>>("operationproduces")
-                          ?? node.Context.GetTempStorage<List<string>>("globalproduces")
-                          ?? new List<string>() { "application/json" };
-
-
-                    parameter.Content = new Dictionary<string, MediaType>();
-                    foreach (var consume in consumes)
-                    {
-                        parameter.Content.Add(consume, new MediaType()
-                        {
-                            Schema = node.Context.GetTempStorage<Schema>("bodyschema")
-                        });
-                    }
-                    parameter.Schema = null;
-                    break;
-                case "form":
-
-                    break;
-
+                return null; // Don't include Form or Body parameters in Operation.Parameters list
             }
 
             return parameter;
@@ -454,8 +500,8 @@ namespace Tavis.OpenApi
             { "deprecated", (o,n) => { o.Deprecated = bool.Parse(n.GetScalarValue()); } },
             { "allowReserved", (o,n) => { o.AllowReserved = bool.Parse(n.GetScalarValue()); } },
             { "style", (o,n) => { o.Style = n.GetScalarValue(); } },
-            { "type", (o,n) => { GetOrCreateSchema(n.Context).Type = n.GetScalarValue(); } },
-            { "format", (o,n) => { GetOrCreateSchema(n.Context).Format = n.GetScalarValue(); } },
+            { "type", (o,n) => { GetOrCreateSchema(o).Type = n.GetScalarValue(); } },
+            { "format", (o,n) => { GetOrCreateSchema(o).Format = n.GetScalarValue(); } },
 
         };
 
@@ -542,23 +588,39 @@ namespace Tavis.OpenApi
 
         private static FixedFieldMap<Schema> SchemaFixedFields = new FixedFieldMap<Schema>
         {
-                { "type", (o,n) => { o.Type = n.GetScalarValue(); } },
-                { "title", (o,n) => { o.Title = n.GetScalarValue(); } },
-                { "format", (o,n) => { o.Description = n.GetScalarValue(); } },
-                { "description", (o,n) => { o.Type = n.GetScalarValue(); } },
+                { "title", (o,n) => { o.Title = n.GetScalarValue();  } },
+                { "multipleOf", (o,n) => { o.MultipleOf = decimal.Parse(n.GetScalarValue()); } },
+                { "maximum", (o,n) => { o.Maximum = decimal.Parse(n.GetScalarValue()); } },
+                { "exclusiveMaximum", (o,n) => { o.ExclusiveMaximum = bool.Parse(n.GetScalarValue()); } },
+                { "minimum", (o,n) => { o.Minimum = decimal.Parse(n.GetScalarValue()); } },
+                { "exclusiveMinimum", (o,n) => { o.ExclusiveMinimum = bool.Parse(n.GetScalarValue()); } },
+                { "maxLength", (o,n) => { o.MaxLength = int.Parse(n.GetScalarValue()); } },
+                { "minLength", (o,n) => { o.MinLength = int.Parse(n.GetScalarValue()); } },
+                { "pattern", (o,n) => { o.Pattern = n.GetScalarValue(); } },
+                { "maxItems", (o,n) => { o.MaxItems = int.Parse(n.GetScalarValue()); } },
+                { "minItems", (o,n) => { o.MinItems = int.Parse(n.GetScalarValue()); } },
+                { "uniqueItems", (o,n) => { o.UniqueItems = bool.Parse(n.GetScalarValue()); } },
+                { "maxProperties", (o,n) => { o.MaxProperties = int.Parse(n.GetScalarValue()); } },
+                { "minProperties", (o,n) => { o.MinProperties = int.Parse(n.GetScalarValue()); } },
                 { "required", (o,n) => { o.Required = n.CreateSimpleList<string>(n2 => n2.GetScalarValue()).ToArray(); } },
+                { "enum", (o,n) => { o.Enum =  n.CreateSimpleList<string>((s)=> s.GetScalarValue()); } },
+
+                { "type", (o,n) => { o.Type = n.GetScalarValue(); } },
+                { "allOf", (o,n) => { o.AllOf = n.CreateList(LoadSchema); } },
                 { "items", (o,n) => { o.Items = LoadSchema(n); } },
                 { "properties", (o,n) => { o.Properties = n.CreateMap(LoadSchema); } },
-                { "allOf", (o,n) => { o.AllOf = n.CreateList(LoadSchema); } },
-                { "examples", (o,n) => { o.Examples = ((ListNode)n).Select(s=> new AnyNode(s)).ToList(); } },
-                { "example", (o,n) => { o.Example = new AnyNode(n); } },
-                { "minimum", (o,n) => { o.Minimum = n.GetScalarValue(); } },
-                { "maximum", (o,n) => { o.Maximum = n.GetScalarValue(); } },
-                { "maxLength", (o,n) => { o.MaxLength = n.GetScalarValue(); } },
-                { "minLength", (o,n) => { o.MinLength = n.GetScalarValue(); } },
-                { "readOnly", (o,n) => { o.ReadOnly = bool.Parse(n.GetScalarValue()); } },
+                { "additionalProperties", (o,n) => { if (n is ValueNode) { o.AdditionalPropertiesAllowed = bool.Parse(n.GetScalarValue()); }
+                                                     else { o.AdditionalProperties = LoadSchema(n); }
+                                                    } },
+                { "description", (o,n) => { o.Type = n.GetScalarValue(); } },
+                { "format", (o,n) => { o.Description = n.GetScalarValue(); } },
                 { "default", (o,n) => { o.Default = n.GetScalarValue(); } },
-                { "enum", (o,n) => { o.Enum =  n.CreateSimpleList<string>((s)=> s.GetScalarValue()); } },
+
+                // discriminator
+                { "readOnly", (o,n) => { o.ReadOnly = bool.Parse(n.GetScalarValue()); } },
+                // xml
+                { "externalDocs", (o,n) => { o.ExternalDocs = LoadExternalDocs(n); } },
+                { "example", (o,n) => { o.Example = new AnyNode(n); } },
 
 
         };

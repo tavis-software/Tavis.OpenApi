@@ -53,7 +53,10 @@ namespace Tavis.OpenApi.Export
             Indent = Indent.Substring(0, Indent.Length - 2);
         }
 
-
+        private bool InMap()
+        {
+            return state.Peek() == State.InMap;
+        }
         private bool InList()
         {
             return state.Peek() == State.InList;
@@ -170,10 +173,10 @@ namespace Tavis.OpenApi.Export
 
         public void WriteNull()
         {
-//            if (InList()) writer.Write(Indent + "- ");
-            writer.WriteLine("{}");  //TODO deal with culture issues
-                                     //           if (InProperty()) state.Pop();
-            IncreaseIndent();  //Starting offset the missing map start?
+            if (InList()) writer.Write(Indent + "- ");
+            writer.WriteLine("{}");
+            //            /*if (InMap())*/ DecreaseIndent();  //Negate decreasing indent in the EndMap 
+            if (InProperty()) state.Pop();
         }
     }
 }
