@@ -254,7 +254,7 @@ namespace Tavis.OpenApi
         {
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) },
             { (s)=> "get,put,post,delete,patch,options,head,patch,trace".Contains(s),
-                (o,k,n)=> o.Operations.Add(k, LoadOperation(n)    ) }
+                (o,k,n)=> o.AddOperation(k, LoadOperation(n)    ) }
         };
 
 
@@ -464,11 +464,9 @@ namespace Tavis.OpenApi
         {
             var mapNode = node.CheckMapNode("response");
 
+            var required = new List<string>() { "description" };
             var response = new Response();
-            foreach (var property in mapNode)
-            {
-                property.ParseField(response, ResponseFixedFields, ResponsePatternFields);
-            }
+            ParseMap(mapNode, response, ResponseFixedFields, ResponsePatternFields, required);
 
             return response;
         }

@@ -19,7 +19,7 @@ namespace Tavis.OpenApi.Model
             writer.WriteStartMap();
 
             writer.WriteStringProperty("description", Description);
-            writer.WriteBoolProperty("required", Required);
+            writer.WriteBoolProperty("required", Required, false);
             writer.WriteMap("content", Content, ModelHelper.Write);
 
             writer.WriteEndMap();

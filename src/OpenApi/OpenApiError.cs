@@ -11,6 +11,7 @@ namespace Tavis.OpenApi
         public OpenApiError(DomainParseException ex)
         {
             this.message = ex.Message;
+            this.pointer = ex.Pointer;
         }
         public OpenApiError(string pointer, string message)
         {
@@ -20,7 +21,7 @@ namespace Tavis.OpenApi
 
         public override string ToString()
         {
-            return this.message;
+            return this.message + (!string.IsNullOrEmpty(this.pointer) ? "at " + this.pointer : "");
         }
     }
 

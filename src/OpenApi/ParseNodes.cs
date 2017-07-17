@@ -23,10 +23,12 @@ namespace Tavis.OpenApi
 
     public class DomainParseException : Exception
     {
+        public string Pointer { get; set; }
         public DomainParseException(string message) : base(message)
         {
 
         }
+
     }
     public class FixedFieldMap<T> : Dictionary<string, Action<T, ParseNode>>
     {
@@ -175,6 +177,7 @@ namespace Tavis.OpenApi
                     fixedFieldMap(parentInstance, this.Value);
                 } catch (DomainParseException ex)
                 {
+                    ex.Pointer = this.Context.GetLocation();
                     this.Context.ParseErrors.Add(new OpenApiError(ex));
                 }
                 finally
@@ -194,6 +197,7 @@ namespace Tavis.OpenApi
                     }
                     catch (DomainParseException ex)
                     {
+                        ex.Pointer = this.Context.GetLocation();
                         this.Context.ParseErrors.Add(new OpenApiError(ex));
                     }
                     finally

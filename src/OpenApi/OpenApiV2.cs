@@ -197,7 +197,7 @@ namespace Tavis.OpenApi
         {
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k,  new AnyNode(n)) },
             { (s)=> "get,put,post,delete,patch,options,head,patch".Contains(s),
-                (o,k,n)=> o.Operations.Add(k, OpenApiV2.LoadOperation(n)    ) }
+                (o,k,n)=> o.AddOperation(k, OpenApiV2.LoadOperation(n)    ) }
         };
 
 
@@ -258,6 +258,7 @@ namespace Tavis.OpenApi
                     operation.RequestBody = CreateFormBody(formParameters);
                 }
             }
+
 
             return operation;
         }
@@ -343,7 +344,7 @@ namespace Tavis.OpenApi
             { "example",        (o,n) => { o.Example = new AnyNode(n); } },
             { "type", (o,n) => { GetOrCreateSchema(o).Type = n.GetScalarValue(); } },
             { "items", (o,n) => { GetOrCreateSchema(o).Items = LoadSchema(n); } },
-            { "collectionFormat", (o,n) => { /* Convert to style */ } },
+            { "collectionFormat", (o,n) => { o.Style = LoadStyle(n.GetScalarValue());  } },
             { "format", (o,n) => { GetOrCreateSchema(o).Format = n.GetScalarValue(); } },
             { "minimum", (o,n) => { GetOrCreateSchema(o).Minimum = decimal.Parse(n.GetScalarValue()); } },
             { "maximum", (o,n) => { GetOrCreateSchema(o).Maximum = decimal.Parse(n.GetScalarValue()); } },
@@ -355,6 +356,11 @@ namespace Tavis.OpenApi
             { "enum", (o,n) => { GetOrCreateSchema(o).Enum = n.CreateSimpleList<String>(l=>l.GetScalarValue()); } },
             { "schema", (o,n) => { o.Schema = LoadSchema(n); } },
         };
+
+        private static string LoadStyle(string v)
+        {
+            return "simple";
+        }
 
         private static Schema GetOrCreateSchema(Parameter p)
         {
