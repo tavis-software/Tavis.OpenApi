@@ -344,7 +344,7 @@ namespace Tavis.OpenApi
             { "example",        (o,n) => { o.Example = new AnyNode(n); } },
             { "type", (o,n) => { GetOrCreateSchema(o).Type = n.GetScalarValue(); } },
             { "items", (o,n) => { GetOrCreateSchema(o).Items = LoadSchema(n); } },
-            { "collectionFormat", (o,n) => { o.Style = LoadStyle(n.GetScalarValue());  } },
+            { "collectionFormat", (o,n) => { LoadStyle(o,n.GetScalarValue());  } },
             { "format", (o,n) => { GetOrCreateSchema(o).Format = n.GetScalarValue(); } },
             { "minimum", (o,n) => { GetOrCreateSchema(o).Minimum = decimal.Parse(n.GetScalarValue()); } },
             { "maximum", (o,n) => { GetOrCreateSchema(o).Maximum = decimal.Parse(n.GetScalarValue()); } },
@@ -357,9 +357,26 @@ namespace Tavis.OpenApi
             { "schema", (o,n) => { o.Schema = LoadSchema(n); } },
         };
 
-        private static string LoadStyle(string v)
+        private static void LoadStyle(Parameter p, string v)
         {
-            return "simple";
+            switch (v)
+            {
+                case "csv":
+                    p.Style = "simple";
+                    return;
+                case "ssv":
+                    p.Style = "spaceDelimited";
+                    return;
+                case "pipes":
+                    p.Style = "pipeDelimited";
+                    return;
+                case "tsv":
+                    throw new NotSupportedException();
+                case "multi":
+                    p.Style = "form";
+                    p.Explode = true;
+                    return;
+            }
         }
 
         private static Schema GetOrCreateSchema(Parameter p)

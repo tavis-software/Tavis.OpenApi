@@ -9,9 +9,9 @@ namespace Tavis.OpenApi.Model
 
     public enum InEnum
     {
-        path,
-        query,
-        header
+        path = 1,
+        query = 2,
+        header = 3
     }
 
     public class Parameter : IModel, IReference

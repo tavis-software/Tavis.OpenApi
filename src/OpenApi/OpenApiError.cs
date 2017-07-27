@@ -21,7 +21,7 @@ namespace Tavis.OpenApi
 
         public override string ToString()
         {
-            return this.message + (!string.IsNullOrEmpty(this.pointer) ? "at " + this.pointer : "");
+            return this.message + (!string.IsNullOrEmpty(this.pointer) ? " at " + this.pointer : "");
         }
     }
 

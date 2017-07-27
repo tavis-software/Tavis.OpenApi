@@ -663,8 +663,8 @@ namespace Tavis.OpenApi
                 { "additionalProperties", (o,n) => { if (n is ValueNode) { o.AdditionalPropertiesAllowed = bool.Parse(n.GetScalarValue()); }
                                                      else { o.AdditionalProperties = LoadSchema(n); }
                                                     } },
-                { "description", (o,n) => { o.Type = n.GetScalarValue(); } },
-                { "format", (o,n) => { o.Description = n.GetScalarValue(); } },
+                { "description", (o,n) => { o.Description = n.GetScalarValue(); } },
+                { "format", (o,n) => { o.Format = n.GetScalarValue(); } },
                 { "default", (o,n) => { o.Default = n.GetScalarValue(); } },
 
                 { "nullable", (o,n) => { o.Nullable = bool.Parse(n.GetScalarValue()); } },
