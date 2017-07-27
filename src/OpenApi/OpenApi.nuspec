@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>Darrel Miller</authors>
+    <owners>Darrel Miller</owners>
+    <licenseUrl>https://raw.githubusercontent.com/tavis-software/Tavis.OpenApi/master/License.txt</licenseUrl>
+    <projectUrl>https://github.com/tavis-software/Tavis.OpenApi</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Initial release</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>http OpenApi swagger</tags>
+  </metadata>
+</package>
