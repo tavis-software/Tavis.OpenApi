@@ -683,6 +683,10 @@ namespace Tavis.OpenApi
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) }
         };
 
+        public static Schema LoadSchema(string schema)
+        {
+            return LoadSchema(MapNode.Create(schema));
+        }
 
         public static Schema LoadSchema(ParseNode node)
         {

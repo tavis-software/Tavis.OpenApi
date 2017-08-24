@@ -296,6 +296,17 @@ namespace Tavis.OpenApi
     {
         YamlMappingNode node;
         private List<PropertyNode> nodes;
+
+        public static MapNode Create(string yaml)
+        {
+            var reader = new StringReader(yaml);
+            var yamlStream = new YamlStream();
+            yamlStream.Load(reader);
+            var yamlDocument = yamlStream.Documents.First();
+            var parsingContent = new ParsingContext();
+            return new MapNode(parsingContent, (YamlMappingNode)yamlDocument.RootNode);
+        }
+
         public MapNode(ParsingContext ctx, YamlMappingNode node) : base(ctx)
         {
             this.node = node;

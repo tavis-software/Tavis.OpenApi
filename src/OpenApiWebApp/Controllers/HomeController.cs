@@ -32,7 +32,7 @@ namespace OpenApiWebApp.Controllers
                 {
                     var outputwriter = new OpenApiV3Writer(doc);
                     var outputstream = new MemoryStream();
-                    outputwriter.Writer(outputstream);
+                    outputwriter.Write(outputstream);
                     outputstream.Position = 0;
 
                     model.Output = new StreamReader(outputstream).ReadToEnd();

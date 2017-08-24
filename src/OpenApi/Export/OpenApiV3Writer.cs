@@ -18,9 +18,9 @@ namespace Tavis.OpenApi
             this.document = document;
         }
 
-        public void Writer(Stream stream)
+        public void Write(Stream stream)
         {
-            var writer = new YamlParseNodeWriter(stream);
+            var writer = new JsonParseNodeWriter(stream);
             writer.WriteStartDocument();
             ModelHelper.Write(writer,this.document);
             writer.WriteEndDocument();

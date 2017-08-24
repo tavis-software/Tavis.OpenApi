@@ -19,7 +19,7 @@ namespace OpenApiService.Controllers
         protected override Task SerializeToStreamAsync(Stream stream, TransportContext context)
         {
             var writer = new OpenApiV3Writer(this.document);
-            writer.Writer(stream);
+            writer.Write(stream);
             stream.Flush();
             return Task.FromResult<object>(null);
         }
