@@ -1,4 +1,9 @@
 # Tavis.OpenApi
+## 0.7.0
+- Added parameter to constructor of OpenAPIV3Writer to accept different writers
+- Added Save method to OpenApiDocument to simplify serialziation
+- Made OpenApiParser methods static and return ParsingContext instead of OpenApiDocument
+- Overall structural reorganization
 
 ## 0.6.0
 - Fixed name of OpenAPIV3Writer.Write

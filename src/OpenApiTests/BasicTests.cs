@@ -36,15 +36,15 @@ namespace OpenApiTests
 
             var stream = this.GetType().Assembly.GetManifestResourceStream("OpenApiTests.Samples.Simplest.yaml");
 
-            var parser = new OpenApiParser();
              
-            var openApiDoc = parser.Parse(stream); 
+            var context = OpenApiParser.Parse(stream);
+            var openApiDoc = context.OpenApiDocument;
 
             Assert.Equal("1.0.0", openApiDoc.Version);
             Assert.Equal(0, openApiDoc.Paths.PathItems.Count());
             Assert.Equal("The Api", openApiDoc.Info.Title);
             Assert.Equal("0.9.1", openApiDoc.Info.Version);
-            Assert.Equal(0, parser.ParseErrors.Count);
+            Assert.Equal(0, context.ParseErrors.Count);
 
         }
 
@@ -54,12 +54,11 @@ namespace OpenApiTests
 
             var stream = this.GetType().Assembly.GetManifestResourceStream("OpenApiTests.Samples.BrokenSimplest.yaml");
 
-            var parser = new OpenApiParser();
-            var openApiDoc = parser.Parse(stream);
+            var context = OpenApiParser.Parse(stream);
 
-            Assert.Equal(2, parser.ParseErrors.Count);
-            Assert.NotNull(parser.ParseErrors.Where(s=> s.ToString() == "`openapi` property does not match the required format major.minor.patch at #/openapi").FirstOrDefault());
-            Assert.NotNull(parser.ParseErrors.Where(s => s.ToString() == "title is a required property of #/info").FirstOrDefault());
+            Assert.Equal(2, context.ParseErrors.Count);
+            Assert.NotNull(context.ParseErrors.Where(s=> s.ToString() == "`openapi` property does not match the required format major.minor.patch at #/openapi").FirstOrDefault());
+            Assert.NotNull(context.ParseErrors.Where(s => s.ToString() == "title is a required property of #/info").FirstOrDefault());
 
         }
 
@@ -68,8 +67,7 @@ namespace OpenApiTests
         {
 
             var stream = this.GetType().Assembly.GetManifestResourceStream("OpenApiTests.Samples.petstore30.yaml");
-            var parser = new OpenApiParser();
-            var openApiDoc = parser.Parse(stream);
+            var openApiDoc = OpenApiParser.Parse(stream).OpenApiDocument;
 
             Assert.Equal("3.0.0", openApiDoc.Version);
 
@@ -79,8 +77,8 @@ namespace OpenApiTests
         public void InlineExample()
         {
 
-            var parser = new OpenApiParser();
-            var openApiDoc = parser.Parse(@"
+            
+            var openApiDoc = OpenApiParser.Parse(@"
                     openapi: 3.0.0
                     info:
                         title: A simple inline example
@@ -91,7 +89,7 @@ namespace OpenApiTests
                           responses:
                             200:
                               description: A home document
-                    ");
+                    ").OpenApiDocument;
 
             Assert.Equal("3.0.0", openApiDoc.Version);
 

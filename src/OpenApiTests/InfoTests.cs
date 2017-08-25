@@ -18,8 +18,7 @@ namespace OpenApiTests.Samples
         {
             var stream = this.GetType().Assembly.GetManifestResourceStream("OpenApiTests.Samples.petstore30.yaml");
 
-            var parser = new OpenApiParser();
-            var openApiDoc = parser.Parse(stream);
+            var openApiDoc = OpenApiParser.Parse(stream).OpenApiDocument;
             var info = openApiDoc.Info;
             Assert.Equal("Swagger Petstore (Simple)", openApiDoc.Info.Title);
             Assert.Equal("A sample API that uses a petstore as an example to demonstrate features in the swagger-2.0 specification", info.Description);
@@ -34,8 +33,7 @@ namespace OpenApiTests.Samples
 
             var stream = this.GetType().Assembly.GetManifestResourceStream("OpenApiTests.Samples.CompleteHeader.yaml");
 
-            var parser = new OpenApiParser();
-            var openApiDoc = parser.Parse(stream);
+            var openApiDoc = OpenApiParser.Parse(stream).OpenApiDocument;
 
             Assert.Equal("1.0.0", openApiDoc.Version);
 

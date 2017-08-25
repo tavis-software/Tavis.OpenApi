@@ -15,15 +15,15 @@ namespace OpenApiService.Controllers
     {
         public async Task<HttpResponseMessage> Post()
         {
-            var parser = new OpenApiParser();
-            var doc = parser.Parse(await this.Request.Content.ReadAsStreamAsync());
 
-            var errors = parser.ParseErrors;
+            var context = OpenApiParser.Parse(await this.Request.Content.ReadAsStreamAsync());
+
+            var errors = context.ParseErrors;
             if (errors.Count == 0)
             {
                 return new HttpResponseMessage(HttpStatusCode.OK)
                 {
-                    Content = new OpenApiContent(doc)
+                    Content = new OpenApiContent(context.OpenApiDocument)
                 };
             }
             else

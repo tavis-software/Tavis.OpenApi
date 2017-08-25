@@ -1,27 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Tavis.OpenApi.Model;
+﻿
 
 namespace Tavis.OpenApi
 {
+    using SharpYaml.Serialization;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using Tavis.OpenApi.Model;
+
+    /// <summary>
+    /// Service class for converting strings or streams into OpenApiDocument instances
+    /// </summary>
     public class OpenApiParser
     {
-
-        ParsingContext context;
-        RootNode rootNode;
-        string inputVersion;
-        IReferenceService referenceService;
-
-        public List<OpenApiError> ParseErrors
-        {
-            get
-            {
-                return context.ParseErrors;
-            }
-        }
-
-        public OpenApiDocument Parse(string document)
+        public static ParsingContext Parse(string document)
         {
             var ms = new MemoryStream();
             var writer = new StreamWriter(ms);
@@ -31,44 +23,51 @@ namespace Tavis.OpenApi
             return Parse(ms);
         }
 
-        public OpenApiDocument Parse(Stream stream)
+        public static ParsingContext Parse(Stream stream)
         {
-
-            this.context = new ParsingContext();
+            RootNode rootNode;
+            var context = new ParsingContext();
             try
             {
-                this.rootNode = new RootNode(this.context, stream);
+                var yamlStream = new YamlStream();
+                yamlStream.Load(new StreamReader(stream));
+
+                var yamlDocument = yamlStream.Documents.First();
+                rootNode = new RootNode(context, yamlDocument);
 
             }
             catch (SharpYaml.SyntaxErrorException ex)
             {
-                ParseErrors.Add(new OpenApiError("", ex.Message));
-                return new OpenApiDocument();
+                context.ParseErrors.Add(new OpenApiError("", ex.Message));
+                context.OpenApiDocument = new OpenApiDocument();  // Could leave this null?
+                return context;
             }
 
-            inputVersion = GetVersion(this.rootNode);
+            var inputVersion = GetVersion(rootNode);
 
             switch (inputVersion)
             {
                 case "2.0":
-                    this.context.SetReferenceService(new ReferenceService(this.rootNode)
+                    context.SetReferenceService(new ReferenceService(rootNode)
                     {
                         loadReference = OpenApiV2.LoadReference,
                         parseReference = p => OpenApiV2.ParseReference(p)
                     });
-                    return OpenApiV2.LoadOpenApi(this.rootNode);
-                default:
-                    this.context.SetReferenceService(new ReferenceService(this.rootNode)
+                    context.OpenApiDocument = OpenApiV2.LoadOpenApi(rootNode);
+                    break;
+               default:
+                    context.SetReferenceService(new ReferenceService(rootNode)
                     {
                         loadReference = OpenApiV3.LoadReference,
                         parseReference = p => new OpenApiReference(p)
                     });
-                    return OpenApiV3.LoadOpenApi(this.rootNode);
+                    context.OpenApiDocument = OpenApiV3.LoadOpenApi(rootNode);
+                    break;
             }
-
+            return context;
         }
 
-        private string GetVersion(RootNode rootNode)
+        private static string GetVersion(RootNode rootNode)
         {
             var versionNode = rootNode.Find(new JsonPointer("/openapi"));
             if (versionNode != null)
@@ -84,33 +83,6 @@ namespace Tavis.OpenApi
             return null;
         }
 
-    }
-
-    public class ReferenceService : IReferenceService
-    {
-        internal Func<OpenApiReference, RootNode, IReference> loadReference { get; set; }
-        internal Func<string, OpenApiReference> parseReference { get; set; }
-
-        private RootNode rootNode;
-
-        public ReferenceService(RootNode rootNode)
-        {
-            this.rootNode = rootNode;
-        }
-        public IReference LoadReference(OpenApiReference reference)
-        {
-            var referenceObject = this.loadReference(reference,this.rootNode);
-            if (referenceObject == null)
-            {
-                throw new DomainParseException($"Cannot locate $ref {reference.ToString()}");
-            }
-            return referenceObject;
-        }
-
-        public OpenApiReference ParseReference(string pointer)
-        {
-            return this.parseReference(pointer);
-        }
     }
 }
 

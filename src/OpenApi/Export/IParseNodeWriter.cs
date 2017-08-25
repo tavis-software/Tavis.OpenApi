@@ -23,5 +23,6 @@ namespace Tavis.OpenApi
         void WriteValue(bool value);
         void WriteNull();
 
+        void Flush();
     }
 }

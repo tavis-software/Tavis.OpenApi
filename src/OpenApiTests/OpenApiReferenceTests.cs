@@ -1,13 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tavis.OpenApi;
-using Xunit;
+﻿
 
 namespace OpenApiTests
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Tavis.OpenApi;
+    using Tavis.OpenApi.Model;
+    using Xunit;
+
     public class OpenApiReferenceTests
     {
         [Fact]

@@ -19,8 +19,7 @@ namespace OpenApiTests.V2Tests
             var v2stream = this.GetType().Assembly.GetManifestResourceStream("OpenApiTests.V2Tests.V2Samples.simplest.2.yaml");
             var v3stream = this.GetType().Assembly.GetManifestResourceStream("OpenApiTests.V2Tests.V2Samples.simplest.3.yaml");
 
-            var parser = new OpenApiParser();
-            var openApiDoc2 = parser.Parse(v2stream);
+            var openApiDoc2 = OpenApiParser.Parse(v2stream).OpenApiDocument;
 
             Assert.True(AreStreamsEqual(v2stream, v3stream));
 

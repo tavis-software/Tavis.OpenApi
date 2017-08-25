@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Tavis.OpenApi.Model;
-
+﻿
 namespace Tavis.OpenApi
 {
-
-    public interface IReferenceService
-    {
-        IReference LoadReference(OpenApiReference reference);
-        OpenApiReference ParseReference(string pointer);
-    }
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Tavis.OpenApi.Model;
 
     public class ParsingContext
     {
         public string Version { get; set; }
         public List<OpenApiError> ParseErrors { get; set; } = new List<OpenApiError>();
+        public OpenApiDocument OpenApiDocument { get; internal set; }
 
         private Dictionary<string, object> tempStorage = new Dictionary<string, object>();
 

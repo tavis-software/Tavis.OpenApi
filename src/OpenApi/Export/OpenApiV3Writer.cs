@@ -1,28 +1,34 @@
-﻿using SharpYaml.Serialization;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tavis.OpenApi.Export;
-using Tavis.OpenApi.Model;
-
+﻿
 namespace Tavis.OpenApi
 {
-    public class OpenApiV3Writer
+    using SharpYaml.Serialization;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using Tavis.OpenApi.Export;
+    using Tavis.OpenApi.Model;
+
+    public interface IOpenApiWriter {
+        void Write(Stream stream, OpenApiDocument document);
+    }
+
+    public class OpenApiV3Writer : IOpenApiWriter
     {
-        OpenApiDocument document;
-        public OpenApiV3Writer(OpenApiDocument document)
+        Func<Stream, IParseNodeWriter> defaultWriterFactory = s => new YamlParseNodeWriter(s);
+        Func<Stream, IParseNodeWriter> writerFactory;
+
+        public OpenApiV3Writer(Func<Stream, IParseNodeWriter> writerFactory = null)
         {
-            this.document = document;
+            this.writerFactory = writerFactory ?? defaultWriterFactory;
         }
 
-        public void Write(Stream stream)
+        public void Write(Stream stream, OpenApiDocument document)
         {
-            var writer = new JsonParseNodeWriter(stream);
+
+            var writer = writerFactory(stream);
             writer.WriteStartDocument();
-            ModelHelper.Write(writer,this.document);
+            ModelHelper.Write(writer,document);
             writer.WriteEndDocument();
             writer.Flush();
         }

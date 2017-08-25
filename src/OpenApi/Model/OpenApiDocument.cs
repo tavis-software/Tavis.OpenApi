@@ -75,6 +75,15 @@ namespace Tavis.OpenApi.Model
 
             }
         }
+
+        public void Save(Stream stream, IOpenApiWriter openApiWriter = null)
+        {
+            if (openApiWriter == null)
+            {
+                openApiWriter = new OpenApiV3Writer();
+            }
+            openApiWriter.Write(stream, this);
+        }
     }
 
 

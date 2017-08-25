@@ -36,17 +36,17 @@ namespace OpenApiWorkbench
             try
             {
                 txtErrors.Text = "";
-                OpenApiParser openApiParser = new OpenApiParser();
+
                 MemoryStream stream = CreateStream(this.txtInput.Text);
 
 
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
-                var doc = openApiParser.Parse(stream);
+                var context = OpenApiParser.Parse(stream);
                 stopwatch.Stop();
                 this.txtParseTime.Text = $"{stopwatch.ElapsedMilliseconds} ms";
 
-                if (openApiParser.ParseErrors.Count == 0)
+                if (context.ParseErrors.Count == 0)
                 {
                     txtErrors.Text = "OK";
 
@@ -54,7 +54,7 @@ namespace OpenApiWorkbench
                 else
                 {
                     var errorReport = new StringBuilder();
-                    foreach (var error in openApiParser.ParseErrors)
+                    foreach (var error in context.ParseErrors)
                     {
                         errorReport.AppendLine(error.ToString());
                     }
@@ -63,7 +63,7 @@ namespace OpenApiWorkbench
 
                 stopwatch.Reset();
                 stopwatch.Start();
-                txtOutput.Text = WriteContents(doc);
+                txtOutput.Text = WriteContents(context.OpenApiDocument);
                 stopwatch.Stop();
 
                 this.txtRenderTime.Text = $"{stopwatch.ElapsedMilliseconds} ms";
@@ -76,9 +76,9 @@ namespace OpenApiWorkbench
 
         private string WriteContents(Tavis.OpenApi.Model.OpenApiDocument doc)
         {
-            var outputwriter = new OpenApiV3Writer(doc);
+
             var outputstream = new MemoryStream();
-            outputwriter.Write(outputstream);
+            doc.Save(outputstream);
             outputstream.Position = 0;
 
             return new StreamReader(outputstream).ReadToEnd();

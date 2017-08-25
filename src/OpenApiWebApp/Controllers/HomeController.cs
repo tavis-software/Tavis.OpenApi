@@ -20,8 +20,9 @@ namespace OpenApiWebApp.Controllers
                 OpenApiDocument doc = null;
                 try
                 {
-                    doc = openApiParser.Parse(model.Input);
-                    model.Errors = String.Join("\r\n", openApiParser.ParseErrors);
+                    var context = OpenApiParser.Parse(model.Input);
+                    doc = context.OpenApiDocument;
+                    model.Errors = String.Join("\r\n", context.ParseErrors);
                 }
                 catch (Exception ex)
                 {
@@ -30,9 +31,8 @@ namespace OpenApiWebApp.Controllers
                 }
                 if (doc != null)
                 {
-                    var outputwriter = new OpenApiV3Writer(doc);
                     var outputstream = new MemoryStream();
-                    outputwriter.Write(outputstream);
+                    doc.Save(outputstream);
                     outputstream.Position = 0;
 
                     model.Output = new StreamReader(outputstream).ReadToEnd();

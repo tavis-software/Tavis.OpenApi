@@ -16,9 +16,9 @@ namespace OpenApiTests
   //      private Operation _PostOperation;
         public OperationTests()
         {
-            var parser = new OpenApiParser();
+            
             var stream = this.GetType().Assembly.GetManifestResourceStream("OpenApiTests.Samples.petstore30.yaml");
-            _PetStoreDoc = parser.Parse(stream);
+            _PetStoreDoc = OpenApiParser.Parse(stream).OpenApiDocument;
             //_PostOperation = _PetStoreDoc.Paths.PathMap.Where(pm=>pm.Key == "/pets").Value
             //    .Operations.Where()
         }

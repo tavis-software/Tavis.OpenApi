@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tavis.OpenApi.Model;
-
+﻿
 namespace Tavis.OpenApi
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Tavis.OpenApi.Model;
+
+
     public static class OpenApiV3
     {
 

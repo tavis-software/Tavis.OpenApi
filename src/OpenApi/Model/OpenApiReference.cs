@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tavis.OpenApi
+namespace Tavis.OpenApi.Model
 {
     public enum ReferenceType
     {
