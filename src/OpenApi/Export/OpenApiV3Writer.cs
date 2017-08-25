@@ -44,15 +44,15 @@ namespace Tavis.OpenApi
 
         public static void WriteList<T>(this IParseNodeWriter writer, string propertyName, IList<T> list, Action<IParseNodeWriter, T> parser)
         {
-            if (list != null && list.Count() > 0)
+            if (list != null && list.Any())
             {
                 writer.WritePropertyName(propertyName);
+                writer.WriteStartList();
                 foreach (var item in list)
                 {
-                    writer.WriteStartList();
-                    parser(writer, item);
-                    writer.WriteEndList();
+                    writer.WriteListItem(item, parser);
                 }
+                writer.WriteEndList();
             }
 
         }
@@ -62,19 +62,20 @@ namespace Tavis.OpenApi
             if (list != null && list.Count() > 0)
             {
                 writer.WritePropertyName(propertyName);
+                writer.WriteStartMap();
                 foreach (var item in list)
                 {
-                    writer.WriteStartMap();
                     writer.WritePropertyName(item.Key);
                     if (item.Value != null)
                     {
                         parser(writer, item.Value);
-                    } else
+                    }
+                    else
                     {
                         writer.WriteNull();
                     }
-                    writer.WriteEndMap();
                 }
+                writer.WriteEndMap();
             }
 
         }

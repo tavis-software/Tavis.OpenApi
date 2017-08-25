@@ -102,6 +102,11 @@ namespace Tavis.OpenApi.Export
             }
         }
 
+        public void WriteListItem<T>(T item, Action<IParseNodeWriter, T> parser)
+        {
+            parser(this, item);
+        }
+
         public void WriteStartMap()
         {
             if (InList())
