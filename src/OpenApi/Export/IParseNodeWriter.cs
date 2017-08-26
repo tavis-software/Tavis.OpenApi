@@ -8,6 +8,7 @@ namespace Tavis.OpenApi
         void WriteEndDocument();
         void WriteStartList();
         void WriteEndList();
+        void WriteListItem<T>(T item, Action<IParseNodeWriter, T> parser);
 
         void WriteStartMap();
         void WriteEndMap();

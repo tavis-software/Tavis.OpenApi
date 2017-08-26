@@ -50,6 +50,26 @@ namespace Tavis.OpenApi
             DecreaseIndent();
         }
 
+        public void WriteListItem<T>(T item, Action<IParseNodeWriter, T> parser)
+        {
+            if (!first)
+            {
+                writer.Write(",");
+                writer.WriteLine();
+                writer.Write(Indent);
+            }
+            else
+            {
+                writer.Write(Indent);
+                first = false;
+            }
+
+            if (item != null)
+                parser(this, item);
+            else
+                WriteNull();
+        }
+
         public void WriteStartMap() {
             writer.WriteLine(Indent + "{");
             state.Push(ParseState.InMap);

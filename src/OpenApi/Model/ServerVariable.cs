@@ -19,16 +19,7 @@ namespace Tavis.OpenApi.Model
         {
             writer.WriteStartMap();
 
-            if (Enum.Count > 0)
-            {
-                writer.WritePropertyName("enum");
-                writer.WriteStartList();
-                foreach (var enumItem in Enum)
-                {
-                    writer.WriteValue(enumItem);
-                }
-                writer.WriteEndList();
-            }
+            writer.WriteList("enum", Enum, (nodeWriter, s) => nodeWriter.WriteValue(s));
             writer.WriteStringProperty("default", Default);
             writer.WriteStringProperty("description", Description);
 

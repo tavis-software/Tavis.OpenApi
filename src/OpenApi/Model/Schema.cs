@@ -67,21 +67,18 @@ namespace Tavis.OpenApi.Model
             writer.WriteStringProperty("pattern", Pattern);
             writer.WriteStringProperty("default", Default);
 
-            if (Required != null && Required.Length > 0)
-            {
-                writer.WritePropertyName("required");
-                writer.WriteStartList();
-                foreach (var name in Required)
-                {
-                    writer.WriteValue(name);
-                }
-                writer.WriteEndList();
-            }
+            writer.WriteList("required", Required, (nodeWriter, s) => nodeWriter.WriteValue(s));
 
             writer.WriteNumberProperty("maximum", Maximum);
             writer.WriteBoolProperty("exclusiveMaximum", ExclusiveMaximum, false);
             writer.WriteNumberProperty("minimum", Minimum);
             writer.WriteBoolProperty("exclusiveMinimum", ExclusiveMinimum, false);
+
+            if (AdditionalProperties != null)
+            {
+                writer.WritePropertyName("additionalProperties");
+                ModelHelper.Write(writer, AdditionalProperties);
+            }
 
             if (Items != null)
             {
@@ -111,18 +108,8 @@ namespace Tavis.OpenApi.Model
             writer.WriteNumberProperty("maxProperties", MaxProperties);
             writer.WriteNumberProperty("minProperties", MinProperties);
 
+            writer.WriteList("enum", Enum, (nodeWriter, s) => nodeWriter.WriteValue(s));
 
-
-            if (Enum.Count > 0 )
-            {
-                writer.WritePropertyName("enum");
-                writer.WriteStartList();
-                foreach (var item in Enum)
-                {
-                    writer.WriteValue(item);
-                }
-                writer.WriteEndList();
-            }
             writer.WriteEndMap();
         }
         
