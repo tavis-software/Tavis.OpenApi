@@ -11,17 +11,26 @@
             <ColumnDefinition/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <TextBox x:Name="txtInput" Margin="10" TextWrapping="Wrap" Text="TextBox" AcceptsReturn="True" FontFamily="Consolas" />
+        <TextBox x:Name="txtInput" Text="{Binding Input}" Margin="10" TextWrapping="Wrap" AcceptsReturn="True" FontFamily="Consolas" />
         <DockPanel Grid.Column="1" Margin="0,10" >
-            <Button Content="Validate" HorizontalAlignment="Left" Height="20" Margin="10" VerticalAlignment="Top" Width="131" Click="Button_Click" Grid.Column="1" DockPanel.Dock="Top"/>
-            <TextBox x:Name="txtErrors"  Margin="10,10,10,10" TextWrapping="Wrap" Text="TextBlock"  Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" DockPanel.Dock="Top" MaxHeight="100" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnlyCaretVisible="True" IsManipulationEnabled="True" />
+      <StackPanel Orientation="Horizontal"  DockPanel.Dock="Top">
+        <Button Content="Validate" HorizontalAlignment="Left" Height="20" Margin="10" VerticalAlignment="Top" Width="131" Click="Button_Click" Grid.Column="1"/>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+          <Label>Output:</Label>
+          <RadioButton GroupName="Format" Content="Yaml" Padding="5" Height="24" VerticalAlignment="Top" IsChecked="{Binding IsYaml }" />
+          <RadioButton GroupName="Format" Content="JSON" Padding="5" Height="24" VerticalAlignment="Top" IsChecked="{Binding IsJson }" />
+        </StackPanel>
+      </StackPanel>
+            
+            <TextBox x:Name="txtErrors"  Margin="10,10,10,10" TextWrapping="Wrap" Text="{Binding Errors}"  Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" DockPanel.Dock="Top" MaxHeight="100" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnlyCaretVisible="True" IsManipulationEnabled="True" />
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                 <Label>Parsing: </Label>
-                <TextBlock x:Name="txtParseTime" Width="100" VerticalAlignment="Center"/>
+                <TextBlock x:Name="txtParseTime" Text="{Binding ParseTime}" Width="100" VerticalAlignment="Center"/>
                 <Label>Rendering:</Label>
-                <TextBlock x:Name="txtRenderTime" VerticalAlignment="Center"/>
+                <TextBlock x:Name="txtRenderTime" Text="{Binding RenderTime}" VerticalAlignment="Center"/>
             </StackPanel>
-            <TextBox x:Name="txtOutput" VerticalScrollBarVisibility="Auto" Margin="10,10,10,10" VerticalAlignment="Stretch" TextWrapping="Wrap" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" FontFamily="Consolas" IsReadOnlyCaretVisible="True" VerticalContentAlignment="Stretch" IsManipulationEnabled="True" HorizontalScrollBarVisibility="Auto" DockPanel.Dock="Top" />
-        </DockPanel>
+            <TextBox x:Name="txtOutput" Text="{Binding Output}" VerticalScrollBarVisibility="Auto" Margin="10,10,10,10" VerticalAlignment="Stretch" TextWrapping="Wrap" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" FontFamily="Consolas" IsReadOnlyCaretVisible="True" VerticalContentAlignment="Stretch" IsManipulationEnabled="True" HorizontalScrollBarVisibility="Auto" DockPanel.Dock="Top" />
+      
+    </DockPanel>
     </Grid>
 </Window>

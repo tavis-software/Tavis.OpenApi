@@ -23,75 +23,17 @@ namespace OpenApiWorkbench
     /// </summary>
     public partial class MainWindow : Window
     {
+        private MainModel mainModel = new MainModel();
         
         public MainWindow()
         {
             InitializeComponent();
-            txtErrors.Text = "";
-            txtInput.Text = "";
+            this.DataContext = mainModel;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                txtErrors.Text = "";
-
-                MemoryStream stream = CreateStream(this.txtInput.Text);
-
-
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-                var context = OpenApiParser.Parse(stream);
-                stopwatch.Stop();
-                this.txtParseTime.Text = $"{stopwatch.ElapsedMilliseconds} ms";
-
-                if (context.ParseErrors.Count == 0)
-                {
-                    txtErrors.Text = "OK";
-
-                }
-                else
-                {
-                    var errorReport = new StringBuilder();
-                    foreach (var error in context.ParseErrors)
-                    {
-                        errorReport.AppendLine(error.ToString());
-                    }
-                    txtErrors.Text = errorReport.ToString();
-                }
-
-                stopwatch.Reset();
-                stopwatch.Start();
-                txtOutput.Text = WriteContents(context.OpenApiDocument);
-                stopwatch.Stop();
-
-                this.txtRenderTime.Text = $"{stopwatch.ElapsedMilliseconds} ms";
-            }
-            catch (Exception ex)
-            {
-                txtErrors.Text = "Failed to parse input: " + ex.Message;
-            }
-        }
-
-        private string WriteContents(Tavis.OpenApi.Model.OpenApiDocument doc)
-        {
-
-            var outputstream = new MemoryStream();
-            doc.Save(outputstream);
-            outputstream.Position = 0;
-
-            return new StreamReader(outputstream).ReadToEnd();
-        }
-
-        private MemoryStream CreateStream(string text)
-        {
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(text);
-            writer.Flush();
-            stream.Position = 0;
-            return stream;
+                this.mainModel.Validate();
         }
     }
 }

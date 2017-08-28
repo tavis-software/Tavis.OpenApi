@@ -139,16 +139,20 @@ namespace Tavis.OpenApi.Export
         public void WriteValue(string value)
         {
             if (InList()) writer.Write(Indent + "- ");
-            if (value.Contains("#"))
+            if (value.Contains("\n"))
+            {
+                writer.WriteLine(" |-"); // Block flow with "strip" chomping.
+                IncreaseIndent();
+                writer.WriteLine(this.Indent + value.Replace("\n","\n" + this.Indent));
+                DecreaseIndent();
+            }
+            else if (value.Contains("#"))  //Yaml treats hash as a comment so we need to quote it
             {
                 writer.Write("\"");
                 writer.Write(value);
                 writer.WriteLine("\"");
-            } else if (value.Contains("\n") || value.Contains("\r"))
-            {
-                writer.WriteLine(" |");
-                writer.WriteLine(value);
-            } else
+            }
+            else
             {
                 writer.WriteLine(value);
             }
@@ -179,7 +183,7 @@ namespace Tavis.OpenApi.Export
         public void WriteNull()
         {
             if (InList()) writer.Write(Indent + "- ");
-            writer.WriteLine("{}");
+            writer.WriteLine("{}"); // JSON compatible way of indicating null object
             //            /*if (InMap())*/ DecreaseIndent();  //Negate decreasing indent in the EndMap 
             if (InProperty()) state.Pop();
         }
