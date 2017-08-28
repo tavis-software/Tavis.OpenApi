@@ -39,13 +39,14 @@ namespace Tavis.OpenApi
         public void WriteStartDocument() { }
         public void WriteEndDocument() { }
         public void WriteStartList() {
-            writer.WriteLine(Indent + "[");
+            writer.WriteLine(" [");
             state.Push(ParseState.InList);
             IncreaseIndent();
             first = true;
         }
         public void WriteEndList() {
-            writer.WriteLine(Indent + "]");
+            writer.WriteLine();
+            writer.Write(Indent + "]");
             state.Pop();
             DecreaseIndent();
         }
