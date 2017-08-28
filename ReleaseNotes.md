@@ -1,5 +1,5 @@
 # Tavis.OpenApi
-## 0.7.1 (unreleased)
+## 0.7.1 
 - Added YAML/JSON output selector to Workbench tool
 - Lots of JSON serialization fixes
 - Fix to YAML serialization of multi-line text
