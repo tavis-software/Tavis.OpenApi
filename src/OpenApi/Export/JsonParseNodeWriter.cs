@@ -78,7 +78,7 @@ namespace Tavis.OpenApi
         }
         public void WriteEndMap() {
             writer.WriteLine();
-            writer.WriteLine(Indent + "}");
+            writer.Write(Indent + "}");
             state.Pop();
             DecreaseIndent();
 
@@ -96,6 +96,7 @@ namespace Tavis.OpenApi
         }
 
         public void WriteValue(string value) {
+            value = value.Replace("\n", "\\n");
             writer.Write("\"" + value + "\"");
         }
 
@@ -104,11 +105,11 @@ namespace Tavis.OpenApi
         }
 
         public void WriteValue(int value) {
-            writer.WriteLine(value.ToString());  //TODO deal with culture issues
+            writer.Write(value.ToString());  //TODO deal with culture issues
        }
 
         public void WriteValue(bool value) {
-            writer.WriteLine(value.ToString().ToLower());  //TODO deal with culture issues
+            writer.Write(value.ToString().ToLower());  //TODO deal with culture issues
         }
 
         public void WriteNull()

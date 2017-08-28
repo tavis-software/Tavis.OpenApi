@@ -1,4 +1,8 @@
 # Tavis.OpenApi
+## 0.7.1 (unreleased)
+- Added YAML/JSON output selector to Workbench tool
+- Lots of JSON serialization fixes
+- Fix to YAML serialization of multi-line text
 ## 0.7.0
 - Added parameter to constructor of OpenAPIV3Writer to accept different writers
 - Added Save method to OpenApiDocument to simplify serialziation
