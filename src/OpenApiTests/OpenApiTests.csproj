@@ -14,6 +14,7 @@
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -91,7 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenApi\OpenApi.csproj">
-      <Project>{A8E50143-69B2-472A-9D45-3F9A05D13202}</Project>
+      <Project>{a8e50143-69b2-472a-9d45-3f9a05d13202}</Project>
       <Name>OpenApi</Name>
     </ProjectReference>
   </ItemGroup>

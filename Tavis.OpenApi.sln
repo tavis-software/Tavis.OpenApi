@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenApi", "src\OpenApi\OpenApi.csproj", "{A8E50143-69B2-472A-9D45-3F9A05D13202}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenApi", "src\OpenApi\OpenApi.csproj", "{A8E50143-69B2-472A-9D45-3F9A05D13202}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenApiTests", "src\OpenApiTests\OpenApiTests.csproj", "{1ED3C2C1-E1E7-4925-B4E6-2D969C3F5237}"
 EndProject
@@ -15,8 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenApiWorkbench", "src\OpenApiWorkbench\OpenApiWorkbench.csproj", "{6A5E91E5-0441-46EE-AEB9-8334981B7F08}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenApiService", "src\OpenApiService\OpenApiService.csproj", "{802FD617-812C-4098-A750-D48CA3ECA0F5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenApiWebApp", "src\OpenApiWebApp\OpenApiWebApp.csproj", "{FAA05247-2640-459A-A1CE-0D66F21EE2AE}"
 EndProject
@@ -38,10 +36,6 @@ Global
 		{6A5E91E5-0441-46EE-AEB9-8334981B7F08}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A5E91E5-0441-46EE-AEB9-8334981B7F08}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A5E91E5-0441-46EE-AEB9-8334981B7F08}.Release|Any CPU.Build.0 = Release|Any CPU
-		{802FD617-812C-4098-A750-D48CA3ECA0F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{802FD617-812C-4098-A750-D48CA3ECA0F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{802FD617-812C-4098-A750-D48CA3ECA0F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{802FD617-812C-4098-A750-D48CA3ECA0F5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FAA05247-2640-459A-A1CE-0D66F21EE2AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FAA05247-2640-459A-A1CE-0D66F21EE2AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAA05247-2640-459A-A1CE-0D66F21EE2AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
