@@ -8,21 +8,15 @@ using System.Threading.Tasks;
 namespace Tavis.OpenApi.Model
 {
 
-    public class Callback : IModel, IReference
+    public class Callback : IReference
     {
-        public Dictionary<string, PathItem> PathItems { get; set; } = new Dictionary<string, PathItem>();
+        public Dictionary<RuntimeExpression, PathItem> PathItems { get; set; } = new Dictionary<RuntimeExpression, PathItem>();
 
         public OpenApiReference Pointer { get; set; }
 
         public Dictionary<string, string> Extensions { get; set; }
 
-
-        void IModel.Write(IParseNodeWriter writer)
-        {
-            writer.WriteStartMap();
-            writer.WriteEndMap();
-        }
-        
+                
 
 
     }

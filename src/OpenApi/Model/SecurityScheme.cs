@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Tavis.OpenApi.Model
 {
-    public class SecurityScheme : IModel, IReference
+    public class SecurityScheme : IReference
     {
         public string Key { get; set; }
         public string Type { get; set; }
@@ -38,28 +38,6 @@ namespace Tavis.OpenApi.Model
 
             return schemeObject;
         }
-
-        void IModel.Write(IParseNodeWriter writer)
-        {
-            writer.WriteStartMap();
-            writer.WriteStringProperty("type",this.Type);
-            switch(this.Type) {
-                case "http" :
-                    writer.WriteStringProperty("scheme", this.Scheme);
-                    writer.WriteStringProperty("bearerFormat", this.BearerFormat);
-                    break;
-                case "oauth2":
-                //writer.WriteStringProperty("scheme", this.Scheme);
-                case "apiKey":
-                    writer.WriteStringProperty("in", this.In);
-                    writer.WriteStringProperty("name", this.Name);
-
-                    break;
-            }
-            writer.WriteEndMap();
-
-        }
-        
 
     }
 }

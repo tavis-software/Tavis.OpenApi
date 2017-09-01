@@ -5,7 +5,7 @@ using System.Linq;
 namespace Tavis.OpenApi.Model
 {
  
-    public class Schema : IModel, IReference
+    public class Schema : IReference
 
     {
         public string Title { get; set; }
@@ -53,65 +53,6 @@ namespace Tavis.OpenApi.Model
         }
 
 
-        void IModel.Write(IParseNodeWriter writer)
-        {
-            writer.WriteStartMap();
-
-            writer.WriteStringProperty("title", Title);
-            writer.WriteStringProperty("type", Type);
-            writer.WriteStringProperty("format", Format);
-            writer.WriteStringProperty("description", Description);
-
-            writer.WriteNumberProperty("maxLength", MaxLength);
-            writer.WriteNumberProperty("minLength", MinLength);
-            writer.WriteStringProperty("pattern", Pattern);
-            writer.WriteStringProperty("default", Default);
-
-            writer.WriteList("required", Required, (nodeWriter, s) => nodeWriter.WriteValue(s));
-
-            writer.WriteNumberProperty("maximum", Maximum);
-            writer.WriteBoolProperty("exclusiveMaximum", ExclusiveMaximum, false);
-            writer.WriteNumberProperty("minimum", Minimum);
-            writer.WriteBoolProperty("exclusiveMinimum", ExclusiveMinimum, false);
-
-            if (AdditionalProperties != null)
-            {
-                writer.WritePropertyName("additionalProperties");
-                ModelHelper.Write(writer, AdditionalProperties);
-            }
-
-            if (Items != null)
-            {
-                writer.WritePropertyName("items");
-                ModelHelper.Write(writer, Items);
-            }
-            writer.WriteNumberProperty("maxItems", MaxItems);
-            writer.WriteNumberProperty("minItems", MinItems);
-
-            if (Properties != null)
-            {
-                writer.WritePropertyName("properties");
-                writer.WriteStartMap();
-                foreach (var prop in Properties)
-                {
-                    writer.WritePropertyName(prop.Key);
-                    if (prop.Value != null)
-                    {
-                        ModelHelper.Write(writer, prop.Value);
-                    } else
-                    {
-                        writer.WriteValue("null");
-                    }
-                }
-                writer.WriteEndMap();
-            }
-            writer.WriteNumberProperty("maxProperties", MaxProperties);
-            writer.WriteNumberProperty("minProperties", MinProperties);
-
-            writer.WriteList("enum", Enum, (nodeWriter, s) => nodeWriter.WriteValue(s));
-
-            writer.WriteEndMap();
-        }
         
     }
 }

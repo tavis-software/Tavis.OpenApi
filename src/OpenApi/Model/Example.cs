@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Tavis.OpenApi.Model
 {
-    public class Example : IModel, IReference
+    public class Example : IReference
     {
         public string Summary { get; set; }
         public string Description { get; set; }
@@ -19,20 +19,6 @@ namespace Tavis.OpenApi.Model
         {
             get; set;
         }
-
-        void IModel.Write(IParseNodeWriter writer)
-        {
-            writer.WriteStartMap();
-            writer.WriteStringProperty("summary", Summary);
-            writer.WriteStringProperty("description", Description);
-            if (Value != null)
-            {
-                writer.WritePropertyName("value");
-                Value.Write(writer);
-            }
-            writer.WriteEndMap();
-        }
-
      }
 
    

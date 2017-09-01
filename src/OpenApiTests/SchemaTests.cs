@@ -32,7 +32,7 @@ namespace OpenApiTests
 
             var mapNode = MapNode.Create(jsonSchema);
 
-            var schema = OpenApiV3.LoadSchema(mapNode);
+            var schema = OpenApiV3Reader.LoadSchema(mapNode);
 
             Assert.NotNull(schema);
             Assert.Equal("int", schema.Type);

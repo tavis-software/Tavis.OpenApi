@@ -5,7 +5,7 @@ using SharpYaml.Serialization;
 namespace Tavis.OpenApi.Model
 {
 
-    public class Components : IModel
+    public class Components
     {
         public Dictionary<string, Schema> Schemas { get; set; } = new Dictionary<string, Schema>();
         public Dictionary<string, Response> Responses { get; set; } = new Dictionary<string, Response>();
@@ -31,23 +31,6 @@ namespace Tavis.OpenApi.Model
                 || this.Callbacks.Count > 0 
                 || this.Extensions.Count > 0);
 
-        }
-
-        void IModel.Write(IParseNodeWriter writer)
-        {
-            writer.WriteStartMap();
-
-            writer.WriteMap("schemas", Schemas, ModelHelper.WriteFull);
-            writer.WriteMap("responses", Responses, ModelHelper.WriteFull);
-            writer.WriteMap("parameters", Parameters, ModelHelper.WriteFull);
-            writer.WriteMap("examples", Examples, ModelHelper.WriteFull);
-            writer.WriteMap("requestBodies", RequestBodies, ModelHelper.WriteFull);
-            writer.WriteMap("headers", Headers, ModelHelper.WriteFull);
-            writer.WriteMap("securitySchemes", SecuritySchemes, ModelHelper.WriteFull);
-            writer.WriteMap("links", Links, ModelHelper.WriteFull);
-            writer.WriteMap("callbacks", Callbacks, ModelHelper.WriteFull);
-
-            writer.WriteEndMap();
         }
 
 
