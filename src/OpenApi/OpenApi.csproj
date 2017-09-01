@@ -1,7 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net46;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Darrel Miller</Authors>
+    <Company>Tavis Software Inc.</Company>
+    <Product>Tavis.OpenApi</Product>
+    <PackageId>Tavis.OpenApi</PackageId>
+    <Version>0.8.0</Version>
+    <Description>Parser for OpenAPI descriptions</Description>
   </PropertyGroup>
 
   <ItemGroup>

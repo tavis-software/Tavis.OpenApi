@@ -1,4 +1,6 @@
 # Tavis.OpenApi
+## 0.8.0
+- Moved to .net Standard 2.0
 ## 0.7.1 
 - Added YAML/JSON output selector to Workbench tool
 - Lots of JSON serialization fixes
