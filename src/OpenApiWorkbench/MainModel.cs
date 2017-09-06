@@ -106,7 +106,7 @@ namespace OpenApiWorkbench
 
         private string WriteContents(Tavis.OpenApi.Model.OpenApiDocument doc)
         {
-            var writer = new OpenApiV3Writer(s => (this.format == "Yaml" ? (IParseNodeWriter)new YamlParseNodeWriter(s) : (IParseNodeWriter)new JsonParseNodeWriter(s)));
+            var writer = new OpenApiV2Writer(s => (this.format == "Yaml" ? (IParseNodeWriter)new YamlParseNodeWriter(s) : (IParseNodeWriter)new JsonParseNodeWriter(s)));
             var outputstream = new MemoryStream();
             writer.Write(outputstream, doc);
             outputstream.Position = 0;
