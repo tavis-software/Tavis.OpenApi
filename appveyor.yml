@@ -3,8 +3,6 @@ image: Visual Studio 2017 Preview
 branches:
   only:
   - master
-before_build:
-- nuget restore
 build_script:
 - cmd: build.cmd
 test: off
