@@ -3,7 +3,7 @@ using SharpYaml.Serialization;
 
 namespace Tavis.OpenApi.Model
 {
-    public class Tag : IModel, IReference
+    public class Tag : IReference
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -24,14 +24,6 @@ namespace Tavis.OpenApi.Model
                 tagObject = new Tag() { Name = tagName };
             }
             return tagObject;
-        }
-
-        void IModel.Write(IParseNodeWriter writer)
-        {
-            writer.WriteStartMap();
-            writer.WriteStringProperty("name", Name);
-            writer.WriteStringProperty("description", Description);
-            writer.WriteEndMap();
         }
 
         public void WriteRef(IParseNodeWriter writer)

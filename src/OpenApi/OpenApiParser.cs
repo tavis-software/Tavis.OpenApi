@@ -50,18 +50,18 @@ namespace Tavis.OpenApi
                 case "2.0":
                     context.SetReferenceService(new ReferenceService(rootNode)
                     {
-                        loadReference = OpenApiV2.LoadReference,
-                        parseReference = p => OpenApiV2.ParseReference(p)
+                        loadReference = OpenApiV2Reader.LoadReference,
+                        parseReference = p => OpenApiV2Reader.ParseReference(p)
                     });
-                    context.OpenApiDocument = OpenApiV2.LoadOpenApi(rootNode);
+                    context.OpenApiDocument = OpenApiV2Reader.LoadOpenApi(rootNode);
                     break;
                default:
                     context.SetReferenceService(new ReferenceService(rootNode)
                     {
-                        loadReference = OpenApiV3.LoadReference,
+                        loadReference = OpenApiV3Reader.LoadReference,
                         parseReference = p => new OpenApiReference(p)
                     });
-                    context.OpenApiDocument = OpenApiV3.LoadOpenApi(rootNode);
+                    context.OpenApiDocument = OpenApiV3Reader.LoadOpenApi(rootNode);
                     break;
             }
             return context;

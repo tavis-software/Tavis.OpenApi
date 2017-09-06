@@ -46,7 +46,7 @@ namespace OpenApiTests
 
             Callback callback = callbackPair.Value;
             var pathItemPair = callback.PathItems.First();
-            Assert.Equal("$request.body(/url)", pathItemPair.Key);
+            Assert.Equal("$request.body(/url)", pathItemPair.Key.Expression);
 
             PathItem pathItem = pathItemPair.Value;
 

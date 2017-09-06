@@ -6,13 +6,14 @@ namespace Tavis.OpenApi
     using Tavis.OpenApi.Export;
     using Tavis.OpenApi.Model;
     using System.Linq;
+    using System.Collections.Generic;
 
-    public class OpenApiV3Writer : IOpenApiWriter
+    public class OpenApiV2Writer : IOpenApiWriter
     {
         Func<Stream, IParseNodeWriter> defaultWriterFactory = s => new YamlParseNodeWriter(s);
         Func<Stream, IParseNodeWriter> writerFactory;
 
-        public OpenApiV3Writer(Func<Stream, IParseNodeWriter> writerFactory = null)
+        public OpenApiV2Writer(Func<Stream, IParseNodeWriter> writerFactory = null)
         {
             this.writerFactory = writerFactory ?? defaultWriterFactory;
         }
@@ -22,20 +23,21 @@ namespace Tavis.OpenApi
 
             var writer = writerFactory(stream);
             writer.WriteStartDocument();
-            WriteOpenApiDocument(writer,document);
+            WriteOpenApiDocument(writer, document);
             writer.WriteEndDocument();
             writer.Flush();
         }
-        
+
         public static void WriteOpenApiDocument(IParseNodeWriter writer, OpenApiDocument doc)
         {
             writer.WriteStartMap();
 
-            writer.WritePropertyName("openapi");
-            writer.WriteValue("3.0.0");
+            writer.WritePropertyName("swagger");
+            writer.WriteValue("2.0");
 
             writer.WriteObject("info", doc.Info, WriteInfo);
-            writer.WriteList("servers", doc.Servers, WriteServer);
+            WriteHostInfo(writer, doc.Servers);
+
             writer.WritePropertyName("paths");
             if (doc.Paths.PathItems.Count() > 0)
             {
@@ -48,7 +50,7 @@ namespace Tavis.OpenApi
             writer.WriteList("tags", doc.Tags, WriteTag);
             if (!doc.Components.IsEmpty())
             {
-                writer.WriteObject("components", doc.Components, WriteComponents);
+                WriteComponents(writer, doc.Components);
             }
             if (doc.ExternalDocs.Url != null)
             {
@@ -58,6 +60,11 @@ namespace Tavis.OpenApi
 
             writer.WriteEndMap();
 
+        }
+
+        private static void WriteHostInfo(IParseNodeWriter writer, IList<Server> servers)
+        {
+            // TODO:
         }
 
         public static void WriteInfo(IParseNodeWriter writer, Info info)
@@ -95,18 +102,6 @@ namespace Tavis.OpenApi
 
             writer.WriteEndMap();
         }
-
-        public static void WriteServer(IParseNodeWriter writer, Server server)
-        {
-            writer.WriteStartMap();
-
-            writer.WriteStringProperty("url", server.Url);
-            writer.WriteStringProperty("description", server.Description);
-
-            writer.WriteMap("variables", server.Variables, WriteServerVariable);
-            writer.WriteEndMap();
-        }
-
         public static void WriteTag(IParseNodeWriter writer, Tag tag)
         {
             writer.WriteStartMap();
@@ -122,27 +117,12 @@ namespace Tavis.OpenApi
             writer.WriteMap("schemas", components.Schemas, WriteSchema);
             writer.WriteMap("responses", components.Responses, WriteResponse);
             writer.WriteMap("parameters", components.Parameters, WriteParameter);
-            writer.WriteMap("examples", components.Examples, WriteExample);
-            writer.WriteMap("requestBodies", components.RequestBodies, WriteRequestBody);
             writer.WriteMap("headers", components.Headers, WriteHeader);
-            writer.WriteMap("securitySchemes", components.SecuritySchemes, WriteSecurityScheme);
-            writer.WriteMap("links", components.Links, WriteLink);
-            writer.WriteMap("callbacks", components.Callbacks, WriteCallback);
+            writer.WriteMap("securityDefintions", components.SecuritySchemes, WriteSecurityScheme);
 
             writer.WriteEndMap();
         }
-
-        public static void WriteServerVariable(IParseNodeWriter writer, ServerVariable variable)
-        {
-            writer.WriteStartMap();
-
-            writer.WriteList("enum", variable.Enum, (nodeWriter, s) => nodeWriter.WriteValue(s));
-            writer.WriteStringProperty("default", variable.Default);
-            writer.WriteStringProperty("description", variable.Description);
-
-            writer.WriteEndMap();
-
-        }
+        
         public static void WriteExternalDocs(IParseNodeWriter writer, ExternalDocs externalDocs)
         {
             writer.WriteStartMap();
@@ -194,8 +174,8 @@ namespace Tavis.OpenApi
         public static void WritePathItem(IParseNodeWriter writer, PathItem pathItem)
         {
             writer.WriteStartMap();
-            writer.WriteStringProperty("summary", pathItem.Summary);
-            writer.WriteStringProperty("description", pathItem.Description);
+            writer.WriteStringProperty("x-summary", pathItem.Summary);
+            writer.WriteStringProperty("x-description", pathItem.Description);
             if (pathItem.Parameters != null && pathItem.Parameters.Count > 0)
             {
                 writer.WritePropertyName("parameters");
@@ -207,7 +187,7 @@ namespace Tavis.OpenApi
                 writer.WriteEndList();
 
             }
-            writer.WriteList("servers", pathItem.Servers, WriteServer);
+            //writer.WriteList("x-servers", pathItem.Servers, WriteServer);
 
             foreach (var operationPair in pathItem.Operations)
             {
@@ -228,12 +208,11 @@ namespace Tavis.OpenApi
 
             writer.WriteStringProperty("operationId", operation.OperationId);
             writer.WriteList<Parameter>("parameters", operation.Parameters, WriteParameterOrReference);
-            writer.WriteObject("requestBody", operation.RequestBody, WriteRequestBodyOrReference);
+//            writer.WriteObject("requestBody", operation.RequestBody, WriteRequestBodyOrReference);
             writer.WriteMap<Response>("responses", operation.Responses, WriteResponseOrReference);
-            writer.WriteMap<Callback>("callbacks", operation.Callbacks, WriteCallbackOrReference);
             writer.WriteBoolProperty("deprecated", operation.Deprecated, Operation.DeprecatedDefault);
             writer.WriteList("security", operation.Security, WriteSecurityRequirement);
-            writer.WriteList("servers", operation.Servers, WriteServer);
+//            writer.WriteList("servers", operation.Servers, WriteServer);
 
             writer.WriteEndMap();
         }
@@ -309,11 +288,10 @@ namespace Tavis.OpenApi
             writer.WriteStartMap();
 
             writer.WriteStringProperty("description", response.Description);
-            writer.WriteMap("content", response.Content, WriteMediaType);
+ //           writer.WriteMap("content", response.Content, WriteMediaType);
 
             writer.WriteMap("headers", response.Headers, WriteHeaderOrReference);
-            writer.WriteMap("links", response.Links, WriteLinkOrReference);
-
+ 
             //Links
             writer.WriteEndMap();
         }
@@ -392,29 +370,6 @@ namespace Tavis.OpenApi
             writer.WriteEndMap();
         }
 
-        public static void WriteLinkOrReference(IParseNodeWriter writer, Link link)
-        {
-            if (link.IsReference())
-            {
-                link.WriteRef(writer);
-            }
-            else
-            {
-                WriteLink(writer, link);
-            }
-        }
-
-        public static void WriteLink(IParseNodeWriter writer, Link link)
-        {
-            writer.WriteStartMap();
-
-            writer.WriteStringProperty("href", link.Href);
-            writer.WriteStringProperty("operationId", link.OperationId);
-            writer.WriteMap("parameters", link.Parameters, (w, x) => { w.WriteValue(x.ToString()); });
-
-            writer.WriteEndMap();
-        }
-
         public static void WriteHeaderOrReference(IParseNodeWriter writer, Header header)
         {
             if (header.IsReference())
@@ -452,44 +407,11 @@ namespace Tavis.OpenApi
 
             writer.WriteObject("schema", mediaType.Schema, WriteSchemaOrReference);
             writer.WriteObject("example", mediaType.Example, AnyNode.Write);
-            writer.WriteMap("examples", mediaType.Examples, WriteExampleOrReference);
+    //        writer.WriteMap("examples", mediaType.Examples, WriteExampleOrReference);
 
             writer.WriteEndMap();
         }
 
-        public static void WriteCallbackOrReference(IParseNodeWriter writer, Callback callback)
-        {
-            if (callback.IsReference())
-            {
-                callback.WriteRef(writer);
-            }
-            else
-            {
-                WriteCallback(writer, callback);
-            }
-        }
-
-        public static void WriteCallback(IParseNodeWriter writer, Callback callback)
-        {
-            writer.WriteStartMap();
-            foreach(var item in callback.PathItems)
-            {
-                writer.WriteObject<PathItem>(item.Key.Expression, item.Value, WritePathItem);
-            }
-            writer.WriteEndMap();
-        }
-
-        public static void WriteExampleOrReference(IParseNodeWriter writer, Example example)
-        {
-            if (example.IsReference())
-            {
-                example.WriteRef(writer);
-            }
-            else
-            {
-                WriteExample(writer, example);
-            }
-        }
 
         public static void WriteExample(IParseNodeWriter writer, Example example)
         {

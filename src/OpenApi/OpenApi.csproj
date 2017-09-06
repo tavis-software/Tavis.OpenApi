@@ -9,6 +9,10 @@
     <PackageId>Tavis.OpenApi</PackageId>
     <Version>0.8.0</Version>
     <Description>Parser for OpenAPI descriptions</Description>
+    <AssemblyName>Tavis.OpenApi</AssemblyName>
+    <RootNamespace>Tavis.OpenApi</RootNamespace>
+    <LicenseUrl>https://raw.githubusercontent.com/tavis-software/Tavis.OpenApi/master/License.txt</LicenseUrl>
+    <ProjectUrl>https://github.com/tavis-software/Tavis.OpenApi</ProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

@@ -7,7 +7,7 @@ using System.Collections;
 
 namespace Tavis.OpenApi.Model
 {
-    public class OpenApiDocument : IModel
+    public class OpenApiDocument 
     {
         string version;
         public string Version { get { return version; }
@@ -34,38 +34,7 @@ namespace Tavis.OpenApi.Model
         private static Regex versionRegex = new Regex(@"\d+\.\d+\.\d+");
 
 
-
-        void IModel.Write(IParseNodeWriter writer)
-        {
-            writer.WriteStartMap();
-
-            writer.WritePropertyName("openapi");
-            writer.WriteValue("3.0.0");
-
-            writer.WriteObject("info", Info, ModelHelper.Write);
-            writer.WriteList("servers", Servers, ModelHelper.Write);
-            writer.WritePropertyName("paths");
-            if (Paths.PathItems.Count() > 0)
-            {
-                ModelHelper.Write(writer, Paths);
-            } else
-            {
-                writer.WriteValue("{}");
-            }
-            writer.WriteList("tags", Tags, ModelHelper.Write);
-            if (!Components.IsEmpty())
-            {
-                writer.WriteObject("components", Components, ModelHelper.Write);
-            }
-            if (ExternalDocs.Url != null)
-            {
-                writer.WriteObject("externalDocs", ExternalDocs, ModelHelper.Write);
-            }
-            writer.WriteList("security", SecurityRequirements, ModelHelper.Write);
-
-            writer.WriteEndMap();
-        }
-
+        
         internal void Diff(List<OpenApiDifference> diffs, OpenApiDocument source)
         {
             // need some kind of context object for tracking where the diffs are found

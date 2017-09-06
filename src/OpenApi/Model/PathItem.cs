@@ -7,7 +7,7 @@ namespace Tavis.OpenApi.Model
 
 {
 
-    public class PathItem : IModel
+    public class PathItem 
     {
 
         public string Summary { get; set; }
@@ -32,36 +32,6 @@ namespace Tavis.OpenApi.Model
             this.operations.Add(method, operation);
         }
 
-        public void Write(IParseNodeWriter writer)
-        {
-            writer.WriteStartMap();
-            writer.WriteStringProperty("summary", Summary);
-            writer.WriteStringProperty("description", Description);
-            if (Parameters != null && Parameters.Count >0)
-            {
-                writer.WritePropertyName("parameters");
-                writer.WriteStartList();
-                foreach (var parameter in this.Parameters)
-                {
-                    ModelHelper.Write(writer,parameter);
-                }
-                writer.WriteEndList();
-
-            }
-            writer.WriteList("servers", Servers, ModelHelper.Write);
-
-            foreach (var operationPair in Operations)
-            {
-                writer.WritePropertyName(operationPair.Key);
-                ModelHelper.Write(writer, operationPair.Value);
-            }
-            writer.WriteEndMap();
-        }
-
-        public static void Write(IParseNodeWriter writer, PathItem pathItem)
-        {
-            pathItem.Write(writer);
-        }
 
     }
 }

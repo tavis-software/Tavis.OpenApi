@@ -14,7 +14,7 @@ namespace Tavis.OpenApi.Model
         header = 3
     }
 
-    public class Parameter : IModel, IReference
+    public class Parameter : IReference
     {
         public OpenApiReference Pointer { get; set; }
         public string Name { get; set; }
@@ -56,24 +56,6 @@ namespace Tavis.OpenApi.Model
         public Dictionary<string, MediaType> Content { get; set; }
         public Dictionary<string, AnyNode> Extensions { get; set; } = new Dictionary<string, AnyNode>();
 
-        void IModel.Write(IParseNodeWriter writer)
-        {
-            writer.WriteStartMap();
-            writer.WriteStringProperty("name", Name);
-            writer.WriteStringProperty("in", In.ToString());
-            writer.WriteStringProperty("description", Description);
-            writer.WriteBoolProperty("required", Required, false);
-            writer.WriteBoolProperty("deprecated", Deprecated, false);
-            writer.WriteBoolProperty("allowEmptyValue", AllowEmptyValue, false);
-            writer.WriteStringProperty("style", Style);
-            writer.WriteBoolProperty("explode", Explode,false);
-            writer.WriteBoolProperty("allowReserved", AllowReserved, false);
-            writer.WriteObject("schema", Schema, ModelHelper.Write);
-            writer.WriteList("examples", Examples, AnyNode.Write);
-            writer.WriteObject("example", Example, AnyNode.Write);
-            writer.WriteMap("content", Content, ModelHelper.Write);
-            writer.WriteEndMap();
-        }
         
     }
     }
