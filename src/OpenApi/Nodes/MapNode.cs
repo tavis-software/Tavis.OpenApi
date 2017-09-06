@@ -27,6 +27,7 @@ namespace Tavis.OpenApi
 
         public MapNode(ParsingContext ctx, YamlMappingNode node) : base(ctx)
         {
+            if (node == null) throw new DomainParseException($"Expected map");
             this.node = node;
             nodes = this.node.Children.Select(kvp => new PropertyNode(Context, kvp.Key.GetScalarValue(), kvp.Value)).ToList();
         }
@@ -92,7 +93,7 @@ namespace Tavis.OpenApi
         {
             var yamlMap = this.node;
             if (yamlMap == null) throw new DomainParseException($"Expected map at line {yamlMap.Start.Line} while parsing {typeof(T).Name}");
-            var nodes = yamlMap.Select(n => new { key = n.Key.GetScalarValue(), value = map(new MapNode(this.Context,(YamlMappingNode)n.Value)) });
+            var nodes = yamlMap.Select(n => new { key = n.Key.GetScalarValue(), value = map(new MapNode(this.Context,n.Value as YamlMappingNode)) });
             return nodes.ToDictionary(k => k.key, v => v.value);
         }
 
