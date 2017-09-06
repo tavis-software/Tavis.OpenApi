@@ -5,9 +5,8 @@ branches:
   - master
 before_build:
 - nuget restore
-build:
-  project: build\build.proj
-  verbosity: normal
+build_script:
+- cmd: build.cmd
 test: off
 artifacts:
 - path: artifacts\*.nupkg
