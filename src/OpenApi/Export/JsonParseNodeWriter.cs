@@ -82,7 +82,7 @@ namespace Tavis.OpenApi
             writer.Write(Indent + "}");
             state.Pop();
             DecreaseIndent();
-
+            first = false;
         }
 
         public void WritePropertyName(string name) {

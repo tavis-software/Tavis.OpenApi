@@ -39,14 +39,11 @@ namespace Tavis.OpenApi
             WriteHostInfo(writer, doc.Servers);
 
             writer.WritePropertyName("paths");
-            if (doc.Paths.PathItems.Count() > 0)
-            {
-                WritePaths(writer, doc.Paths);
-            }
-            else
-            {
-                writer.WriteValue("{}");
-            }
+
+            writer.WriteStartMap();
+            WritePaths(writer, doc.Paths);
+            writer.WriteEndMap();
+
             writer.WriteList("tags", doc.Tags, WriteTag);
             if (!doc.Components.IsEmpty())
             {
@@ -64,7 +61,18 @@ namespace Tavis.OpenApi
 
         private static void WriteHostInfo(IParseNodeWriter writer, IList<Server> servers)
         {
-            // TODO:
+            var firstServer = servers.First();
+            var url = new Uri(firstServer.Url);
+            writer.WriteStringProperty("host", url.GetComponents(UriComponents.Host | UriComponents.Port, UriFormat.SafeUnescaped));
+            writer.WriteStringProperty("basePath", url.AbsolutePath);
+            var schemes = servers.Select(s => new Uri(s.Url).Scheme).Distinct();
+            writer.WritePropertyName("schemes");
+            writer.WriteStartList();
+            foreach(var scheme in schemes)
+            {
+                writer.WriteListItem(scheme, (w, s) => w.WriteValue(s));
+            }
+            writer.WriteEndList();
         }
 
         public static void WriteInfo(IParseNodeWriter writer, Info info)
@@ -118,7 +126,7 @@ namespace Tavis.OpenApi
             writer.WriteMap("responses", components.Responses, WriteResponse);
             writer.WriteMap("parameters", components.Parameters, WriteParameter);
             writer.WriteMap("headers", components.Headers, WriteHeader);
-            writer.WriteMap("securityDefintions", components.SecuritySchemes, WriteSecurityScheme);
+            writer.WriteMap("securityDefinitions", components.SecuritySchemes, WriteSecurityScheme);
 
             writer.WriteEndMap();
         }
@@ -141,19 +149,14 @@ namespace Tavis.OpenApi
             {
 
                 writer.WritePropertyName(scheme.Key.Pointer.TypeName);
-                if (scheme.Value.Count > 0)
+                writer.WriteStartList();
+                    
+                foreach (var scope in scheme.Value)
                 {
-                    writer.WriteStartList();
-                    foreach (var scope in scheme.Value)
-                    {
-                        writer.WriteValue(scope);
-                    }
-                    writer.WriteEndList();
+                    writer.WriteValue(scope);
                 }
-                else
-                {
-                    writer.WriteValue("[]");
-                }
+
+                writer.WriteEndList();
             }
 
             writer.WriteEndMap();
@@ -162,13 +165,11 @@ namespace Tavis.OpenApi
 
         public static void WritePaths(IParseNodeWriter writer, Paths paths)
         {
-            writer.WriteStartMap();
             foreach (var pathItem in paths.PathItems)
             {
                 writer.WritePropertyName(pathItem.Key);
                 WritePathItem(writer, pathItem.Value);
             }
-            writer.WriteEndMap();
         }
 
         public static void WritePathItem(IParseNodeWriter writer, PathItem pathItem)

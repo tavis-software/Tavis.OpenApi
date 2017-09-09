@@ -37,14 +37,11 @@ namespace Tavis.OpenApi
             writer.WriteObject("info", doc.Info, WriteInfo);
             writer.WriteList("servers", doc.Servers, WriteServer);
             writer.WritePropertyName("paths");
-            if (doc.Paths.PathItems.Count() > 0)
-            {
-                WritePaths(writer, doc.Paths);
-            }
-            else
-            {
-                writer.WriteValue("{}");
-            }
+
+            writer.WriteStartMap();
+            WritePaths(writer, doc.Paths);
+            writer.WriteEndMap();
+
             writer.WriteList("tags", doc.Tags, WriteTag);
             if (!doc.Components.IsEmpty())
             {
@@ -182,13 +179,12 @@ namespace Tavis.OpenApi
 
         public static void WritePaths(IParseNodeWriter writer, Paths paths)
         {
-            writer.WriteStartMap();
+
             foreach (var pathItem in paths.PathItems)
             {
                 writer.WritePropertyName(pathItem.Key);
                 WritePathItem(writer, pathItem.Value);
             }
-            writer.WriteEndMap();
         }
 
         public static void WritePathItem(IParseNodeWriter writer, PathItem pathItem)
