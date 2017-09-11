@@ -1,7 +1,8 @@
 # Tavis.OpenApi
-## 0.8.next
+## 0.8.1
 - Fixes to JSON Writer
-- Added support for rendering V2 host,basePath and schemes
+- Added support for rendering V2 host,basePath, schemes, produces, consumes, requestBody, parameters
+- Improved error handling
 ## 0.8.0
 - Moved to .net Standard 2.0
 - Some bug fixes for parsing badly structured input
