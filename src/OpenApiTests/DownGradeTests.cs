@@ -53,6 +53,95 @@ namespace OpenApiTests
 
         }
 
+        [Fact]
+        public void TestConsumes()
+        {
+            var openApiDoc = new OpenApiDocument();
+            var pathItem = new PathItem();
+            var operation = new Operation
+            {
+                RequestBody = new RequestBody
+                {
+                    Content = new Dictionary<string,MediaType>() {
+                        { "application/vnd.collection+json", new MediaType
+                                {
+                                }
+                        }
+                    }
+                }, 
+                Responses = new Dictionary<string,Response> { { "200", new Response() {
+                    Description = "Success"
+                } } }
+            };
+            pathItem.AddOperation("get", operation);
+            openApiDoc.Paths.PathItems.Add("/resource", pathItem);
+
+            JObject jObject = ExportV2ToJObject(openApiDoc);
+
+            Assert.Equal("application/vnd.collection+json", (string)jObject["paths"]["/resource"]["get"]["consumes"][0]);
+
+        }
+
+        [Fact]
+        public void TestProduces()
+        {
+            var openApiDoc = new OpenApiDocument();
+            var pathItem = new PathItem();
+            var operation = new Operation
+            {
+                Responses = new Dictionary<string, Response> { { "200", new Response() {
+                    Description = "Success",
+                    Content = new Dictionary<string, MediaType>() {
+                        { "application/vnd.collection+json", new MediaType
+                                {
+                                }
+                        },
+                        { "text/plain", null }
+                    }
+
+                } } }
+            };
+            pathItem.AddOperation("get", operation);
+            openApiDoc.Paths.PathItems.Add("/resource", pathItem);
+
+            JObject jObject = ExportV2ToJObject(openApiDoc);
+
+            Assert.Equal("application/vnd.collection+json", (string)jObject["paths"]["/resource"]["get"]["produces"][0]);
+            Assert.Equal("text/plain", (string)jObject["paths"]["/resource"]["get"]["produces"][1]);
+
+
+        }
+
+        [Fact]
+        public void Testxxx()
+        {
+            var openApiDoc = new OpenApiDocument();
+            var pathItem = new PathItem();
+            var operation = new Operation
+            {
+                Parameters = new List<Parameter> {
+                new Parameter {
+                    Name = "param1",
+                    In = InEnum.query,
+                    Schema = new Schema
+                    {
+                        Type = "string"
+                    }
+
+                } },
+                Responses = new Dictionary<string, Response> { { "200", new Response() {
+                    Description = "Success"
+                } } }
+            };
+            pathItem.AddOperation("get", operation);
+            openApiDoc.Paths.AddPathItem("/resource", pathItem);
+
+            JObject jObject = ExportV2ToJObject(openApiDoc);
+
+            Assert.Equal("string", (string)jObject["paths"]["/resource"]["get"]["parameters"][0]["type"]);
+
+        }
+
         private static JObject ExportV2ToJObject(OpenApiDocument openApiDoc)
         {
             var outputStream = new MemoryStream();
@@ -62,5 +151,7 @@ namespace OpenApiTests
             var jObject = JObject.Parse(json);
             return jObject;
         }
+
+
     }
 }

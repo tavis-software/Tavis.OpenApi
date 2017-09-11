@@ -61,6 +61,7 @@ namespace Tavis.OpenApi
 
         private static void WriteHostInfo(IParseNodeWriter writer, IList<Server> servers)
         {
+            if (servers == null || servers.Count == 0) return;
             var firstServer = servers.First();
             var url = new Uri(firstServer.Url);
             writer.WriteStringProperty("host", url.GetComponents(UriComponents.Host | UriComponents.Port, UriFormat.SafeUnescaped));
@@ -208,7 +209,42 @@ namespace Tavis.OpenApi
             writer.WriteObject("externalDocs", operation.ExternalDocs, WriteExternalDocs);
 
             writer.WriteStringProperty("operationId", operation.OperationId);
-            writer.WriteList<Parameter>("parameters", operation.Parameters, WriteParameterOrReference);
+
+            var parameters = new List<Parameter>(operation.Parameters);
+
+            Parameter bodyParameter = null;
+            if (operation.RequestBody != null)
+            {
+                writer.WritePropertyName("consumes");
+                writer.WriteStartList();
+                foreach (var mediaType in operation.RequestBody.Content.Keys)
+                {
+                    writer.WriteListItem(mediaType, (w, s) => w.WriteValue(s));
+                }
+                writer.WriteEndList();
+
+                // Create bodyParameter
+                bodyParameter = new BodyParameter()
+                {
+                    
+                };
+                // add to parameters
+                operation.Parameters.Add(bodyParameter);
+            }
+
+            var produces = operation.Responses.Where(r => r.Value.Content != null).SelectMany(r => r.Value.Content?.Keys);
+            if (produces.Count() > 0)
+            {
+                writer.WritePropertyName("produces");
+                writer.WriteStartList();
+                foreach (var mediaType in produces)
+                {
+                    writer.WriteListItem(mediaType, (w, s) => w.WriteValue(s));
+                }
+                writer.WriteEndList();
+            }
+
+            writer.WriteList<Parameter>("parameters", parameters, WriteParameterOrReference);
 //            writer.WriteObject("requestBody", operation.RequestBody, WriteRequestBodyOrReference);
             writer.WriteMap<Response>("responses", operation.Responses, WriteResponseOrReference);
             writer.WriteBoolProperty("deprecated", operation.Deprecated, Operation.DeprecatedDefault);
@@ -234,7 +270,14 @@ namespace Tavis.OpenApi
         {
             writer.WriteStartMap();
             writer.WriteStringProperty("name", parameter.Name);
-            writer.WriteStringProperty("in", parameter.In.ToString());
+            if (parameter is BodyParameter)
+            {
+                writer.WriteStringProperty("in", "body");   // form?
+            }
+            else
+            {
+                writer.WriteStringProperty("in", parameter.In.ToString());
+            }
             writer.WriteStringProperty("description", parameter.Description);
             writer.WriteBoolProperty("required", parameter.Required, false);
             writer.WriteBoolProperty("deprecated", parameter.Deprecated, false);
@@ -242,7 +285,14 @@ namespace Tavis.OpenApi
             writer.WriteStringProperty("style", parameter.Style);
             writer.WriteBoolProperty("explode", parameter.Explode, false);
             writer.WriteBoolProperty("allowReserved", parameter.AllowReserved, false);
-            writer.WriteObject("schema", parameter.Schema, WriteSchemaOrReference);
+            if (parameter is BodyParameter)
+            {
+                writer.WriteObject("schema", parameter.Schema, WriteSchemaOrReference);
+            }
+            else
+            {
+                WriteSchemaProperties(writer, parameter.Schema);
+            }
             writer.WriteList("examples", parameter.Examples, AnyNode.Write);
             writer.WriteObject("example", parameter.Example, AnyNode.Write);
             writer.WriteMap("content", parameter.Content, WriteMediaType);
@@ -314,6 +364,13 @@ namespace Tavis.OpenApi
         {
             writer.WriteStartMap();
 
+            WriteSchemaProperties(writer, schema);
+
+            writer.WriteEndMap();
+        }
+
+        private static void WriteSchemaProperties(IParseNodeWriter writer, Schema schema)
+        {
             writer.WriteStringProperty("title", schema.Title);
             writer.WriteStringProperty("type", schema.Type);
             writer.WriteStringProperty("format", schema.Format);
@@ -367,8 +424,6 @@ namespace Tavis.OpenApi
             writer.WriteNumberProperty("minProperties", schema.MinProperties);
 
             writer.WriteList("enum", schema.Enum, (nodeWriter, s) => nodeWriter.WriteValue(s));
-
-            writer.WriteEndMap();
         }
 
         public static void WriteHeaderOrReference(IParseNodeWriter writer, Header header)
@@ -452,6 +507,11 @@ namespace Tavis.OpenApi
         }
 
 
+
+    }
+
+    internal class BodyParameter : Parameter
+    {
 
     }
 }
