@@ -11,10 +11,8 @@ info:
   license:
     name: MIT
     url: http://opensource.org/licenses/MIT
-hosts:
-    host: petstore.swagger.io
-    basePath: /api
-    scheme: http
+servers:
+    - url: http://petstore.swagger.io/api
 paths:
   /pets:
     get:
@@ -29,7 +27,6 @@ paths:
             type: array
             items:
                 type: string
-            collectionFormat: csv
         - name: limit
           in: query
           description: maximum number of results to return
@@ -70,8 +67,10 @@ paths:
       requestBody:
           description: Pet to add to the store
           required: true
-          schema:
-            "$ref": '#/components/schemas/newPet'
+          content:
+            'application/json':
+              schema:
+                "$ref": '#/components/schemas/newPet'
       responses:
         '200':
           description: pet response
