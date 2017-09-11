@@ -69,28 +69,29 @@ namespace Tavis.OpenApi
 
         public virtual string GetScalarValue()
         {
-            throw new Exception();
+            throw new DomainParseException("Cannot get scalar value");
         }
 
         public virtual Dictionary<string, T> CreateMap<T>(Func<MapNode, T> map)
         {
-            throw new Exception();
+            throw new DomainParseException("Cannot create map");
         }
         public virtual Dictionary<string, T> CreateMapWithReference<T>(string refpointer, Func<MapNode, T> map) where T : class, IReference
         {
-            throw new Exception();
+            throw new DomainParseException("Cannot create map from reference");
         }
         public virtual Dictionary<string, T> CreateSimpleMap<T>(Func<ValueNode, T> map)
         {
-            throw new Exception();
+            throw new DomainParseException("Cannot create simple map");
         }
         public virtual List<T> CreateList<T>(Func<MapNode, T> map)
         {
-            throw new Exception();
+            throw new DomainParseException("Cannot create list");
+
         }
         public virtual List<T> CreateSimpleList<T>(Func<ValueNode, T> map)
         {
-            throw new Exception();
+            throw new DomainParseException("Cannot create simple list");
         }
 
         internal string CheckRegex(string value, Regex versionRegex, string defaultValue)
