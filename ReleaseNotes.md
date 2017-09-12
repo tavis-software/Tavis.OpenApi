@@ -1,4 +1,7 @@
 # Tavis.OpenApi
+## 0.8.2
+- Added back StrongNaming cert.
+- Added back support for net46
 ## 0.8.1
 - Fixes to JSON Writer
 - Added support for rendering V2 host,basePath, schemes, produces, consumes, requestBody, parameters
