@@ -294,28 +294,7 @@ namespace Tavis.OpenApi
             writer.WriteEndMap();
         }
 
-        public static void WriteRequestBodyOrReference(IParseNodeWriter writer, RequestBody requestBody)
-        {
-            if (requestBody.IsReference())
-            {
-                requestBody.WriteRef(writer);
-            }
-            else
-            {
-                WriteRequestBody(writer, requestBody);
-            }
-        }
 
-        public static void WriteRequestBody(IParseNodeWriter writer, RequestBody requestBody)
-        {
-            writer.WriteStartMap();
-
-            writer.WriteStringProperty("description", requestBody.Description);
-            writer.WriteBoolProperty("required", requestBody.Required, false);
-            writer.WriteMap("content", requestBody.Content, WriteMediaType);
-
-            writer.WriteEndMap();
-        }
 
         public static void WriteResponseOrReference(IParseNodeWriter writer, Response response)
         {
@@ -334,11 +313,28 @@ namespace Tavis.OpenApi
             writer.WriteStartMap();
 
             writer.WriteStringProperty("description", response.Description);
- //           writer.WriteMap("content", response.Content, WriteMediaType);
+            if (response.Content != null)
+            {
+                var mediatype = response.Content.FirstOrDefault();
+                if (mediatype.Value != null)
+                {
 
+                    writer.WriteObject("schema", mediatype.Value.Schema, WriteSchemaOrReference);
+
+                    if (mediatype.Value.Example != null)
+                    {
+                        writer.WritePropertyName("examples");
+                        writer.WriteStartMap();
+                        writer.WritePropertyName(mediatype.Key);
+                        AnyNode.Write(writer,mediatype.Value.Example);
+                        writer.WriteEndMap();
+                    }
+                    
+                }
+
+            }
             writer.WriteMap("headers", response.Headers, WriteHeaderOrReference);
  
-            //Links
             writer.WriteEndMap();
         }
 
@@ -447,36 +443,11 @@ namespace Tavis.OpenApi
             writer.WriteObject("schema", header.Schema, WriteSchema);
             writer.WriteList("examples", header.Examples, AnyNode.Write);
             writer.WriteObject("example", header.Example, AnyNode.Write);
-            writer.WriteMap("content", header.Content, WriteMediaType);
 
             writer.WriteEndMap();
         }
 
-        public static void WriteMediaType(IParseNodeWriter writer, MediaType mediaType)
-        {
-            writer.WriteStartMap();
-
-            writer.WriteObject("schema", mediaType.Schema, WriteSchemaOrReference);
-            writer.WriteObject("example", mediaType.Example, AnyNode.Write);
-    //        writer.WriteMap("examples", mediaType.Examples, WriteExampleOrReference);
-
-            writer.WriteEndMap();
-        }
-
-
-        public static void WriteExample(IParseNodeWriter writer, Example example)
-        {
-            writer.WriteStartMap();
-            writer.WriteStringProperty("summary", example.Summary);
-            writer.WriteStringProperty("description", example.Description);
-            if (example.Value != null)
-            {
-                writer.WritePropertyName("value");
-                example.Value.Write(writer);
-            }
-            writer.WriteEndMap();
-        }
-
+        
 
         public static void WriteSecurityScheme(IParseNodeWriter writer, SecurityScheme securityScheme)
         {

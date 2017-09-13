@@ -14,11 +14,18 @@
         <TextBox x:Name="txtInput" Text="{Binding Input}" Margin="10" TextWrapping="Wrap" AcceptsReturn="True" FontFamily="Consolas" />
         <DockPanel Grid.Column="1" Margin="0,10" >
       <StackPanel Orientation="Horizontal"  DockPanel.Dock="Top">
-        <Button Content="Validate" HorizontalAlignment="Left" Height="20" Margin="10" VerticalAlignment="Top" Width="131" Click="Button_Click" Grid.Column="1"/>
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-          <Label>Output:</Label>
-          <RadioButton GroupName="Format" Content="Yaml" Padding="5" Height="24" VerticalAlignment="Top" IsChecked="{Binding IsYaml }" />
-          <RadioButton GroupName="Format" Content="JSON" Padding="5" Height="24" VerticalAlignment="Top" IsChecked="{Binding IsJson }" />
+        <Button Content="Convert" VerticalAlignment="Center" HorizontalAlignment="Left" Height="20" Margin="10" Width="131" Click="Button_Click" Grid.Column="1"/>
+        <StackPanel Orientation="Vertical"  DockPanel.Dock="Top">
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <Label>Format:</Label>
+            <RadioButton GroupName="Format" Content="Yaml" Padding="5" Height="24" VerticalAlignment="Top" IsChecked="{Binding IsYaml }" />
+            <RadioButton GroupName="Format" Content="JSON" Padding="5" Height="24" VerticalAlignment="Top" IsChecked="{Binding IsJson }" />
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <Label>Version:</Label>
+            <RadioButton GroupName="Format" Content="V3" Padding="5" Height="24" VerticalAlignment="Top" IsChecked="{Binding IsV3 }" />
+            <RadioButton GroupName="Format" Content="V2" Padding="5" Height="24" VerticalAlignment="Top" IsChecked="{Binding IsV2 }" />
+          </StackPanel>
         </StackPanel>
       </StackPanel>
             
