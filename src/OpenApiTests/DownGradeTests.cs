@@ -83,6 +83,43 @@ namespace OpenApiTests
         }
 
         [Fact]
+        public void TestRequestBody()
+        {
+            var openApiDoc = new OpenApiDocument();
+            var pathItem = new PathItem();
+            var operation = new Operation
+            {
+                RequestBody = new RequestBody
+                {
+                    Content = new Dictionary<string, MediaType>() {
+                        { "application/vnd.collection+json", new MediaType
+                                {
+                                    Schema = new Schema
+                                    {
+                                        Type = "string",
+                                        MaxLength = 100
+                                    }
+                                }
+                        }
+                    }
+                },
+                Responses = new Dictionary<string, Response> { { "200", new Response() {
+                    Description = "Success"
+                } } }
+            };
+            pathItem.AddOperation("post", operation);
+            openApiDoc.Paths.PathItems.Add("/resource", pathItem);
+
+            JObject jObject = ExportV2ToJObject(openApiDoc);
+
+            var bodyparam = jObject["paths"]["/resource"]["post"]["parameters"][0];
+            Assert.Equal("body", (string)bodyparam["in"]);
+            Assert.Equal("string", (string)bodyparam["schema"]["type"]);
+            Assert.Equal("100", (string)bodyparam["schema"]["maxLength"]);
+
+        }
+
+        [Fact]
         public void TestProduces()
         {
             var openApiDoc = new OpenApiDocument();
@@ -113,7 +150,7 @@ namespace OpenApiTests
         }
 
         [Fact]
-        public void Testxxx()
+        public void TestParameter()
         {
             var openApiDoc = new OpenApiDocument();
             var pathItem = new PathItem();
