@@ -35,8 +35,10 @@ namespace Tavis.OpenApi.Export
         }
         public YamlParseNodeWriter(Stream stream)
         {
-            this.writer = new StreamWriter(stream);
-            this.writer.NewLine = "\n";
+            this.writer = new StreamWriter(stream)
+            {
+                NewLine = "\n"
+            };
         }
 
         public void Flush()
