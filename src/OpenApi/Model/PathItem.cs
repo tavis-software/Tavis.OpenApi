@@ -20,7 +20,7 @@ namespace Tavis.OpenApi.Model
         public List<Parameter> Parameters { get; set; } = new List<Parameter>();
         public Dictionary<string, AnyNode> Extensions { get; set; } = new Dictionary<string, AnyNode>();
 
-        public void AddOperation(string method, Operation operation)
+        public void AddOperation(OperationType operationType, Operation operation)
         {
             var successResponse = operation.Responses.Keys.Where(k => k.StartsWith("2")).Any();
             if (!successResponse)
@@ -29,7 +29,7 @@ namespace Tavis.OpenApi.Model
             }
 
 
-            this.operations.Add(method, operation);
+            this.operations.Add(operationType.GetOperationTypeName(), operation);
         }
 
 
