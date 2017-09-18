@@ -254,7 +254,7 @@ namespace Tavis.OpenApi
         {
             { (s)=> s.StartsWith("x-"), (o,k,n)=> o.Extensions.Add(k, new AnyNode(n)) },
             { (s)=> "get,put,post,delete,patch,options,head,patch,trace".Contains(s),
-                (o,k,n)=> o.AddOperation(k, LoadOperation(n)    ) }
+                (o,k,n)=> o.AddOperation(OperationTypeExtensions.ParseOperationType(k), LoadOperation(n)    ) }
         };
 
 
