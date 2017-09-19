@@ -18,7 +18,10 @@ namespace Tavis.OpenApi
 
         public JsonParseNodeWriter(Stream stream)
         {
-            this.writer = new StreamWriter(stream);
+            this.writer = new StreamWriter(stream)
+            {
+                NewLine = "\n"
+            };
         }
 
         public void Flush()

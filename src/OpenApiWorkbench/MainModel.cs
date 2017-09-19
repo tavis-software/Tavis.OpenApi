@@ -29,6 +29,7 @@ namespace OpenApiWorkbench
         public string RenderTime { get { return renderTime; } set { renderTime = value; OnPropertyChanged("RenderTime"); } }
 
         private string format = "Yaml";
+        private string version = "V3";
 
         public string Format {
          get {
@@ -42,9 +43,26 @@ namespace OpenApiWorkbench
             }
         }
 
+        public string Version
+        {
+            get
+            {
+                return version;
+            }
+            set
+            {
+                version = value;
+                OnPropertyChanged("IsV2");
+                OnPropertyChanged("IsV3");
+            }
+        }
 
         public bool IsYaml { get { return Format == "Yaml"; } set { Format = "Yaml"; }  }
         public bool IsJson { get { return Format == "JSON"; } set { Format ="JSON"; } }
+
+        public bool IsV2{ get { return Version == "V2"; } set { Version = "V2"; } }
+        public bool IsV3 { get { return Version == "V3"; } set { Version = "V3"; } }
+
 
         protected void OnPropertyChanged(string name)
         {
@@ -106,7 +124,16 @@ namespace OpenApiWorkbench
 
         private string WriteContents(Tavis.OpenApi.Model.OpenApiDocument doc)
         {
-            var writer = new OpenApiV3Writer(s => (this.format == "Yaml" ? (IParseNodeWriter)new YamlParseNodeWriter(s) : (IParseNodeWriter)new JsonParseNodeWriter(s)));
+            Func<Stream, IParseNodeWriter> writerFactory = s => (this.format == "Yaml" ? (IParseNodeWriter)new YamlParseNodeWriter(s) : (IParseNodeWriter)new JsonParseNodeWriter(s));
+            IOpenApiWriter writer;
+            if (IsV3)
+            {
+                writer = new OpenApiV3Writer(writerFactory);
+            } else
+            {
+                writer = new OpenApiV2Writer(writerFactory);
+            }
+
             var outputstream = new MemoryStream();
             writer.Write(outputstream, doc);
             outputstream.Position = 0;
