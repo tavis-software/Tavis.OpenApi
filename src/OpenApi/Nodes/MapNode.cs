@@ -127,6 +127,12 @@ namespace Tavis.OpenApi
             }
             return refNode.GetScalarValue();
         }
+
+        public override void Write(IParseNodeWriter writer)
+        {
+            // TODO: implement Write
+            base.Write(writer);
+        }
     }
 
 

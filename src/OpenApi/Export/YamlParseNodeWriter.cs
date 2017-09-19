@@ -180,6 +180,13 @@ namespace Tavis.OpenApi.Export
             if (InProperty()) state.Pop();
         }
 
+        public void WriteValue(object value)
+        {
+            if (InList()) writer.Write(Indent + "- ");
+            writer.WriteLine(value);
+            if (InProperty()) state.Pop();
+        }
+
         public void WriteNull()
         {
             if (InList()) writer.Write(Indent + "- ");

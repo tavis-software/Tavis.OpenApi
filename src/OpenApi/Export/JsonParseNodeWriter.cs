@@ -113,6 +113,11 @@ namespace Tavis.OpenApi
             writer.Write(value.ToString().ToLower());  //TODO deal with culture issues
         }
 
+        public void WriteValue(object value)
+        {
+            writer.Write(value);
+        }
+
         public void WriteNull()
         {
             writer.WriteLine("null");

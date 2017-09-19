@@ -54,6 +54,7 @@ namespace Tavis.OpenApi
                 writer.WriteObject("externalDocs", doc.ExternalDocs, WriteExternalDocs);
             }
             writer.WriteList("security", doc.SecurityRequirements, WriteSecurityRequirement);
+            writer.WriteExtensions(doc.Extensions);
 
             writer.WriteEndMap();
 
@@ -86,6 +87,7 @@ namespace Tavis.OpenApi
             writer.WriteObject("contact", info.Contact, WriteContact);
             writer.WriteObject("license", info.License, WriteLicense);
             writer.WriteStringProperty("version", info.Version);
+            writer.WriteExtensions(info.Extensions);
 
             writer.WriteEndMap();
         }
@@ -98,6 +100,7 @@ namespace Tavis.OpenApi
             writer.WriteStringProperty("name", contact.Name);
             writer.WriteStringProperty("url", contact.Url?.OriginalString);
             writer.WriteStringProperty("email", contact.Email);
+            writer.WriteExtensions(contact.Extensions);
 
             writer.WriteEndMap();
         }
@@ -108,6 +111,7 @@ namespace Tavis.OpenApi
 
             writer.WriteStringProperty("name", license.Name);
             writer.WriteStringProperty("url", license.Url?.OriginalString);
+            writer.WriteExtensions(license.Extensions);
 
             writer.WriteEndMap();
         }
@@ -167,6 +171,7 @@ namespace Tavis.OpenApi
                 writer.WritePropertyName(pathItem.Key);
                 WritePathItem(writer, pathItem.Value);
             }
+            writer.WriteExtensions(paths.Extensions);
         }
 
         public static void WritePathItem(IParseNodeWriter writer, PathItem pathItem)
@@ -247,6 +252,7 @@ namespace Tavis.OpenApi
             writer.WriteMap<Response>("responses", operation.Responses, WriteResponseOrReference);
             writer.WriteBoolProperty("deprecated", operation.Deprecated, Operation.DeprecatedDefault);
             writer.WriteList("security", operation.Security, WriteSecurityRequirement);
+            writer.WriteExtensions(operation.Extensions);
 
             writer.WriteEndMap();
         }
@@ -291,6 +297,9 @@ namespace Tavis.OpenApi
             }
 //            writer.WriteList("examples", parameter.Examples, AnyNode.Write);
 //            writer.WriteObject("example", parameter.Example, AnyNode.Write);
+
+            writer.WriteExtensions(parameter.Extensions);
+
             writer.WriteEndMap();
         }
 
@@ -313,6 +322,7 @@ namespace Tavis.OpenApi
             writer.WriteStringProperty("description", requestBody.Description);
             writer.WriteBoolProperty("required", requestBody.Required, false);
             writer.WriteMap("content", requestBody.Content, WriteMediaType);
+            writer.WriteExtensions(requestBody.Extensions);
 
             writer.WriteEndMap();
         }
@@ -337,7 +347,8 @@ namespace Tavis.OpenApi
  //           writer.WriteMap("content", response.Content, WriteMediaType);
 
             writer.WriteMap("headers", response.Headers, WriteHeaderOrReference);
- 
+            writer.WriteExtensions(response.Extensions);
+
             //Links
             writer.WriteEndMap();
         }
@@ -419,6 +430,7 @@ namespace Tavis.OpenApi
             writer.WriteNumberProperty("minProperties", schema.MinProperties);
 
             writer.WriteList("enum", schema.Enum, (nodeWriter, s) => nodeWriter.WriteValue(s));
+            writer.WriteExtensions(schema.Extensions);
         }
 
         public static void WriteHeaderOrReference(IParseNodeWriter writer, Header header)
@@ -474,6 +486,7 @@ namespace Tavis.OpenApi
                 writer.WritePropertyName("value");
                 example.Value.Write(writer);
             }
+            writer.WriteExtensions(example.Extensions);
             writer.WriteEndMap();
         }
 
@@ -503,6 +516,7 @@ namespace Tavis.OpenApi
 
                     break;
             }
+            writer.WriteExtensions(securityScheme.Extensions);
             writer.WriteEndMap();
 
         }

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using SharpYaml;
 
 namespace Tavis.OpenApi
 {
@@ -40,6 +41,29 @@ namespace Tavis.OpenApi
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
+        }
+
+        public override void Write(IParseNodeWriter writer)
+        {
+            if (nodeList == null || !nodeList.Children.Any()) return;
+
+            writer.WriteStartList();
+
+            if (!(nodeList.Children.First() is YamlScalarNode scalarNode)) return;
+
+            bool stringFormat = scalarNode.Style == ScalarStyle.SingleQuoted ||
+                                scalarNode.Style == ScalarStyle.DoubleQuoted;
+
+            var items = nodeList.Children.Select(x => (x as YamlScalarNode).Value).ToList();
+            items.ForEach(s =>
+            {
+                if (stringFormat)
+                    writer.WriteListItem(s, (nodeWriter, item) => nodeWriter.WriteValue(item));
+                else
+                    writer.WriteListItem((object)s, (nodeWriter, item) => nodeWriter.WriteValue(item));
+            });
+ 
+            writer.WriteEndList();
         }
     }
 
