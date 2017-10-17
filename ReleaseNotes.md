@@ -1,4 +1,8 @@
 # Tavis.OpenApi
+## 0.8.5
+- Support for writing extensions
+## 0.8.4
+- Bug fixes (sorry!)
 ## 0.8.2
 - Added back StrongNaming cert.
 - Added back support for net46
