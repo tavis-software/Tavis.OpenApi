@@ -1,4 +1,7 @@
-﻿using SharpYaml.Serialization;
+﻿using System;
+using System.Linq;
+using SharpYaml;
+using SharpYaml.Serialization;
 
 namespace Tavis.OpenApi
 {
@@ -17,9 +20,9 @@ namespace Tavis.OpenApi
             this.node = node;
         }
 
-        public void Write(IParseNodeWriter writer)
+        public override void Write(IParseNodeWriter writer)
         {
-            writer.WriteValue(node.ToString());
+            node.Write(writer);
         }
 
         public static void Write(IParseNodeWriter writer, AnyNode node)

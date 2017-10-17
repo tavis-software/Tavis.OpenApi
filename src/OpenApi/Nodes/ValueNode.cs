@@ -1,4 +1,5 @@
-﻿using SharpYaml.Serialization;
+﻿using SharpYaml;
+using SharpYaml.Serialization;
 
 namespace Tavis.OpenApi
 {
@@ -19,7 +20,15 @@ namespace Tavis.OpenApi
             return scalarNode.Value;
         }
 
+        public override void Write(IParseNodeWriter writer)
+        {
+            if (node.Style == ScalarStyle.DoubleQuoted || node.Style == ScalarStyle.SingleQuoted)
+            {
+                writer.WriteValue(node.Value);
+                return;
+            }
+
+            writer.WriteValue((object)node.Value);
+        }
     }
-
-
 }

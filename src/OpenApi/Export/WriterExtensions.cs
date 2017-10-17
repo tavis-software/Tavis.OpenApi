@@ -1,4 +1,7 @@
 ﻿
+using SharpYaml;
+using SharpYaml.Serialization;
+
 namespace Tavis.OpenApi
 {
     using System;
@@ -98,6 +101,29 @@ namespace Tavis.OpenApi
                 writer.WriteValue((decimal)value);
             }
         }
-       
+
+        public static void WriteExtensions(this IParseNodeWriter writer, Dictionary<string, string> extensions)
+        {
+            if (extensions != null && extensions.Count > 0)
+            {
+                foreach (KeyValuePair<string, string> extension in extensions)
+                {
+                    writer.WritePropertyName(extension.Key);
+                    writer.WriteValue(extension.Value);
+                }
+            }
+        }
+
+        public static void WriteExtensions(this IParseNodeWriter writer, Dictionary<string, AnyNode> extensions)
+        {
+            if (extensions != null && extensions.Count > 0)
+            {
+                foreach (KeyValuePair<string, AnyNode> extension in extensions)
+                {
+                    writer.WritePropertyName(extension.Key);
+                    extension.Value.Write(writer);   
+                }
+            }
+        }
     }
 }

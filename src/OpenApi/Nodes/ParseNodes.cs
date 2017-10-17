@@ -94,6 +94,11 @@ namespace Tavis.OpenApi
             throw new DomainParseException("Cannot create simple list");
         }
 
+        public virtual void Write(IParseNodeWriter writer)
+        {
+            writer.WriteValue(ToString());
+        }
+
         internal string CheckRegex(string value, Regex versionRegex, string defaultValue)
         {
             if (!versionRegex.IsMatch(value))
