@@ -49,20 +49,34 @@ namespace Tavis.OpenApi
 
             writer.WriteStartList();
 
-            if (!(nodeList.Children.First() is YamlScalarNode scalarNode)) return;
+            YamlNode yamlNode = nodeList.Children.First();
 
-            bool stringFormat = scalarNode.Style == ScalarStyle.SingleQuoted ||
-                                scalarNode.Style == ScalarStyle.DoubleQuoted;
-
-            var items = nodeList.Children.Select(x => (x as YamlScalarNode).Value).ToList();
-            items.ForEach(s =>
+            if (yamlNode is YamlScalarNode)
             {
-                if (stringFormat)
-                    writer.WriteListItem(s, (nodeWriter, item) => nodeWriter.WriteValue(item));
-                else
-                    writer.WriteListItem((object)s, (nodeWriter, item) => nodeWriter.WriteValue(item));
-            });
- 
+                YamlScalarNode scalarNode = (YamlScalarNode) yamlNode;
+
+                bool stringFormat = scalarNode.Style == ScalarStyle.SingleQuoted ||
+                                    scalarNode.Style == ScalarStyle.DoubleQuoted;
+
+                var items = nodeList.Children.Select(x => (x as YamlScalarNode).Value).ToList();
+                items.ForEach(s =>
+                {
+                    if (stringFormat)
+                        writer.WriteListItem(s, (nodeWriter, item) => nodeWriter.WriteValue(item));
+                    else
+                        writer.WriteListItem((object)s, (nodeWriter, item) => nodeWriter.WriteValue(item));
+                });
+            }
+            else if (yamlNode is YamlSequenceNode || yamlNode is YamlMappingNode)
+            {
+                var items = nodeList.Children.ToList();
+                items.ForEach(x =>
+                {
+                    writer.WriteListItem(x,
+                        (nodeWriter, item) => new AnyNode(Create(new ParsingContext(), x)).Write(nodeWriter));
+                });
+            }
+
             writer.WriteEndList();
         }
     }

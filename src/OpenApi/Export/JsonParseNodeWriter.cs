@@ -24,7 +24,7 @@ namespace Tavis.OpenApi
             };
         }
 
-        public void Flush()
+        public virtual void Flush()
         {
             this.writer.Flush();
         }
@@ -39,22 +39,22 @@ namespace Tavis.OpenApi
         {
             Indent = Indent.Substring(0,Indent.Length -2 );
         }
-        public void WriteStartDocument() { }
-        public void WriteEndDocument() { }
-        public void WriteStartList() {
+        public virtual void WriteStartDocument() { }
+        public virtual void WriteEndDocument() { }
+        public virtual void WriteStartList() {
             writer.WriteLine(" [");
             state.Push(ParseState.InList);
             IncreaseIndent();
             first = true;
         }
-        public void WriteEndList() {
+        public virtual void WriteEndList() {
             writer.WriteLine();
             writer.Write(Indent + "]");
             state.Pop();
             DecreaseIndent();
         }
 
-        public void WriteListItem<T>(T item, Action<IParseNodeWriter, T> parser)
+        public virtual void WriteListItem<T>(T item, Action<IParseNodeWriter, T> parser)
         {
             if (!first)
             {
@@ -74,13 +74,13 @@ namespace Tavis.OpenApi
                 WriteNull();
         }
 
-        public void WriteStartMap() {
+        public virtual void WriteStartMap() {
             writer.WriteLine(Indent + "{");
             state.Push(ParseState.InMap);
             IncreaseIndent();
             first = true;
         }
-        public void WriteEndMap() {
+        public virtual void WriteEndMap() {
             writer.WriteLine();
             writer.Write(Indent + "}");
             state.Pop();
@@ -88,7 +88,7 @@ namespace Tavis.OpenApi
             first = false;
         }
 
-        public void WritePropertyName(string name) {
+        public virtual void WritePropertyName(string name) {
             if (!first)
             {
                 writer.WriteLine(",");
@@ -99,29 +99,29 @@ namespace Tavis.OpenApi
             writer.Write(Indent + "\"" + name + "\": " );
         }
 
-        public void WriteValue(string value) {
+        public virtual void WriteValue(string value) {
             value = value.Replace("\n", "\\n");
             writer.Write("\"" + value + "\"");
         }
 
-        public void WriteValue(Decimal value) {
+        public virtual void WriteValue(Decimal value) {
             writer.WriteLine(value.ToString());  //TODO deal with culture issues
         }
 
-        public void WriteValue(int value) {
+        public virtual void WriteValue(int value) {
             writer.Write(value.ToString());  //TODO deal with culture issues
        }
 
-        public void WriteValue(bool value) {
+        public virtual void WriteValue(bool value) {
             writer.Write(value.ToString().ToLower());  //TODO deal with culture issues
         }
 
-        public void WriteValue(object value)
+        public virtual void WriteValue(object value)
         {
             writer.Write(value);
         }
 
-        public void WriteNull()
+        public virtual void WriteNull()
         {
             writer.WriteLine("null");
         }
