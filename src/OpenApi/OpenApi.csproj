@@ -7,7 +7,7 @@
     <Company>Tavis Software Inc.</Company>
     <Product>Tavis.OpenApi</Product>
     <PackageId>Tavis.OpenApi</PackageId>
-    <Version>0.8.5</Version>
+    <Version>0.8.6</Version>
     <Description>Parser for OpenAPI descriptions</Description>
     <AssemblyName>Tavis.OpenApi</AssemblyName>
     <RootNamespace>Tavis.OpenApi</RootNamespace>
