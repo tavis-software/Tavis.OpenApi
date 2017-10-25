@@ -130,8 +130,15 @@ namespace Tavis.OpenApi
 
         public override void Write(IParseNodeWriter writer)
         {
-            // TODO: implement Write
-            base.Write(writer);
+            writer.WriteStartMap();
+
+            nodes.ForEach(x =>
+            {
+                writer.WritePropertyName(x.Name);
+                x.Value.Write(writer);
+            });
+
+            writer.WriteEndMap();
         }
     }
 
