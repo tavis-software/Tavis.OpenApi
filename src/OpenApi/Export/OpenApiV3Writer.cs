@@ -406,6 +406,18 @@ namespace Tavis.OpenApi
 
             writer.WriteList("enum", schema.Enum, (nodeWriter, s) => nodeWriter.WriteValue(s));
 
+            writer.WriteBoolProperty("nullable", schema.Nullable, false);
+            writer.WriteBoolProperty("readOnly", schema.ReadOnly, false);
+            writer.WriteBoolProperty("writeOnly", schema.WriteOnly, false);
+
+            if (schema.ExternalDocs != null && schema.ExternalDocs.Url != null)
+            {
+                writer.WriteObject("externalDocs", schema.ExternalDocs, WriteExternalDocs);
+            }
+
+            writer.WriteObject("example", schema.Example, AnyNode.Write);
+            writer.WriteBoolProperty("deprecated", schema.Deprecated, false);
+
             writer.WriteExtensions(schema.Extensions);
 
             writer.WriteEndMap();
