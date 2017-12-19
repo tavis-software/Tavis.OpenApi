@@ -1,5 +1,7 @@
 # Tavis.OpenAPI
 
+Note: This library has been superceded by [Microsoft.OpenAPI.NET](https://github.com/Microsoft/OpenAPI.NET).  I don't expect any further development on this project.
+
 This library is a parser for the [OpenAPI Specification](https://openapis.org/).  The model is based around OpenAPI 3.0 specification.
 
 ## Simple Example
