@@ -1,4 +1,6 @@
 # Tavis.OpenApi
+## 0.8.7
+- Write support for optional schema documentation fields
 ## 0.8.6
 - More writing support for extensions
 ## 0.8.5
